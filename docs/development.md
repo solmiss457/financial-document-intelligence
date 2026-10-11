@@ -43,9 +43,9 @@ docker compose up -d --wait db
 .venv/bin/python -m backend.scripts.prepare_test_db
 .venv/bin/python -m backend.scripts.check_clean_migrations
 # Everything except checks that need the original PDFs (this is what CI runs).
-.venv/bin/python -m pytest -c backend/pytest.ini -q -k 'not source_values' --ignore=backend/tests/ingestion/test_pdf_probe.py
+.venv/bin/python -m pytest -c backend/pytest.ini backend/tests -q -k 'not source_values' --ignore=backend/tests/ingestion/test_pdf_probe.py
 # Full suite after downloading the reports listed in the manifest.
-.venv/bin/python -m pytest -c backend/pytest.ini -q
+.venv/bin/python -m pytest -c backend/pytest.ini backend/tests -q
 # Register manifest reports for fictional organizations A/B and enqueue ingestion jobs.
 .venv/bin/python -m backend.scripts.register_reports
 # Process queued jobs, then exit. Omit --drain to keep polling.

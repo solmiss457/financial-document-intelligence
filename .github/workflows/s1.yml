@@ -23,6 +23,6 @@ jobs:
           .venv/bin/python -m backend.scripts.prepare_test_db
           .venv/bin/python -m backend.scripts.check_clean_migrations
           # Original PDFs are not distributed, so source-value and probe checks run locally only.
-          .venv/bin/python -m pytest -c backend/pytest.ini -q -k 'not source_values' --ignore=backend/tests/ingestion/test_pdf_probe.py
+          .venv/bin/python -m pytest -c backend/pytest.ini backend/tests -q -k 'not source_values' --ignore=backend/tests/ingestion/test_pdf_probe.py
       - if: always()
         run: docker compose down

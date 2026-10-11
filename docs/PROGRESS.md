@@ -222,3 +222,8 @@ Check public text for remaining Korean, relative links against the published fil
 ### Next
 
 Step 3: retrieval over authorized chunks and B0 answer generation behind an LLM interface, with a fake LLM until an API key is available.
+
+## 2026-10-11 — CI Collection Failure After Steps 0–2
+
+- Remote run 38101460539 (29acaac) failed during collection: `PermissionError` on `storage/postgres-pgvector`. Without explicit paths, pytest ignores `testpaths` when not run from `backend/`, so it walked the repository root and hit the Postgres data directory (owned by the container user, mode 0700 on Linux). macOS Docker Desktop makes that directory readable, so local runs passed while scanning the whole repository.
+- Fix: commands pass `backend/tests` explicitly, and `pytest.ini` sets `norecursedirs` to skip `storage`, `work`, `.venv`. Reproduced locally with an unreadable directory: the old command failed with the same collection error; either fix alone passes (98 passed, 1 deselected). Full local suite: 100 passed. Remote rerun pending.
