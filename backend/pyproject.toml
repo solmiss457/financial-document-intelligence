@@ -1,0 +1,14 @@
+# Packaging only: makes `fdi` importable without PYTHONPATH.
+# Pinned runtime dependencies stay in the requirements-*.lock files.
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fdi"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

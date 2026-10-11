@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 from psycopg.conninfo import make_conninfo
 ROOT = Path(__file__).resolve().parents[4]
+ROLES = {'admin': ('postgres', 'FDI_POSTGRES_PASSWORD'), 'app': ('fdi_app', 'FDI_APP_PASSWORD'),
+         'worker': ('fdi_worker', 'FDI_WORKER_PASSWORD')}
 
 
 def settings():
@@ -17,9 +19,9 @@ def settings():
     return result
 
 
-def dsn(admin=False):
+def dsn(admin=False, role='app'):
     s = settings()
+    user, secret = ROLES['admin' if admin else role]
     return make_conninfo(host='127.0.0.1', port=s.get('FDI_DB_PORT', '55432'),
-                         dbname=s.get('FDI_DB_NAME', 'fdi'), user='postgres' if admin else 'fdi_app',
-                         password=s['FDI_POSTGRES_PASSWORD' if admin else 'FDI_APP_PASSWORD'],
+                         dbname=s.get('FDI_DB_NAME', 'fdi'), user=user, password=s[secret],
                          connect_timeout=5)

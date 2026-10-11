@@ -24,31 +24,40 @@ curl --fail --location --silent --show-error 'https://www.berkshirehathaway.com/
 
 The original local run created `.venv` using Codex's bundled Python 3.12.14. Investigate hash mismatches if a publisher changes a download; do not overwrite the manifest blindly. Original PDFs, page images, and extracted full text stay in Git-ignored `storage/` and `work/`. The single regression test compares eight table/strategy combinations, including known failures; it does not measure whole-table accuracy or security.
 
-## Development Questions, Database, and API
+## Database, API, and Ingestion Worker
 
 See [question review limitations](archive/s1-questions.md) and [authorization implementation and validation](security.md).
 
-Prerequisites: Python 3.12 and running Docker Desktop. Execute from the repository root. The API lock pins direct and transitive versions but, unlike the PDF lock, does not pin wheel hashes. Remote Linux CI execution has not been verified in the implementation record.
+Prerequisites: Python 3.12 and running Docker Desktop. Execute from the repository root. The API and worker locks pin direct and transitive versions but, unlike the PDF lock, not wheel hashes.
 
 ```sh
 # Create .venv with Python 3.12 first if it does not exist.
 .venv/bin/python -m pip install --cache-dir work/pip-cache -r backend/requirements-api.lock
+.venv/bin/python -m pip install --cache-dir work/pip-cache --require-hashes -r backend/requirements-pdf-macos-arm64.lock
+.venv/bin/python -m pip install --cache-dir work/pip-cache -r backend/requirements-worker.lock
+.venv/bin/python -m pip install --cache-dir work/pip-cache --no-deps -e backend
+# Generates random credentials for postgres, fdi_app, and fdi_worker; adds missing keys only.
 .venv/bin/python backend/scripts/init_local_env.py
-# Do not copy .env.example to .env; the command above generates random credentials.
 docker compose up -d --wait db
-PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.migrate
-PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.prepare_test_db
-PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.check_clean_migrations
-# Database/API and question-contract checks without original PDFs.
-.venv/bin/python -m pytest -c backend/pytest.ini backend/tests/authorization backend/tests/test_questions.py -k 'not source_values' -q
-# All 40 tests after installing PDF dependencies and downloading the reports.
+.venv/bin/python -m backend.scripts.migrate
+.venv/bin/python -m backend.scripts.prepare_test_db
+.venv/bin/python -m backend.scripts.check_clean_migrations
+# Everything except checks that need the original PDFs (this is what CI runs).
+.venv/bin/python -m pytest -c backend/pytest.ini -q -k 'not source_values' --ignore=backend/tests/ingestion/test_pdf_probe.py
+# Full suite after downloading the reports listed in the manifest.
 .venv/bin/python -m pytest -c backend/pytest.ini -q
+# Register manifest reports for fictional organizations A/B and enqueue ingestion jobs.
+.venv/bin/python -m backend.scripts.register_reports
+# Process queued jobs, then exit. Omit --drain to keep polling.
+.venv/bin/python -m fdi.worker --drain
 # Start the local API.
-.venv/bin/python -m uvicorn fdi.api.main:app --app-dir backend/src --host 127.0.0.1 --port 8000
+.venv/bin/python -m uvicorn fdi.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-`/health` and `/ready` return 200; document routes return 401 by default. Test identity headers such as X-User-ID are not supported. Development database `fdi` starts without automatic sample data. Tests reset only fixtures in `fdi_test`; they do not upload actual reports. `check_clean_migrations` creates a temporary database, applies and repeats migrations, then deletes only the database it created.
+`/health` and `/ready` return 200; document routes return 401 by default because authentication is not implemented. Test identity headers such as X-User-ID are not supported. Tests reset only fixtures in `fdi_test`. `check_clean_migrations` creates a temporary database, applies and repeats migrations, then deletes only the database it created.
 
-Database address: `127.0.0.1:55432`. Data directory: Git-ignored `storage/postgres`. Stop the API with Ctrl-C and the database with `docker compose stop db`. Do not directly delete database volume files. Secrets remain in local `.env` (0600) and must not be printed or committed. Optional `FDI_DB_PORT`/`FDI_DB_NAME` overrides must match the Compose configuration where applicable.
+The worker downloads the pinned embedding model into ignored `work/models` on first use and copies registered PDFs into ignored `storage/documents` under random keys. It logs IDs, counts, and outcomes, not document text. B0 ingestion settings are recorded in `evaluation/configs/b0_ingestion.json`.
 
-`.github/workflows/s1.yml` checks authorization/API behavior and question contracts without downloading the original PDFs. Writing a workflow is distinct from a verified remote CI pass. Public-demo, actual-authentication, retrieval, citation, and download checks belong to S2 and later stages.
+Database address: `127.0.0.1:55432`, image PostgreSQL 17.11 + pgvector 0.8.6. Data directory: Git-ignored `storage/postgres-pgvector`. The earlier alpine-based `storage/postgres` is no longer mounted; it was left in place rather than deleted. Stop the API with Ctrl-C and the database with `docker compose stop db`. Do not directly delete database volume files. Secrets remain in local `.env` (0600) and must not be printed or committed. Optional `FDI_DB_PORT`/`FDI_DB_NAME` overrides must match the Compose configuration where applicable.
+
+`.github/workflows/s1.yml` runs migrations and every test that does not need the original PDFs on GitHub-hosted Ubuntu. PyMuPDF is installed there by version without a hash. The PDF regression and source-value checks run only locally because original PDFs are not distributed.

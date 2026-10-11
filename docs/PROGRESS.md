@@ -194,3 +194,31 @@ Check public text for remaining Korean, relative links against the published fil
 
 - No questions reference the new documents yet, and no table-extraction probe cases were added. Redistribution permission is unverified.
 - Next: add representative table probes for the new layouts, then author development questions (human review required).
+
+## 2026-10-11 — Plan Steps 0–2: Packaging, Ingestion Schema, Worker
+
+### Completed / Changed Files
+
+- Step 0: `backend/pyproject.toml` editable install; removed `PYTHONPATH`/`--app-dir` from commands and CI. Updated docs that still said remote CI was unverified (it has passed on every pushed commit).
+- Step 1: `compose.yaml` now uses pgvector 0.8.6 on PostgreSQL 17.11 with a new data directory. `backend/migrations/003_ingestion.sql`: `ingestion_jobs`, `document_pages`, `chunks` (384-dim vector + generated `tsvector`), FORCE RLS, `fdi_worker` role. Worker credentials added to `init_local_env.py`/`migrate.py`.
+- Step 2: `fdi/storage.py`, `fdi/ingestion/{extract,chunking,embedding}.py`, `fdi/worker/{jobs,__main__}.py`, `backend/scripts/register_reports.py`, `backend/requirements-worker.lock`, `evaluation/configs/b0_ingestion.json`.
+- Tests: `test_ingestion_rls.py` (35), `test_worker.py` (18), `test_chunking.py` (7); shared DB fixture moved to `backend/tests/conftest.py`.
+
+### Validation
+
+- `pytest -c backend/pytest.ini -q`: **100 passed**, 6 existing deprecation warnings. CI-equivalent subset: 98 passed, 1 deselected.
+- `check_clean_migrations`: 3 migrations on an empty database, repeat verified, 8/8 tables FORCE RLS.
+- Mutation checks: removing the chunk policy's `ready` condition failed 5 tests; removing the final lease-owner check failed 1 test (after adding a test that isolates it). Both restored.
+- Real run: `register_reports` (idempotent on rerun) + `python -m fdi.worker --drain` ingested 12/12 reports: 2,023 pages, 9,435 chunks, 245 s on CPU. The worker log contained no document text.
+- Smoke check through `fdi_app`: an organization A member saw 9,435 chunks in 12 documents; organization B users saw 0. One manual Apple question returned Apple chunks in its top 5. Not an evaluation.
+- Live API without `PYTHONPATH`: health 200, ready 200, document list 401.
+
+### Failures / Limitations
+
+- The first lease test passed even with the final ownership check removed, because lease renewal also checks ownership; added a test isolating the final check.
+- A shell-variable mistake initially skipped the policy mutation; rerun with explicit commands.
+- No upload/delete HTTP endpoints, deletion cleanup, retrieval API, or LLM answering. Extraction memory limits are not enforced on macOS. The worker lock and Linux PyMuPDF install are not hash-pinned. B0 retrieval and answer metrics remain Not measured.
+
+### Next
+
+Step 3: retrieval over authorized chunks and B0 answer generation behind an LLM interface, with a fake LLM until an API key is available.

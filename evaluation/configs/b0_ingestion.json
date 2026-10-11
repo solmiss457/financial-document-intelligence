@@ -1,0 +1,22 @@
+{
+  "configuration": "B0",
+  "chunker": "fixed_words_v1:150/30",
+  "chunking": "Fixed windows of 150 PyMuPDF words with 30-word overlap over the whole document; layout, tables, and page boundaries are ignored. Words on the same line are joined by spaces, line changes by newlines.",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "embedding_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+  "embedding_dimension": 384,
+  "normalize_embeddings": true,
+  "query_instruction": "Represent this sentence for searching relevant passages: ",
+  "pdf_parser": "PyMuPDF 1.26.7 page.get_text('words')",
+  "chunk_size_selection": {
+    "measured_on": "12 manifest reports, bge tokenizer, 2026-10-11",
+    "model_max_tokens": 512,
+    "candidates": [
+      {"words": 100, "overlap": 20, "chunks": 14149, "median_tokens": 132, "p99_tokens": 247, "over_512": 3},
+      {"words": 150, "overlap": 30, "chunks": 9435, "median_tokens": 198, "p99_tokens": 353, "over_512": 2},
+      {"words": 200, "overlap": 40, "chunks": 7076, "median_tokens": 263, "p99_tokens": 453, "over_512": 25},
+      {"words": 250, "overlap": 50, "chunks": 5663, "median_tokens": 329, "p99_tokens": 560, "over_512": 144}
+    ],
+    "reason": "Largest candidate with nearly all chunks inside the model limit; chunks over 512 tokens are truncated by the model."
+  }
+}

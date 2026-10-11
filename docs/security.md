@@ -49,9 +49,20 @@ Initially, SELECT policies hid deleting rows even from admins. A real admin UPDA
 - `ingestion_jobs`: the same composite FK, deduplication key, claim, lease expiration, and retry count are planned for S2. Define worker privileges separately from API privileges. Not implemented.
 - In-flight revocation and a final permission recheck will be added with the Q&A path. Only next-transaction revocation has been verified.
 - Actual OIDC, expired sessions, invitations, PDF downloads/citations, keyword/vector retrieval, uploads, and recovery are not implemented or tested. Database GUCs do not replace authentication.
-- CI configuration was added, but remote GitHub execution was not verified in this implementation record. Linux runtime/lock portability remains unverified and must be distinguished from local macOS results.
+- GitHub-hosted Linux CI runs the authorization/API and question-contract subset and has passed since publication (run 38098874459 on fbb9e93). Linux PDF dependency hashes remain unverified.
 - B0 remains unmeasured. The same RLS rules must apply to B0 and all later experiments.
 
 ## Official References
 
 [PostgreSQL RLS](https://www.postgresql.org/docs/17/ddl-rowsecurity.html), [psycopg pools](https://www.psycopg.org/psycopg3/docs/advanced/pool.html), [FastAPI dependency overrides](https://fastapi.tiangolo.com/advanced/testing-dependencies/).
+
+## Ingestion Tables and Worker Role (2026-10-11)
+
+Migration 003 adds `ingestion_jobs`, `document_pages`, and `chunks` with ENABLE/FORCE RLS (eight tables total) and composite `(organization_id, document_id)` foreign keys.
+
+- **fdi_app:** SELECT on pages/chunks only through a parent document that is `ready` and visible under the documents policy. The documents subquery is itself filtered by documents RLS, so membership, restricted ACLs, revocation, and `deleting` status apply to content as well. Same-organization admins may read and insert jobs (enqueue for future uploads); members cannot see jobs. No write access to pages/chunks or job state.
+- **fdi_worker:** LOGIN, NOSUPERUSER/NOBYPASSRLS/NOCREATEDB/NOCREATEROLE/NOINHERIT; pool startup rejects any other role name or unsafe attributes. It reads and updates jobs across organizations (needed to claim work), but documents, pages, and chunks only for the organization set in the transaction (`fdi.org_id`). It can update only document `status`, cannot read users/memberships/grants, cannot change titles or visibility, and cannot delete documents or jobs.
+
+Verified by `backend/tests/authorization/test_ingestion_rls.py` (35 tests) and `backend/tests/ingestion/test_worker.py` (18 tests) against real PostgreSQL: the A/B/restricted/inactive matrix for chunks and pages, keyword (`tsvector`) and vector (`<=>`) queries under the same policy, revocation in the next transaction, admin exclusion of `deleting` content, worker cross-organization write rejection, least privilege, concurrent claims, lease loss, and deletion during processing. Temporarily removing the `ready` condition from the chunk policy made five tests fail, and removing the final lease-owner check made one test fail; both were restored and re-verified.
+
+Limits: the worker trusts its own organization context; a compromised worker credential can read every job row and set any organization context. Deletion cleanup (physical removal of files, pages, chunks) and in-flight permission rechecks for answers are not implemented. Extraction isolation uses a spawned process with a wall-clock timeout and CPU rlimit; memory limits are not enforced on macOS.

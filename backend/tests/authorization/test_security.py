@@ -29,7 +29,7 @@ def test_no_context_and_privileged_role_rejected(database):
         assert conn.execute('SELECT id FROM fdi.documents').fetchall()==[]
         role=conn.execute('SELECT rolsuper,rolbypassrls FROM pg_roles WHERE rolname=current_user').fetchone()
         assert not any(role.values())
-        assert conn.execute("SELECT tableowner FROM pg_tables WHERE schemaname='fdi'").fetchall()==[{'tableowner':'fdi_owner'}]*5
+        assert conn.execute("SELECT DISTINCT tableowner FROM pg_tables WHERE schemaname='fdi'").fetchall()==[{'tableowner':'fdi_owner'}]
     with pytest.raises(RuntimeError,match='Unsafe'):
         create_pool(dsn(admin=True))
 
@@ -161,7 +161,7 @@ def test_rls_enabled_for_all_tables_and_no_role_escalation(database):
     _,pool=database
     with pool.connection() as conn:
         rows=conn.execute("SELECT relrowsecurity,relforcerowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='fdi' AND relkind='r'").fetchall()
-        assert len(rows)==5 and all(all(r.values()) for r in rows)
+        assert len(rows)==8 and all(all(r.values()) for r in rows)
         assert conn.execute("SELECT 1 FROM pg_auth_members WHERE member=(SELECT oid FROM pg_roles WHERE rolname=current_user)").fetchall()==[]
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         with pool.connection() as conn: conn.execute('SET ROLE fdi_owner')

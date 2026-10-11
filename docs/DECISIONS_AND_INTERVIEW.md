@@ -83,3 +83,19 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Validation:** All 40 existing tests passed after relocation; the local CI subset passed 38 tests with one deselected. Empty-database migrations and repeat application succeeded with five FORCE RLS tables. Live HTTP health/ready returned 200 and the organization document route returned 401 without authentication. SQL, lockfile, and evaluation JSON bytes match their previous versions.
 
 **Limits:** This refactor adds no product capabilities. Remote CI and independent human question review are not established by these local checks.
+
+## 2026-10-11 — Ingestion Foundation (Plan Steps 0–2)
+
+**Packaging.** `backend/pyproject.toml` with an editable install replaces `PYTHONPATH`/`--app-dir`. Dependencies stay in the existing lockfiles to avoid changing two things at once; the trade-off is that `pip install -e backend` does not install runtime dependencies.
+
+**pgvector image and new data directory.** Switched from `postgres:17.9-alpine` to `pgvector/pgvector:0.8.6-pg17-trixie` (PostgreSQL 17.11), pinned by digest. The old data directory was created under musl; reusing it under glibc risks silent collation differences in text indexes, so a new directory is mounted and the old one left untouched. Alternative: build pgvector into the alpine image; rejected for build complexity.
+
+**Worker role scoped by organization context.** The worker must claim jobs across organizations, but writes pages/chunks for one organization at a time. Jobs are readable across organizations; documents/pages/chunks require `fdi.org_id` to match. A bug that mixes organizations then fails at RLS or the composite FK instead of silently writing. Alternative: BYPASSRLS worker; simpler, but removes the database check entirely.
+
+**Leases instead of a broker.** `FOR UPDATE SKIP LOCKED` plus a lease and attempt counter handles concurrent workers and crashes at this scale. Leases are renewed after extraction and each embedding batch, and the final transaction re-checks ownership. Trade-off: polling latency and a fixed lease length.
+
+**Embedding model.** `BAAI/bge-small-en-v1.5` (MIT, 384 dimensions) pinned by Hugging Face revision, run locally on CPU: no API cost, reproducible, and small enough to embed the 12 reports in about four minutes. It is not a finance-specific model; that limitation should appear in error analysis rather than be assumed away. Vector column dimension is fixed at 384, so a model change requires a migration.
+
+**B0 chunk size from measurement.** Candidates 100–250 words were tokenized on all 12 reports. 150 words / 30 overlap keeps all but 2 of 9,435 chunks within the model's 512-token limit (p99 353 tokens); 250 words would truncate 2.5%. This selects a baseline that does not lose text to truncation; it says nothing about retrieval quality, which is unmeasured.
+
+**Validation.** 100 local tests pass; deliberate policy and lease-check removals were caught by tests. All 12 reports were ingested by the real worker. A single manual query returned only Apple chunks for an Apple question, and organization B users saw zero chunks; this is a smoke check, not an evaluation.

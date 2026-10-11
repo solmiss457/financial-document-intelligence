@@ -1,7 +1,9 @@
 name: fdi-s1
 services:
   db:
-    image: postgres:17.9-alpine@sha256:c7526c0f6c3f30260a563d7bcf8ad778effac59a44f8ffa86678c35418338609
+    # PostgreSQL 17.11 + pgvector 0.8.6 (Debian). The earlier alpine data in
+    # storage/postgres is not reused because its libc collation differs.
+    image: pgvector/pgvector:0.8.6-pg17-trixie@sha256:724a4041afdb1750446e3f6b5cfa8f3b0ac5a2cf538ddfa6bfee4f94c2fa85c6
     environment:
       POSTGRES_DB: fdi
       POSTGRES_USER: postgres
@@ -9,7 +11,7 @@ services:
     ports:
       - '127.0.0.1:55432:5432'
     volumes:
-      - ./storage/postgres:/var/lib/postgresql/data
+      - ./storage/postgres-pgvector:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres -d fdi']
       interval: 2s

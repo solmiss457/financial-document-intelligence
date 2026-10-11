@@ -11,9 +11,13 @@ FDI/
     src/fdi/api/            HTTP routes
     src/fdi/auth/           Pure authorization policies
     src/fdi/db/             Configuration and pooled DB sessions
+    src/fdi/ingestion/      PDF extraction, B0 chunking, embeddings
+    src/fdi/worker/         Database-backed ingestion jobs (python -m fdi.worker)
+    src/fdi/storage.py      Private original-file storage
     migrations/            Immutable SQL migrations
     scripts/               Local environment and DB management tools
     tests/                 Authorization, API, PDF and question regressions
+    pyproject.toml         Editable install of the fdi package
     pytest.ini             Test discovery and import configuration
     requirements-*.lock    Existing dependency locks, unchanged versions
   evaluation/
@@ -70,10 +74,14 @@ OIDC provider/library, LLM provider/model, embedding model/version, final report
 
 ## Progress as of 2026-10-10
 
-S1-1: extraction experiment on two reports and four representative tables completed; see [results](archive/pdf-extraction-s1.md). S1-2: 12 questions authored and compared with sources by Codex. S1-3: DB/RLS/minimal API implemented, with 40 local tests passing. Independent human review is pending. CI configuration was written; remote execution was not verified in this implementation record. See [security validation](security.md) and [question review scope](archive/s1-questions.md).
+S1-1: extraction experiment on two reports and four representative tables completed; see [results](archive/pdf-extraction-s1.md). S1-2: 12 questions authored and compared with sources by Codex. S1-3: DB/RLS/minimal API implemented, with 40 local tests passing. Independent human review is pending. The GitHub Actions workflow has passed on GitHub-hosted Linux for every pushed commit since publication (latest checked: run 38098874459 on fbb9e93). See [security validation](security.md) and [question review scope](archive/s1-questions.md).
 
 ## Repository Organization Before S2
 
 The existing implementation is grouped into frontend, backend, evaluation, and docs. API and future worker processes can share the fdi Python package while remaining separate runtime processes. Add ingestion/retrieval/answering/calculations/worker modules when their implementations begin, rather than adding empty directories now. Existing SQL migration bytes and dependency lock versions are preserved. Dependency-tool consolidation is a separate change.
 
 PROGRESS.md, IMPLEMENTATION_PLAN.md, and DECISIONS_AND_INTERVIEW.md retain their names because local project instructions refer to these stable entry points. One-off S1 reports live in docs/archive. Private files, storage, .env, and work artifacts remain local and ignored.
+
+## Progress as of 2026-10-11 (plan steps 0–2)
+
+The S2 order was adjusted to reach a measurable B0 before authentication: (0) packaging cleanup, (1) ingestion schema, (2) worker and B0 chunking, (3) B0 retrieval and answers, (4) evaluation tooling and B0 measurement, (5) OIDC, upload, and UI. Steps 0–2 are implemented: editable package install, pgvector, `ingestion_jobs`/`document_pages`/`chunks` with RLS and a separate worker role, and a worker that ingested all 12 manifest reports. Retrieval APIs, LLM answers, uploads, deletion cleanup, and authentication remain. No retrieval or answer quality has been measured.

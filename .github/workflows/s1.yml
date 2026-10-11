@@ -1,9 +1,9 @@
-name: S1 security and development questions
+name: Security, ingestion, and development questions
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  s1:
+  backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,11 +13,16 @@ jobs:
       - run: |
           python -m venv .venv
           .venv/bin/python -m pip install -r backend/requirements-api.lock
+          # Linux has no hash-pinned PDF lock yet; same version as the macOS lock.
+          .venv/bin/python -m pip install PyMuPDF==1.26.7
+          .venv/bin/python -m pip install --no-deps -e backend
           .venv/bin/python backend/scripts/init_local_env.py
           docker compose up -d --wait db
-          PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.migrate
-          PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.migrate
-          PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.prepare_test_db
-          .venv/bin/python -m pytest -c backend/pytest.ini backend/tests/authorization backend/tests/test_questions.py -k 'not source_values' -q
+          .venv/bin/python -m backend.scripts.migrate
+          .venv/bin/python -m backend.scripts.migrate
+          .venv/bin/python -m backend.scripts.prepare_test_db
+          .venv/bin/python -m backend.scripts.check_clean_migrations
+          # Original PDFs are not distributed, so source-value and probe checks run locally only.
+          .venv/bin/python -m pytest -c backend/pytest.ini -q -k 'not source_values' --ignore=backend/tests/ingestion/test_pdf_probe.py
       - if: always()
         run: docker compose down

@@ -41,3 +41,13 @@ Implemented: PostgreSQL users/organizations/memberships/documents/document_grant
 `fdi_app` is a non-owner role without schema modification, user/membership administration, document organization reassignment, or physical document deletion privileges. Development database `fdi` and test database `fdi_test` are separate. The migration verification task cleans up only its own temporary database.
 
 Deletion **metadata** is visible in the database to admins of the same organization for state transitions and future recovery. Regular members and current API document responses exclude deleting documents. Future retrieval, citations, original files, and facts require separate ready-state and permission checks. See [S1 Security and API](security.md) for verified behavior and limitations.
+
+## Ingestion Implementation (2026-10-11)
+
+Implemented: `ingestion_jobs`, `document_pages`, and `chunks` (migration 003), a separate `fdi_worker` database role, and a polling worker (`python -m fdi.worker`). Upload HTTP endpoints, OIDC, deletion cleanup, retrieval APIs, and LLM answers are not implemented.
+
+Flow: a document row (status `queued`) and an ingestion job are created → the worker claims the job with `FOR UPDATE SKIP LOCKED` and a lease → it sets the transaction's organization context to the job's organization, marks the document `processing`, and verifies the stored file's SHA256 against the document version → PyMuPDF extracts pages and words in a separate, time-limited process → B0 fixed-size word chunks are embedded locally → pages and chunks are replaced in one transaction and the document becomes `ready`.
+
+Safety properties: the final write re-locks the job and confirms this worker still owns the lease and the document is not `deleting`; otherwise nothing is written. Input errors (hash mismatch, missing file, non-PDF, encryption, page/size/time limits) fail without retry; other errors are retried up to `max_attempts`, after which the document becomes `failed`. Jobs whose final lease expires are reaped as failed. Chunk rows record their chunker and embedding model so B0 and later chunkers can coexist on the same documents.
+
+API-side, pages and chunks are readable only when the parent document is `ready` and readable under the documents policy, so keyword and vector queries over `chunks` inherit organization, ACL, revocation, and deletion rules. See [security](security.md).
