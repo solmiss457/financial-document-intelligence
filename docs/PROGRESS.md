@@ -305,3 +305,9 @@ Step 4: revise development questions for the multi-company corpus (human review)
 - 12 questions, one company; R1/R2/R3 runs used uncommitted code identified by worktree hash `b2318b88`. dev-02 lacks an alternative evidence set (cash flow statement), so its Recall@5 understates retrieval.
 - R1 and R3 produced wrong answers from neighboring tables (segment totals, pro forma figures).
 - Next: development questions for the other five companies (human review), then choose R1 or R3 and run G1/G2.
+
+## 2026-10-11 — Development Questions for Apple and Walmart
+
+- Split decided by company: development = Berkshire, Apple, Walmart; final = Coca-Cola, JPMorgan, Nike.
+- Added dev-13 to dev-28 (8 Apple, 8 Walmart: 8 lookups including one parenthesized negative, 4 calculations, 2 missing-period, 2 fiscal-vs-calendar clarifications) and a cash-flow alternative evidence set for dev-02. Values checked against rendered pages; Decimal-computed answers; every evidence item coverable in both indexes.
+- Contract tests now cover 28 questions and check alternative evidence values on hash-pinned pages. Human review pending for 17 items (16 new questions + dev-02's added evidence). R1/R3 comparison waits for that review.

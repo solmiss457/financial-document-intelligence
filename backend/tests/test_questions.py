@@ -8,7 +8,7 @@ QUESTIONS = json.loads((ROOT / 'evaluation/questions/s1_development.json').read_
 
 
 def test_question_contract_and_ground_truth():
-    assert len(QUESTIONS) == len({q['question_id'] for q in QUESTIONS}) == 12
+    assert len(QUESTIONS) == len({q['question_id'] for q in QUESTIONS}) == 28
     manifest = {d['document_id']: d for d in json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())}
     for q in QUESTIONS:
         assert q['split'] == 'development'
@@ -71,7 +71,7 @@ def test_source_values_present_on_hash_pinned_pages():
         assert hashlib.sha256(path.read_bytes()).hexdigest() == d['sha256']
         with pymupdf.open(path) as pdf:
             for q in QUESTIONS:
-                for item in q['inputs']:
+                for item in q['inputs'] + [i for s in q['alternative_evidence_sets'] for i in s]:
                     if item['document_id'] != d['document_id']: continue
                     text = ''.join(pdf[item['pdf_page']-1].get_text().split())
                     value = Decimal(item['value'])

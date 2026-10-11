@@ -120,6 +120,23 @@
           "period_type": "annual",
           "period_end": "2022-12-31"
         }
+      ],
+      [
+        {
+          "document_id": "berkshire-2023",
+          "document_version": "2023 Annual Report (hash-pinned downloaded version)",
+          "sha256": "2132b85f9c472a6f0b141551adb08d93f88db28e6a3794e7e2b13ca3f8a57b5b",
+          "pdf_page": 98,
+          "printed_page_label": "K-74",
+          "table_id": "cashflows",
+          "row_label": "Net earnings (loss)",
+          "column_label": "2022",
+          "value": "-21998",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2022-12-31"
+        }
       ]
     ],
     "inputs": [
@@ -144,10 +161,10 @@
     "reason": null,
     "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "confirmed",
+    "human_review_status": "pending",
     "human_reviewer": "project owner (single reviewer)",
     "human_reviewed_at": "2026-10-11",
-    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages. Alternative evidence (2023 cash flow statement, PDF page 98) added 2026-10-11; needs review."
   },
   {
     "question_id": "dev-03",
@@ -1011,5 +1028,1245 @@
     "human_reviewer": "project owner (single reviewer)",
     "human_reviewed_at": "2026-10-11",
     "human_review_note": "Clarify the metric, and include the attributable-earnings value as a provisional answer."
+  },
+  {
+    "question_id": "dev-13",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2025-operations"
+    ],
+    "question": "According to Apple's fiscal 2025 Form 10-K, what were total net sales for fiscal 2025, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "416161",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Total net sales",
+          "column_label": "2025",
+          "value": "416161",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-09-27"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Total net sales",
+        "column_label": "2025",
+        "value": "416161",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-09-27"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-14",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2025-operations"
+    ],
+    "question": "According to Apple's fiscal 2025 Form 10-K, what were Services net sales in fiscal 2025, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "109158",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Services",
+          "column_label": "2025",
+          "value": "109158",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-09-27"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Services",
+        "column_label": "2025",
+        "value": "109158",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-09-27"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-15",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2025-cashflows"
+    ],
+    "question": "According to Apple's fiscal 2025 Form 10-K, how much cash was generated by operating activities in fiscal 2025, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "111482",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 36,
+          "printed_page_label": "33",
+          "table_id": "cashflows",
+          "row_label": "Cash generated by operating activities",
+          "column_label": "2025",
+          "value": "111482",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-09-27"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 36,
+        "printed_page_label": "33",
+        "table_id": "cashflows",
+        "row_label": "Cash generated by operating activities",
+        "column_label": "2025",
+        "value": "111482",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-09-27"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-16",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2024-operations"
+    ],
+    "question": "According to Apple's fiscal 2024 Form 10-K, what were total net sales in fiscal 2022, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "394328",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2024",
+          "document_version": "FY2024 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "319e1217afe72f194575e63350ea6c813eaf5caf0c24e59ce8b221fc1b3ea0d4",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Total net sales",
+          "column_label": "2022",
+          "value": "394328",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2022-09-24"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2024",
+        "document_version": "FY2024 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "319e1217afe72f194575e63350ea6c813eaf5caf0c24e59ce8b221fc1b3ea0d4",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Total net sales",
+        "column_label": "2022",
+        "value": "394328",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2022-09-24"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-17",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2025-operations"
+    ],
+    "question": "Using Apple's fiscal 2025 Form 10-K, what was total net sales growth from fiscal 2024 to fiscal 2025, rounded to two decimal places?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "6.43",
+      "unit": "percent"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Total net sales",
+          "column_label": "2025",
+          "value": "416161",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-09-27"
+        },
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Total net sales",
+          "column_label": "2024",
+          "value": "391035",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-09-28"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Total net sales",
+        "column_label": "2025",
+        "value": "416161",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-09-27"
+      },
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Total net sales",
+        "column_label": "2024",
+        "value": "391035",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-09-28"
+      }
+    ],
+    "formula": "growth_percent",
+    "tolerance": "0.005",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-18",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2025-operations"
+    ],
+    "question": "Using Apple's fiscal 2025 Form 10-K, how much did net income change from fiscal 2024 to fiscal 2025, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "18274",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Net income",
+          "column_label": "2025",
+          "value": "112010",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-09-27"
+        },
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Net income",
+          "column_label": "2024",
+          "value": "93736",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-09-28"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Net income",
+        "column_label": "2025",
+        "value": "112010",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-09-27"
+      },
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Net income",
+        "column_label": "2024",
+        "value": "93736",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-09-28"
+      }
+    ],
+    "formula": "difference",
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-19",
+    "type": "insufficient_evidence",
+    "split": "development",
+    "evidence_group_ids": [],
+    "question": "What were Apple's total net sales for fiscal 2026?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "insufficient_evidence",
+    "expected_answer": null,
+    "alternative_evidence_sets": [],
+    "inputs": [],
+    "formula": null,
+    "tolerance": null,
+    "reason": "The corpus contains Apple's fiscal 2024 and fiscal 2025 Form 10-K filings only; fiscal 2026 results are not in it. No external retrieval allowed.",
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-20",
+    "type": "ambiguous",
+    "split": "development",
+    "evidence_group_ids": [
+      "apple-fy2025-operations",
+      "apple-fy2024-operations"
+    ],
+    "question": "What were Apple's total net sales in 2024?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "needs_clarification",
+    "expected_answer": null,
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "apple-fy2025",
+          "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Total net sales",
+          "column_label": "2024",
+          "value": "391035",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-09-28"
+        }
+      ],
+      [
+        {
+          "document_id": "apple-fy2024",
+          "document_version": "FY2024 Form 10-K (hash-pinned downloaded version)",
+          "sha256": "319e1217afe72f194575e63350ea6c813eaf5caf0c24e59ce8b221fc1b3ea0d4",
+          "pdf_page": 32,
+          "printed_page_label": "29",
+          "table_id": "operations",
+          "row_label": "Total net sales",
+          "column_label": "2024",
+          "value": "391035",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-09-28"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "apple-fy2025",
+        "document_version": "FY2025 Form 10-K (hash-pinned downloaded version)",
+        "sha256": "3eb270b22acb7d8d8e9c32a43dc221dec3345f8e4bca02755fdbc1ee16c823de",
+        "pdf_page": 32,
+        "printed_page_label": "29",
+        "table_id": "operations",
+        "row_label": "Total net sales",
+        "column_label": "2024",
+        "value": "391035",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-09-28"
+      }
+    ],
+    "formula": null,
+    "tolerance": null,
+    "reason": "Apple's fiscal 2024 ended September 28, 2024, so '2024' may mean fiscal or calendar 2024; the reports do not give calendar-year totals. Ask which is meant and give fiscal 2024 as the provisional answer.",
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending",
+    "expected_clarification": {
+      "asks_for": "fiscal_year",
+      "provisional_answer": {
+        "value": "391035",
+        "unit": "USD million",
+        "interpretation": "fiscal 2024 (ended September 28, 2024)"
+      }
+    }
+  },
+  {
+    "question_id": "dev-21",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-income"
+    ],
+    "question": "According to Walmart's fiscal 2026 annual report, what were total revenues for the fiscal year ended January 31, 2026, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "713163",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2026",
+          "value": "713163",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Total revenues",
+        "column_label": "2026",
+        "value": "713163",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-22",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-income"
+    ],
+    "question": "According to Walmart's fiscal 2026 annual report, what was consolidated net income attributable to Walmart for fiscal 2026, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "21893",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Consolidated net income attributable to Walmart",
+          "column_label": "2026",
+          "value": "21893",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Consolidated net income attributable to Walmart",
+        "column_label": "2026",
+        "value": "21893",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-23",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-cashflows"
+    ],
+    "question": "According to Walmart's fiscal 2026 annual report, what was net cash provided by operating activities in fiscal 2026, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "41565",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 58,
+          "printed_page_label": "56",
+          "table_id": "cashflows",
+          "row_label": "Net cash provided by operating activities",
+          "column_label": "2026",
+          "value": "41565",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 58,
+        "printed_page_label": "56",
+        "table_id": "cashflows",
+        "row_label": "Net cash provided by operating activities",
+        "column_label": "2026",
+        "value": "41565",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-24",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-income"
+    ],
+    "question": "In Walmart's fiscal 2026 consolidated statement of income, what signed amount is shown for interest income in fiscal 2026, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "-368",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Interest income",
+          "column_label": "2026",
+          "value": "-368",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Interest income",
+        "column_label": "2026",
+        "value": "-368",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-25",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-income"
+    ],
+    "question": "Using Walmart's fiscal 2026 annual report, what was total revenue growth from fiscal 2025 to fiscal 2026, rounded to two decimal places?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "4.73",
+      "unit": "percent"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2026",
+          "value": "713163",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        },
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2025",
+          "value": "680985",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Total revenues",
+        "column_label": "2026",
+        "value": "713163",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      },
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Total revenues",
+        "column_label": "2025",
+        "value": "680985",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-01-31"
+      }
+    ],
+    "formula": "growth_percent",
+    "tolerance": "0.005",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-26",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-income"
+    ],
+    "question": "Using Walmart's fiscal 2026 annual report, what was fiscal 2026 operating income as a percentage of fiscal 2026 total revenues, rounded to two decimal places?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "4.18",
+      "unit": "percent"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Operating income",
+          "column_label": "2026",
+          "value": "29825",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        },
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2026",
+          "value": "713163",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Operating income",
+        "column_label": "2026",
+        "value": "29825",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      },
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Total revenues",
+        "column_label": "2026",
+        "value": "713163",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
+      }
+    ],
+    "formula": "ratio_percent",
+    "tolerance": "0.005",
+    "reason": null,
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-27",
+    "type": "insufficient_evidence",
+    "split": "development",
+    "evidence_group_ids": [],
+    "question": "What were Walmart's total revenues for the fiscal year ending January 31, 2027?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "insufficient_evidence",
+    "expected_answer": null,
+    "alternative_evidence_sets": [],
+    "inputs": [],
+    "formula": null,
+    "tolerance": null,
+    "reason": "The corpus contains Walmart's fiscal 2025 and fiscal 2026 annual reports only; the fiscal year ending January 31, 2027 is not covered. No external retrieval allowed.",
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-28",
+    "type": "ambiguous",
+    "split": "development",
+    "evidence_group_ids": [
+      "walmart-fy2026-income",
+      "walmart-fy2025-income"
+    ],
+    "question": "What were Walmart's total revenues in 2025?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
+    ],
+    "expected_state": "needs_clarification",
+    "expected_answer": null,
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2025",
+          "value": "680985",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-01-31"
+        }
+      ],
+      [
+        {
+          "document_id": "walmart-fy2025",
+          "document_version": "FY2025 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "c730ff07b5b06c59551ac77eaef76ddc3d78f7e469332fa1dc9f53eb5bc2dbc0",
+          "pdf_page": 55,
+          "printed_page_label": "53",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2025",
+          "value": "680985",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2025-01-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Total revenues",
+        "column_label": "2025",
+        "value": "680985",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2025-01-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": null,
+    "reason": "Walmart's fiscal 2025 ended January 31, 2025, while most of calendar 2025 falls in fiscal 2026 (713,163). Ask which is meant and give fiscal 2025 as Walmart labels it as the provisional answer.",
+    "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "pending",
+    "expected_clarification": {
+      "asks_for": "fiscal_year",
+      "provisional_answer": {
+        "value": "680985",
+        "unit": "USD million",
+        "interpretation": "fiscal 2025 as Walmart labels it (ended January 31, 2025)"
+      }
+    }
   }
 ]

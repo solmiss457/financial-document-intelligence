@@ -145,3 +145,11 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **New failure mode.** B0 abstained when unsure. R1/R3 answer more and sometimes answer confidently from the wrong table (segment totals, pro forma figures). Better retrieval exposes answer-verification needs; this motivates G1/G2 rather than declaring success.
 
 **Interview framing.** "Table-aware chunking moved the evidence for 'Berkshire total revenues 2024' from rank 2,359 to rank 4. Adding keyword search helped at top-5, but when I equalized the context budget the advantage shrank, so I kept the simpler improvement and left the combination undecided. Better retrieval also produced confident answers from the wrong table, which is why the next step is verification, not more retrieval tuning."
+
+## 2026-10-11 — Company-Level Development/Final Split
+
+**Decision (project owner).** Development questions: Berkshire Hathaway, Apple, Walmart. Final evaluation questions: Coca-Cola, JPMorgan, Nike. All 12 reports remain searchable for every configuration.
+
+**Why.** Chunking was just tuned on statement layouts (row reconstruction, character caps). A table-level split inside the same companies would let layout-specific tuning leak into the final score. A company-level split makes the final test a new layout as well as new questions. Cost: only three companies inform development choices such as R1 vs R3.
+
+**New development questions.** 16 questions on Apple and Walmart (lookups, a negative value shown in parentheses, growth, difference, ratio, missing future periods, and fiscal-vs-calendar ambiguity), plus a second evidence set for dev-02 (the same 2022 figure in the 2023 cash flow statement). Values were read from rebuilt rows and compared with rendered page images; every evidence item has a covering chunk in both the B0 and R1 indexes. Human review is pending, so these are not yet used for decisions.
