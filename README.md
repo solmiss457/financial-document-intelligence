@@ -168,4 +168,4 @@ See the [local development guide](docs/DEVELOPMENT.md) for environment setup, da
 | [Development Plan](docs/IMPLEMENTATION_PLAN.md) | Implementation scope and acceptance criteria |
 | [Engineering Log](docs/PROGRESS.md) | Implementation details, verified results, and limitations |
 
-Supporting engineering documents are maintained in Korean.
+Supporting engineering documents are available in English.

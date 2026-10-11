@@ -14,3 +14,7 @@ work/
 storage/
 eval/runs/*
 !eval/runs/.gitkeep
+
+# Local-only planning and agent instructions
+/AGENTS.md
+/Financial_Document_Intelligence_Project_Plan_EN.md

@@ -1,47 +1,47 @@
-# S1-1 공개 보고서 표 추출 실험
+# S1-1 Public Report Table Extraction Experiment
 
-2026-10-10. 범위: 데이터 확보와 추출 가능성 검증. 앱/질문 세트/DB 구현 완료가 아니다.
+2026-10-10. Scope: acquiring data and testing extraction feasibility. This experiment alone does not complete an application, question set, or database.
 
-## 자료와 선정 이유
+## Sources and Selection
 
-- Berkshire Hathaway [2023 Annual Report](https://www.berkshirehathaway.com/2023ar/2023ar.pdf): 152쪽.
-- Berkshire Hathaway [2024 Annual Report](https://www.berkshirehathaway.com/2024ar/2024ar.pdf): 150쪽.
-- 같은 회사의 기간별 비교, 다년 열, 괄호 음수, 주당 수치의 단위 예외를 확인할 수 있다.
-- Microsoft 2024 PDF 후보는 다운로드 HTTP 403으로 제외했다. 회사 다양성은 확보하지 못했다. 스캔·다중 회사·복잡한 병합 표에 일반화하지 않는다.
-- 출처/취득 시각/SHA256/버전은 `eval/manifests/s1_reports.json`. 공개 열람 가능성을 재배포 허가로 해석하지 않았다. 라이선스 확인 전 원본과 추출 전문은 배포하지 않는다.
+- Berkshire Hathaway [2023 Annual Report](https://www.berkshirehathaway.com/2023ar/2023ar.pdf): 152 pages.
+- Berkshire Hathaway [2024 Annual Report](https://www.berkshirehathaway.com/2024ar/2024ar.pdf): 150 pages.
+- These reports support comparisons across periods, multiple year columns, parenthesized negatives, and per-share unit exceptions.
+- A Microsoft 2024 PDF candidate returned HTTP 403 and was excluded. The sample lacks company diversity; results do not generalize to scans, multiple companies, or complex merged tables.
+- Source URL, acquisition time, SHA256, and version are in `eval/manifests/s1_reports.json`. Public availability was not treated as redistribution permission. Original PDFs and extracted full text are not distributed without verifying permission.
 
-## 실행과 실제 결과
+## Environment and Observed Results
 
-Python 3.12.14, PyMuPDF 1.26.7, macOS 15.7.9 arm64. 전체 302쪽의 텍스트·단어 좌표를 로컬 추출했다. 표 탐지는 아래 4쪽만 수행했다.
+Python 3.12.14, PyMuPDF 1.26.7, macOS 15.7.9 arm64. Text and word coordinates were extracted locally from all 302 pages. Table detection was limited to the four pages below.
 
-| 보고서 | PDF 쪽(1-based) / 인쇄 쪽 | 표 | lines 크기 | text 크기 |
+| Report | PDF page (1-based) / printed label | Statement | lines shape | text shape |
 |---|---|---|---|---|
-| 2023 | 96 / K-72 | 손익 | 46×13 | 57×7 |
-| 2023 | 98 / K-74 | 현금흐름 | 46×13 | 49×12 |
-| 2024 | 90 / K-68 | 손익 | 46×12 | 56×11 |
-| 2024 | 92 / K-70 | 현금흐름 | 47×13 | 50×12 |
+| 2023 | 96 / K-72 | Earnings | 46×13 | 57×7 |
+| 2023 | 98 / K-74 | Cash flows | 46×13 | 49×12 |
+| 2024 | 90 / K-68 | Earnings | 46×12 | 56×11 |
+| 2024 | 92 / K-70 | Cash flows | 47×13 | 50×12 |
 
-각 전략에서 4개 표 후보를 찾았다. 원본의 3개 연도 열이 추출에서는 통화기호·빈 셀 등으로 분리되므로 위 열 개수를 재무 기간 개수로 해석하면 안 된다.
+Each strategy found four table candidates. Currency symbols and blank cells split the original three year columns into additional extracted columns; the shapes above are not counts of financial periods.
 
-- 페이지 텍스트: 4쪽 모두 예상 연도/단위/인쇄 쪽 문자열 존재.
-- lines: 4개 표에서 연도 헤더 존재. 지정 8행 모두 행 이름·3개 값·값 순서 및 괄호 음수 검사 통과. **단위 문구는 표 데이터에 0/4 포함**되어 문맥 손실 확인.
-- text: 4개 표에서 연도 헤더·단위 존재. 동일 지정 행 검사 **1/8 통과, 7/8 실패**. 유일한 통과는 2024 현금흐름의 주식 매입 행. 실제 표 전체 정확도나 재무 사실 추출 정확도가 아니다.
-- 지정 행: 손익의 총수익/순손익, 현금흐름의 영업현금흐름/주식 매입. `eval/configs/pdf_probe.json`에 원본 대조 값 기록.
-- 원본 4쪽을 PNG로 렌더링해 Codex가 시각 대조했다. 독립된 사람의 검토는 아직 없다. 질문 12개에 대한 사람 원본 검토 완료로 간주하지 않는다.
+- Page text: expected years, unit wording, and printed labels were present on all four pages.
+- lines: year headers appeared in all four tables. All eight selected rows passed checks for row label, three values, value order, and parenthesized negatives. **Unit wording appeared in 0/4 extracted tables**, demonstrating context loss.
+- text: year headers and units appeared in all four tables. The same selected-row checks produced **1/8 passes and 7/8 failures**. Only the 2024 cash-flow row for equity-security purchases passed. This is not whole-table or financial-fact extraction accuracy.
+- Selected rows: total revenues/net earnings in the earnings statements and operating cash flow/equity-security purchases in the cash-flow statements. Source-comparison values are in `eval/configs/pdf_probe.json`.
+- Codex visually compared PNG renders of all four original pages. No independent human review has been completed. This does not establish human review of the 12 development questions.
 
-검사는 공백을 제거한 같은 행 안에서 값 존재와 순서를 확인한다. 연도별 셀 매핑, 전체 행, 표 제목 자동 결합, 단위 정규화, 주당 예외, 재작성 수치의 의미를 보장하지 않는다. bbox/cells/words를 보존했으나 좌표의 전체 정확도를 정량 평가하지 않았다.
+Checks remove whitespace and test value presence/order within the same extracted row. They do not guarantee year-to-cell mapping, every row, automatic title association, normalized units, per-share exceptions, or the meaning of restated figures. Bounding boxes, cells, and words were retained, but coordinate accuracy was not quantified across the full documents.
 
-## 재현
+## Reproduction
 
-루트 README 명령으로 원본 다운로드 및 환경 설치 후:
+Download the reports and set up the environment using the [development guide](DEVELOPMENT.md), then run:
 
 ```sh
 .venv/bin/python scripts/probe_pdf.py
 .venv/bin/python -m unittest discover -s tests/ingestion -p 'test_*.py' -v
 ```
 
-출력은 `work/pdf-probe/`: 페이지 text/words JSONL, 표 bbox/cells/rows JSON, PNG, summary JSON. stdout에는 문서 전문 없이 검사 결과만 표시한다. SHA256 불일치는 추출 전에 중단한다. 회귀 검사는 성공뿐 아니라 알려진 실패도 유지되는지 검사한다. 검사 통과는 추출기가 모든 표를 올바르게 읽는다는 뜻이 아니다.
+Outputs in `work/pdf-probe/`: page text/words JSONL, table bbox/cells/rows JSON, PNGs, and summary JSON. Standard output contains check results rather than document bodies. A SHA256 mismatch stops processing before extraction. Regression tests retain known failures as well as successes; passing does not mean the parser reads every table correctly.
 
-## 다음 단위
+## Follow-up Defined by This Experiment
 
-S1-2에서 개발 질문 12개를 이 원본 위치에 연결한다. 보고서별 같은 기간의 표시가 달라질 수 있으므로 문서 버전을 명시하고 필요한 주석을 추가 검토한다. 입력 숫자 대조와 Decimal 계산 대조를 분리한다. 모든 질문은 development 전용이며 B0 이후 실험에 같은 원본 해시를 사용한다. S1-3 DB/RLS/API는 이후 별도 구현한다.
+S1-2 links 12 development questions to original source locations. Specify document versions because the same period may be presented differently across reports, and inspect relevant notes when needed. Keep source-value verification separate from Decimal arithmetic checks. All questions are development-only, and B0/later experiments must use the same source hashes. DB/RLS/API implementation is a separate S1-3 unit; subsequent completion is recorded in the engineering log.

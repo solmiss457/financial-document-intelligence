@@ -1,69 +1,73 @@
-# 설계 선택과 인터뷰 노트
+# Design Decisions and Interview Notes
 
-상태: 초기 설계. 아래 이유는 가설이며 구현·측정 성과가 아니다.
+The initial rationale below is a set of design hypotheses, not measured achievements. Implemented decisions and observations follow in dated entries.
 
-| 선택 | 이유와 트레이드오프 | 검증 방법 |
+| Decision | Rationale and trade-offs | Validation |
 |---|---|---|
-| 하나의 저장소, web/API/worker 분리 | 타입·문서·실험 변경을 함께 추적하면서 실행 책임 분리. 배포 구성은 늘어남 | UI부터 작업 완료까지 통합 테스트 |
-| PostgreSQL + pgvector | 권한·메타데이터·검색을 한 DB에서 관리. 별도 검색 엔진 대비 운영 단순화 가설 | ACL 적용 Recall@5/지연, SQL 및 vector 경로 격리 테스트 |
-| DB jobs + 단일 worker | 초기 규모에 브로커 없이 지속 상태·재시도 관리. 처리량 제한 존재 | 중복 claim, 중단 복구, 재시도, 삭제 중 작업 테스트 |
-| API 검사 + RLS | API 실수에 대한 DB 방어층. 정책 중복 유지 비용 발생 | 비소유자 DB 역할로 조직·restricted·풀 컨텍스트 테스트 |
-| 고정 크기 vector B0부터 | 개선의 비교 기준 확보. 표 근거 손실은 측정할 오류 | 동일 질문·원본 근거로 R1/R2/R3 분리 비교 |
-| 표 청크에 헤더·단위 반복 | 숫자의 의미 유지. 토큰 수가 늘어남 | Recall@5 및 동일 context-token budget 평가 |
-| PostgreSQL FTS + RRF | 회사·연도 키워드와 의미 검색 상호 보완 가설 | vector/keyword/hybrid 비교. FTS를 BM25라고 부르지 않음 |
-| Decimal 계산 | 허용 연산의 재현 가능성 및 십진 정밀도 관리 | 0 분모, 음수 기준 성장률 보류, scale, 반올림, 기간/통화 불일치 |
-| 검증 뒤 응답 | 인용 존재와 실제 뒷받침을 구분. 지연·비용 증가 | claim–citation precision, 숫자 일치, coverage, p95, API 비용 |
+| One repository, separate web/API/worker | Track types, documentation, and experiments together while separating runtime responsibilities; more deployment components | UI-to-job-completion integration tests |
+| PostgreSQL + pgvector | Keep permissions, metadata, and retrieval together; simpler operations than a separate search engine is a hypothesis | ACL-aware Recall@5/latency and SQL/vector isolation tests |
+| Database jobs + one worker | Persist state/retries without a broker at initial scale; limited throughput | Duplicate claims, crash recovery, retries, deletion during processing |
+| API policy + RLS | Database defense against API mistakes; duplicated policy maintenance | Non-owner organization/restricted/pool-context tests |
+| Fixed-size vector B0 first | Establish a comparison baseline; lost table evidence is an error to measure | Separate R1/R2/R3 comparisons on identical questions and source evidence |
+| Repeat headers/units in table chunks | Preserve meaning at additional token cost | Recall@5 and equal context-token-budget evaluation |
+| PostgreSQL FTS + RRF | Hypothesis: company/year keywords complement semantic retrieval | Vector/keyword/hybrid comparison; do not label FTS as BM25 |
+| Decimal calculations | Reproducible allowlisted arithmetic and decimal precision | Zero denominators, negative-baseline growth abstention, scale, rounding, period/currency mismatch |
+| Validate before responding | Separate citation existence from actual support; extra latency/cost | Claim–citation precision, numerical agreement, coverage, p95, API cost |
 
-## 인터뷰에서 설명하는 순서
+## Interview Explanation Structure
 
-문제 → 선택한 설계 → 대안과 비용 → 검증 방법 → 실제 결과 → 제한사항.
+Problem → design choice → alternatives and costs → validation method → observed results → limitations.
 
-예: “금융 표에서는 행 이름·연도·단위가 떨어지면 올바른 숫자를 검색해도 잘못 해석할 수 있습니다. 그래서 헤더와 단위를 반복하는 청크를 비교하려고 설계했습니다. 같은 문서와 질문, 토큰 예산에서 기본 청크와 비교할 예정입니다. 아직 개선 수치는 측정하지 않았습니다.”
+Example: “Separating a financial number from its row, year, or unit can lead to a wrong interpretation even when retrieval finds the number. I therefore designed a comparison using chunks with repeated headers and units, under the same document, question, and token budget. The improvement has not yet been measured.”
 
-## 자주 받을 질문
+## Common Questions
 
-- 왜 처음부터 고급 RAG를 만들지 않았나? 기본 시스템의 오류 분포를 먼저 얻어 개선 효과를 분리하기 위해서다.
-- 인용 링크가 있으면 정답인가? 아니다. 접근권한·문서 버전·원본 위치와 주장의 실제 지지 여부를 따로 확인해야 한다.
-- 계산 테스트가 통과하면 숫자 답변이 정확한가? 아니다. 잘못 추출한 입력으로도 계산은 정확할 수 있다. extraction, arithmetic, end-to-end를 나눈다.
-- 보류를 늘려 정확도를 높일 수 있나? 그래서 answerable accuracy 분모에 보류를 포함하고 coverage 및 false deferral도 함께 본다.
-- 조직 ID 필터만 있으면 안전한가? 인증된 멤버십과 문서 ACL, 인용/다운로드, RLS, 권한 회수까지 검증해야 한다.
+- Why not begin with advanced RAG? First establish the baseline error distribution to isolate improvement effects.
+- Does a citation prove correctness? No. Check access, document version, source location, and whether the source actually supports the claim.
+- Do passing arithmetic tests prove numerical answer accuracy? No. Correct arithmetic can use incorrectly extracted inputs; distinguish extraction, arithmetic, and end-to-end evaluation.
+- Can abstaining more make accuracy appear higher? Include abstentions in answerable accuracy and report coverage and false deferral.
+- Is an organization-ID filter sufficient? No. Validate authenticated membership, document ACLs, citation/download paths, RLS, and revocation.
 
-각 단계 완료 때 실제 실패 사례, 실행 명령, 결과 파일과 한계를 이 문서에 추가한다. 알려진 테스트 통과를 보안 보장으로 표현하지 않는다.
+Record failures, commands, result artifacts, and limitations for each stage. Known test passes must not be presented as security guarantees.
 
-## 2026-10-10 — S1-1 실제 추출 실험 선택
+## 2026-10-10 — S1-1 Extraction Experiment
 
-- **선택:** Berkshire 2023/2024 두 보고서로 작은 추출 실험부터 수행. Microsoft 후보는 403으로 제외. 대안은 다른 회사 추가이며 레이아웃 다양성에는 유리하지만 초기 검증 범위가 커진다. 현재 한 회사 표본이라는 한계를 유지하고 후속 데이터 확장에서 보완한다.
-- **선택:** PyMuPDF 1.26.7을 고정하고 `lines`와 `text`를 모두 보관. 최신 버전 추적보다 이번 결과 재현을 우선한다. [공식 API 문서](https://pymupdf.readthedocs.io/en/latest/page.html#Page.find_tables)의 선 기반/텍스트 기반 전략을 사용했다. 현재 lock은 macOS arm64 wheel 한정이며 Linux CI용 lock은 아직 없다.
-- **실측:** 4표의 lines 지정 행 8/8 검사 통과지만 단위 4/4 누락. text 지정 행은 1/8 통과. 표 탐지 성공과 사실 추출 성공을 분리해야 한다. 원본 페이지 텍스트·좌표를 함께 보존하되 자동 사실로 승인하지 않는다. 단위/헤더 결합은 후속 구현 과제다.
-- **대안/비용:** OCR은 텍스트 PDF에 불필요하며 이번 범위에서 제외. 다른 파서나 수동 좌표 보정은 개선 후보이나, 지금 특정 표에 맞춰 고치면 일반화 여부를 알 수 없어 실패를 먼저 고정 기록했다.
-- **검증:** 원본 4쪽 이미지 시각 대조 + 해시 고정 PDF 대상 회귀 검사. 회귀 기준에 알려진 실패도 포함. Codex 단독 대조이며 사람 검수와 전체 표 정확도 측정은 미완료다.
-- **인터뷰 설명:** “표 탐지는 됐지만 단위가 사라졌습니다. 그래서 표 후보와 검증된 재무 사실을 구분하고, 원본 페이지와 좌표를 남겼습니다. 작은 표본의 지정 행 검사 결과이며 RAG 개선 성과로 주장하지 않습니다.”
-- **baseline:** 이 실험의 lines/text 비교는 PDF 파서 전략 비교다. B0/R1 RAG 비교를 대체하지 않으며 검색·답변 성능은 아직 미측정이다.
+- **Choice:** Start with Berkshire 2023/2024 reports. A Microsoft candidate returned 403. Another company would improve layout diversity but broaden the initial validation scope; disclose the single-company limitation and expand later.
+- **Choice:** Pin PyMuPDF 1.26.7 and retain both lines/text results, favoring reproducibility over following the latest release. Use the strategies in the [official API](https://pymupdf.readthedocs.io/en/latest/page.html#Page.find_tables). The wheel-hash lock is macOS arm64-specific; no Linux PDF hash lock exists.
+- **Observed:** Across four tables, lines passed 8/8 selected-row checks but omitted units in 4/4 tables. text passed 1/8 selected-row checks. Table detection and verified fact extraction are different. Preserve source-page text/coordinates without automatically approving them as facts; unit/header association remains future work.
+- **Alternatives/costs:** OCR is unnecessary for these text PDFs and outside scope. Other parsers or manual coordinate corrections may help, but fitting these specific tables would not establish generalization. Record failures first.
+- **Validation:** Visual comparison of four source-page images and regression against hash-pinned PDFs, including known failures. Codex-only comparison; independent human review and whole-table accuracy measurement remain pending.
+- **Interview framing:** “The parser found the tables but dropped their units. I separated table candidates from verified financial facts and retained original pages and coordinates. These are selected-row checks on a small sample, not a demonstrated RAG improvement.”
+- **Baseline:** lines/text is a parser-strategy comparison, not a replacement for B0/R1 RAG evaluation. Retrieval/answer performance remains unmeasured.
 
-## 2026-10-10 — S1-2 질문·S1-3 권한 구현
+## 2026-10-10 — S1-2 Questions and S1-3 Authorization
 
-### 질문과 검수 수준
+### Questions and Review Level
 
-12개 개발 질문을 원본 위치·해시·단위·기간과 연결했다. 정답이 chunk ID를 참조하면 청크 방식 변경 때 기준도 바뀌므로 원본 표/행/열을 사용했다. 계산 정답은 Decimal로 독립 검산하지만 제품 계산 엔진은 아직 아니다. 전부 development로 유지하여 최종 평가 누수를 피한다. Codex의 시각 대조·자동 검사는 완료했으나 독립 사람 검수는 pending이다.
+Twelve development questions link to original locations, hashes, units, and periods. Chunk IDs would change with chunking methods, so ground truth uses original tables/rows/columns. Expected calculations were independently checked using Decimal; this is not a product calculation engine. Keep all questions in development to avoid final-test leakage. Codex visual comparison and automated checks are complete; independent human review is pending.
 
-### 권한의 두 계층
+### Two Authorization Layers
 
-API 순수 정책과 RLS를 동시에 유지했다. API 검사만 쓰는 대안은 단순하지만 누락된 SQL 경로를 방어하지 못한다. RLS만 쓰는 대안은 제품 응답 상태와 DB 메타데이터 접근의 차이를 표현하기 어렵다. 비용은 정책 두 곳의 회귀 테스트 유지다. 실제 37개 권한/API 테스트로 허용/거부를 검증했다.
+Retain both pure API policies and RLS. API-only checks are simpler but cannot defend omitted SQL checks. RLS alone does not express the distinction between product responses and database metadata access as clearly. The cost is maintaining regression checks for both. Thirty-seven authorization/API tests verified allow/deny behavior.
 
-RLS helper는 SECURITY INVOKER로 유지하고 users → memberships → grants → documents 방향으로만 참조해 재귀를 피했다. SECURITY DEFINER helper의 소유자 우회 위험과 권한 관리 비용을 줄였지만 멤버십 관리 API는 별도로 설계해야 한다. composite FK가 문서/멤버의 조직 불일치를 DB에서 차단한다. 상세 테스트는 `docs/S1_SECURITY_AND_API.md`.
+Helpers remain SECURITY INVOKER, with a one-way users → memberships → grants → documents dependency to avoid recursion. This avoids SECURITY DEFINER owner-bypass risks and privilege-management complexity, while leaving membership administration for separate design. Composite FKs reject organization mismatches. See `docs/S1_SECURITY_AND_API.md`.
 
-### 실제 인증 이전의 테스트 경계
+### Test Boundary Before Real Authentication
 
-개발용 X-User-ID 헤더 대신 항상 거부하는 인증 의존성과 테스트 전용 dependency override를 선택했다. 헤더 방식은 수동 데모가 쉽지만 실수로 운영 경로에 남을 위험이 있다. 현재 실제 HTTP 문서 요청은 401이며, 테스트 신원 주입은 실제 인증 완료가 아니다. OIDC 연결은 S2다.
+Use an always-denying authentication dependency with test-only overrides instead of development X-User-ID headers. Headers simplify manual demos but risk remaining in production paths. Actual document HTTP requests return 401. Injecting test identities does not complete authentication; OIDC belongs to S2.
 
-### 트랜잭션과 삭제 실패
+### Transactions and the Deletion Failure
 
-사용자 컨텍스트는 transaction-local GUC다. 동일 backend PID의 commit/rollback 후 null 복귀를 검증했다. 세션 단위 SET 대안은 풀에서 다음 요청으로 남을 수 있다. DB 로그인 자격 증명은 신뢰한 서버만 보유해야 하며 GUC는 DB 로그인 소유자의 신원 위조를 막지 않는다.
+User context uses transaction-local GUCs. The same backend PID was verified to return null context after commit and rollback. Session-level SET could persist into another pooled request. Only trusted servers should hold DB credentials; GUCs do not prevent identity forgery by a holder of those credentials.
 
-최초 삭제 테스트는 SELECT RLS가 deleting 전환도 막아 실패했다. 관리자에게 자기 조직 삭제 상태 메타데이터를 허용하는 002 migration으로 수정하고 API 문서 응답은 계속 숨겼다. privileged deletion 함수를 만드는 대안보다 단순하나 향후 원본/chunk/fact에 ready 필터를 별도로 강제해야 한다. 알려진 실패(39 통과/1 실패)에서 수정 후 전체 40 통과를 확인했다.
+The first deletion test failed because SELECT RLS also blocked transition to deleting. Migration 002 permits same-organization admins to inspect deletion metadata while the API still hides deleting documents. This is simpler than a privileged deletion function, but future originals/chunks/facts require their own ready filters. The failing run (39 passed/one failed) was followed by all 40 tests passing after the fix.
 
-### 인터뷰에서 말할 수 있는 실제 범위
+### Verified Interview Claims
 
-“비소유자 PostgreSQL 역할에서 두 조직과 문서 ACL을 검증했고, 동일 pooled connection의 요청 컨텍스트가 commit과 rollback 뒤 모두 제거되는지 확인했습니다. 실제 OIDC·검색·다운로드까지 연결한 보안 검증은 아직 하지 않았습니다.”
+“I tested two organizations and document ACLs through a non-owner PostgreSQL role, and confirmed that the same pooled connection clears request context after commit and rollback. I have not yet validated the complete OIDC, retrieval, and download paths.”
 
-“12개 개발 질문은 버전 고정 원본에 연결했고 계산 정답을 검산했습니다. 독립 사람 검수나 최종 holdout 평가를 완료한 것으로 소개하지 않습니다.”
+“I linked 12 development questions to version-pinned sources and checked their arithmetic. I do not describe them as independently human-reviewed or as a completed final holdout evaluation.”
+
+## 2026-10-10 — Public Documentation Boundary
+
+Keep personal planning and agent instructions on the local machine and exclude them from future commits. Publish reproducible implementation, architecture, evaluation, and decision documentation in English. The user authorized removing the two private files from historical commits as well. History rewriting changes commit IDs and requires existing clones to resynchronize; third-party copies and cached objects are outside the scope of a Git push.

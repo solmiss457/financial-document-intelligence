@@ -1,23 +1,23 @@
-# S1-2 개발 질문 12개
+# S1-2: Twelve Development Questions
 
-데이터: `eval/questions/s1_development.json`. 권한 fixture: `eval/configs/s1_access.json`.
-작성/원본 대조: 2026-10-10, Codex. 독립된 사람의 검토는 **pending**이다. 자동 생성만으로 확정한 gold set이나 사람 검수 완료 데이터로 소개하지 않는다.
+Dataset: `eval/questions/s1_development.json`. Permission fixture: `eval/configs/s1_access.json`.
+Authored and compared against source images by Codex on 2026-10-10. Independent human review is **pending**. Do not describe this as a finalized gold set or a human-reviewed dataset based on automated authoring alone.
 
-| 유형 | 개수 | 항목 |
+| Type | Count | Coverage |
 |---|---:|---|
-| 조회 | 4 | 총수익, 음수 순손익, 영업현금흐름, 주식 매입의 부호 |
-| 계산 | 4 | 수익 차액/증가율, 영업현금흐름 차액, 현금흐름/수익 비율 |
-| 근거 부족 | 2 | 제공되지 않은 2025 연간 실적, 미래 주가 예측 |
-| 모호함 | 2 | 연도 미지정, 순손익 지표 정의 미지정 |
+| Lookup | 4 | Total revenues, negative net earnings, operating cash flow, signed equity purchases |
+| Calculation | 4 | Revenue difference/growth, operating cash-flow difference, cash-flow/revenue ratio |
+| Insufficient evidence | 2 | Unavailable 2025 annual results, future stock-price prediction |
+| Ambiguity | 2 | Missing year, unspecified earnings definition |
 
-각 숫자 근거에 문서 해시/버전·PDF 쪽(1-based)·인쇄 쪽·표·행·연도 열·통화·scale·기간을 기록했다. 원본은 앞서 렌더링한 2023년 PDF 96/98쪽 및 2024년 PDF 90/92쪽과 대조했다. 전체 표 내용은 Git에 복제하지 않고 검증에 필요한 수치/위치만 기록한다.
+Each numerical evidence item records document hash/version, 1-based PDF page, printed label, table, row, year column, currency, scale, and period. Values were compared with previously rendered 2023 PDF pages 96/98 and 2024 pages 90/92. Only necessary values and source locations are recorded in Git, not entire tables.
 
-계산 입력과 정답은 Decimal로 검산했다. 비율은 최종 단계에서 소수 둘째 자리 ROUND_HALF_UP, tolerance 0.005 percentage point. 차액/조회는 제공 단위에서 tolerance 0. 숫자 tolerance가 통화·기간·단위 오류를 허용하지 않는다. 이 코드는 평가 정답 검산이며 S5 제품 계산 엔진 구현 완료가 아니다.
+Inputs and expected answers were checked using Decimal. Percentages use ROUND_HALF_UP to two decimal places at the final step, with a tolerance of 0.005 percentage point. Differences and lookups have zero tolerance in the stated units. Numerical tolerance does not excuse currency, period, or unit errors. This is evaluation-answer verification, not completion of the S5 product calculation engine.
 
-근거 부족 질문에는 존재하지 않는 인용을 만들지 않았다. 문서 집합의 기간 경계 또는 범위 밖 예측이라는 이유를 기록했다. 모호함에는 명확화할 필드를 기록했다. 행 문자열/값의 페이지 존재 검사만으로 행-열 의미 정합성을 증명하지 않으며 Codex 시각 대조와 별도 사람 검수를 구분한다.
+Insufficient-evidence questions do not invent citations. Their reasons identify corpus period limits or out-of-scope prediction. Ambiguous questions record the fields requiring clarification. Page-level presence of a row string/value does not prove semantic row-column alignment; Codex visual comparison and independent human review are distinct.
 
-가상 조직 A의 활성 member가 2024 조직 공개 문서 및 grant 받은 2023 restricted 문서에 접근하는 조건이다. DB 테스트 UUID와 맞추었으나 실제 보고서 업로드/인덱싱은 아직 없다. 공개 보고서 소유 회사와 가상 조직은 다른 개념이다.
+The access fixture represents an active member of fictional organization A with access to the organization-wide 2024 report and an explicit grant to the restricted 2023 report. UUIDs match the database test convention, but actual report upload/indexing is not implemented. The company publishing a report is distinct from the fictional organization assigned that report.
 
-모두 development 전용. 같은 표/사실은 evidence_group_ids로 연결하며 최종 평가 세트와 분리해야 한다. 최종 평가 질문 0개, B0/개선 평가 실행 0회. 한 회사의 쉬운 대표 표 위주라는 편향을 후속 데이터 확장에서 보완한다.
+All questions are development-only. Questions sharing tables/facts are linked through evidence_group_ids and must remain separate from final evaluation questions. There are zero final evaluation questions and zero B0/improvement evaluation runs. Broader data selection must address the bias toward simple representative tables from one company.
 
-검증: `tests/test_questions.py` 2개 테스트 통과(12개 계약/계산/문서 위치와 해시 고정 원본 값 존재). 원본 PDF 없는 CI는 계약 검사만 수행한다.
+Validation: two tests in `tests/test_questions.py` passed, covering the 12 question contracts, calculations, source locations, and value presence in hash-pinned PDFs. CI without original PDFs runs only the contract check.
