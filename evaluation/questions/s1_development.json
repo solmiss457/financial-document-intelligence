@@ -161,10 +161,10 @@
     "reason": null,
     "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending",
+    "human_review_status": "confirmed",
+    "human_review_note": "Income statement evidence confirmed; cash-flow alternative (PDF page 98) confirmed as the same pre-attribution net earnings row: all three columns (97,147 / (21,998) / 90,949) match.",
     "human_reviewer": "project owner (single reviewer)",
-    "human_reviewed_at": "2026-10-11",
-    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages. Alternative evidence (2023 cash flow statement, PDF page 98) added 2026-10-11; needs review."
+    "human_reviewed_at": "2026-10-11"
   },
   {
     "question_id": "dev-03",
@@ -909,11 +909,13 @@
     "human_review_status": "confirmed",
     "expected_clarification": {
       "asks_for": "fiscal_year",
-      "provisional_answer": {
-        "value": "371433",
-        "unit": "USD million",
-        "interpretation": "most recent fiscal year in the corpus (2024)"
-      }
+      "provisional_answers": [
+        {
+          "value": "371433",
+          "unit": "USD million",
+          "interpretation": "most recent fiscal year in the corpus (2024)"
+        }
+      ]
     },
     "human_reviewer": "project owner (single reviewer)",
     "human_reviewed_at": "2026-10-11",
@@ -1019,11 +1021,13 @@
     "human_review_status": "confirmed",
     "expected_clarification": {
       "asks_for": "metric",
-      "provisional_answer": {
-        "value": "88995",
-        "unit": "USD million",
-        "interpretation": "net earnings attributable to Berkshire shareholders"
-      }
+      "provisional_answers": [
+        {
+          "value": "88995",
+          "unit": "USD million",
+          "interpretation": "net earnings attributable to Berkshire shareholders"
+        }
+      ]
     },
     "human_reviewer": "project owner (single reviewer)",
     "human_reviewed_at": "2026-10-11",
@@ -1099,7 +1103,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-14",
@@ -1171,7 +1178,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-15",
@@ -1243,7 +1253,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-16",
@@ -1315,7 +1328,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-17",
@@ -1417,7 +1433,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-18",
@@ -1519,7 +1538,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-19",
@@ -1552,7 +1574,10 @@
     "reason": "The corpus contains Apple's fiscal 2024 and fiscal 2025 Form 10-K filings only; fiscal 2026 results are not in it. No external retrieval allowed.",
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Agreed: Apple fiscal 2026 is not in the corpus, so abstain."
   },
   {
     "question_id": "dev-20",
@@ -1639,15 +1664,20 @@
     "reason": "Apple's fiscal 2024 ended September 28, 2024, so '2024' may mean fiscal or calendar 2024; the reports do not give calendar-year totals. Ask which is meant and give fiscal 2024 as the provisional answer.",
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending",
+    "human_review_status": "confirmed",
     "expected_clarification": {
       "asks_for": "fiscal_year",
-      "provisional_answer": {
-        "value": "391035",
-        "unit": "USD million",
-        "interpretation": "fiscal 2024 (ended September 28, 2024)"
-      }
-    }
+      "provisional_answers": [
+        {
+          "value": "391035",
+          "unit": "USD million",
+          "interpretation": "fiscal 2024 (ended September 28, 2024)"
+        }
+      ]
+    },
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Agreed: ask fiscal vs calendar 2024 and give fiscal 2024 (391,035)."
   },
   {
     "question_id": "dev-21",
@@ -1719,7 +1749,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-22",
@@ -1791,7 +1824,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-23",
@@ -1863,7 +1899,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-24",
@@ -1935,7 +1974,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-25",
@@ -2037,7 +2079,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-26",
@@ -2139,7 +2184,10 @@
     "reason": null,
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and units checked against the PDF pages."
   },
   {
     "question_id": "dev-27",
@@ -2172,7 +2220,10 @@
     "reason": "The corpus contains Walmart's fiscal 2025 and fiscal 2026 annual reports only; the fiscal year ending January 31, 2027 is not covered. No external retrieval allowed.",
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending"
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Agreed: the fiscal year ending January 31, 2027 is not covered, so abstain."
   },
   {
     "question_id": "dev-28",
@@ -2217,6 +2268,21 @@
           "scale": "1000000",
           "period_type": "annual",
           "period_end": "2025-01-31"
+        },
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2026",
+          "value": "713163",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
         }
       ],
       [
@@ -2234,6 +2300,21 @@
           "scale": "1000000",
           "period_type": "annual",
           "period_end": "2025-01-31"
+        },
+        {
+          "document_id": "walmart-fy2026",
+          "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+          "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+          "pdf_page": 54,
+          "printed_page_label": "52",
+          "table_id": "income",
+          "row_label": "Total revenues",
+          "column_label": "2026",
+          "value": "713163",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2026-01-31"
         }
       ]
     ],
@@ -2252,21 +2333,46 @@
         "scale": "1000000",
         "period_type": "annual",
         "period_end": "2025-01-31"
+      },
+      {
+        "document_id": "walmart-fy2026",
+        "document_version": "FY2026 Annual Report including Form 10-K (hash-pinned downloaded version)",
+        "sha256": "62ab84e27e0278024b494b1f405840401829e75f8c1c46c8cfb889e0347569ab",
+        "pdf_page": 54,
+        "printed_page_label": "52",
+        "table_id": "income",
+        "row_label": "Total revenues",
+        "column_label": "2026",
+        "value": "713163",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2026-01-31"
       }
     ],
     "formula": null,
     "tolerance": null,
-    "reason": "Walmart's fiscal 2025 ended January 31, 2025, while most of calendar 2025 falls in fiscal 2026 (713,163). Ask which is meant and give fiscal 2025 as Walmart labels it as the provisional answer.",
+    "reason": "Walmart's fiscal 2025 ended January 31, 2025, while most of calendar 2025 falls in fiscal 2026. Ask which is meant and give both: fiscal 2025 as labeled (680,985) and fiscal 2026 as the closest match to calendar 2025 (713,163).",
     "reviewed_by": "Claude Code: values read from rebuilt rows and compared with rendered page images (2026-10-11); not human review",
     "reviewed_at": "2026-10-11",
-    "human_review_status": "pending",
+    "human_review_status": "confirmed",
     "expected_clarification": {
       "asks_for": "fiscal_year",
-      "provisional_answer": {
-        "value": "680985",
-        "unit": "USD million",
-        "interpretation": "fiscal 2025 as Walmart labels it (ended January 31, 2025)"
-      }
-    }
+      "provisional_answers": [
+        {
+          "value": "680985",
+          "unit": "USD million",
+          "interpretation": "fiscal 2025 as Walmart labels it (ended January 31, 2025)"
+        },
+        {
+          "value": "713163",
+          "unit": "USD million",
+          "interpretation": "fiscal 2026 (February 2025 to January 31, 2026), covering most of calendar 2025"
+        }
+      ]
+    },
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Decided: ask, and give both fiscal 2025 (680,985) and fiscal 2026 (713,163)."
   }
 ]

@@ -67,6 +67,9 @@ def test_score_answer_by_expected_state():
     assert not score_answer(abstain, {'state': 'answered', 'answer': '$400,000 million'})['correct']
     assert score_answer(clarify, {'state': 'needs_clarification', 'answer': 'Which year? For 2024 it was $371,433 million.'})['correct']
     assert not score_answer(clarify, {'state': 'needs_clarification', 'answer': 'Which year do you mean?'})['correct']
+    both = QUESTIONS['dev-28']
+    assert score_answer(both, {'state': 'needs_clarification', 'answer': 'Fiscal 2025: $680,985 million; fiscal 2026: $713,163 million.'})['correct']
+    assert not score_answer(both, {'state': 'needs_clarification', 'answer': 'Fiscal 2025 was $680,985 million.'})['correct']
     signed = score_answer(QUESTIONS['dev-02'], {'state': 'answered', 'answer': 'a net loss of $21,998 million'})
     assert signed['value_match'] == 'sign_inferred' and not signed['correct']
 

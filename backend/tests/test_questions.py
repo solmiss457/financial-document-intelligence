@@ -23,9 +23,10 @@ def test_question_contract_and_ground_truth():
             # Policy: ask, and also give the answer under the stated most likely interpretation.
             clarification = q['expected_clarification']
             assert clarification['asks_for'] in ('fiscal_year', 'metric', 'company')
-            provisional = clarification['provisional_answer']
-            assert provisional['interpretation'] and provisional['unit']
-            assert provisional['value'] in {i['value'] for i in q['inputs']}
+            assert clarification['provisional_answers']
+            for provisional in clarification['provisional_answers']:
+                assert provisional['interpretation'] and provisional['unit']
+                assert provisional['value'] in {i['value'] for i in q['inputs']}
         for item in q['inputs']:
             doc = manifest[item['document_id']]
             assert item['document_id'] in q['authorized_document_ids']

@@ -93,8 +93,10 @@ def score_answer(question, response):
         # Strict: only an explicit signed or exact value counts; sign_inferred is adjudicated by a person.
         result['correct'] = state == 'answered' and result['value_match'] == 'exact'
     elif expected_state == 'needs_clarification':
-        pa = question['expected_clarification']['provisional_answer']
-        result['value_match'] = value_matches(text, pa['value'], pa['unit'], '0')
+        # Every expected provisional answer must be stated (e.g. both fiscal readings of "2025").
+        matches = [value_matches(text, pa['value'], pa['unit'], '0')
+                   for pa in question['expected_clarification']['provisional_answers']]
+        result['value_match'] = 'exact' if all(m == 'exact' for m in matches) else next((m for m in matches if m != 'exact'), None)
         result['correct'] = state == 'needs_clarification' and result['value_match'] == 'exact'
     else:
         result['correct'] = state == expected_state
