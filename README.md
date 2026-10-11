@@ -1,68 +1,171 @@
 # Financial Document Intelligence
 
-금융 보고서 PDF에서 필요한 정보를 찾고, 답변의 출처와 숫자 계산 근거를 확인할 수 있는 문서 질의응답 서비스를 만드는 프로젝트입니다.
+**Ask financial questions. Trace the evidence. Understand the numbers.**
 
-RAG(Retrieval-Augmented Generation)는 질문과 관련된 문서 내용을 먼저 찾고, 그 근거를 바탕으로 AI가 답변하도록 하는 방식입니다. 이 프로젝트는 금융 문서에 맞춰 **표의 문맥, 숫자의 정확성, 문서 접근 권한**을 함께 다룹니다.
+Financial Document Intelligence is a project designed to make financial PDF reports easier to explore through natural-language questions, verifiable sources, and transparent calculations.
 
-## 해결하려는 문제
+It combines **Retrieval-Augmented Generation (RAG)**—finding relevant document content before generating an answer—with a focus on financial tables, numerical accuracy, and organization-level access control.
 
-- **표의 문맥 손실:** 숫자만 추출하면 어떤 연도·항목·단위에 해당하는지 놓칠 수 있습니다.
-- **검증하기 어려운 답변:** 자연스러운 설명이라도 원본 문서가 실제로 뒷받침하는지 확인해야 합니다.
-- **계산 오류:** 입력 숫자가 맞아도 기간이나 단위를 혼동하면 증가율과 비율이 잘못될 수 있습니다.
-- **접근 권한:** 같은 서비스 안에서도 조직과 사용자별로 읽을 수 있는 문서가 달라야 합니다.
+## 📌 Problem Statement
 
-## 서비스 설계 목표
+**A financial answer is only useful when its numbers and sources can be checked.** Annual reports contain valuable information, but finding the right figure often means navigating long PDFs, comparing multiple reporting periods, and interpreting tables with different units.
 
-1. 사용자가 접근 권한을 가진 금융 PDF를 선택하고 질문합니다.
-2. 문서의 본문과 표에서 관련 근거를 검색합니다.
-3. 답변에 원본 문서·페이지·수치·계산식을 함께 제시합니다.
-4. 근거가 부족하면 답변을 보류하고, 질문이 모호하면 필요한 조건을 되묻습니다.
+A number can lose its meaning when separated from its row label or year. An AI-generated answer can sound convincing without enough supporting evidence. In a shared workspace, even a correct answer is inappropriate if it uses a document the user is not allowed to read.
 
-예를 들어 “이 보고서에서 전년 대비 매출 증가율은 얼마인가?”라는 질문에 두 해의 매출, 단위, 계산식과 원본 위치를 함께 보여주는 경험을 목표로 합니다.
+This project explores how document retrieval, evidence validation, deterministic calculations, and access control can work together to address these problems.
 
-## 설계 원칙
+## ⭐ Key Features
 
-- **권한을 먼저 확인:** 검색과 답변에 사용할 문서를 조직 멤버십과 문서별 권한으로 제한합니다.
-- **원본에 연결된 근거:** 표의 행·연도·단위와 페이지 위치를 보존하는 방식을 검증합니다.
-- **재현 가능한 계산:** 금액과 비율 계산은 Decimal 기반 코드로 처리하도록 설계합니다.
-- **비교 가능한 평가:** 기본 RAG를 기준으로 검색·근거 검증·계산 개선 효과를 각각 비교합니다.
-- **정확도와 응답률을 함께 평가:** 답변을 많이 보류해서 정확해 보이는 결과를 피하도록 평가 기준을 구성합니다.
+The features below describe the intended product experience and guide the system design.
 
-## 구조와 기술
+### 1. Financial Document Q&A
 
-아래는 서비스의 목표 구조입니다.
+- **Natural-Language Questions**
 
-```text
-웹 화면 → API → 권한 확인 → 문서 검색 → 답변 생성·검증 → 출처와 계산 근거
-                 ↕
-             PostgreSQL
-                 ↑
-            PDF 처리 worker
+  Ask about revenue, earnings, cash flow, and other figures in English annual reports.
+
+- **Table-Aware Retrieval**
+
+  Preserve row labels, reporting periods, and units so that retrieved numbers retain their financial context.
+
+- **Source References**
+
+  Connect answers to the original document and page, allowing users to inspect the supporting evidence.
+
+### 2. Transparent Numerical Analysis
+
+- **Period Comparisons**
+
+  Compare figures across two fiscal periods while checking that their currencies, units, and definitions are compatible.
+
+- **Reproducible Calculations**
+
+  Use Python Decimal for supported differences, growth rates, and ratios, with rounding applied at the final display step.
+
+- **Visible Calculation Details**
+
+  Present the input values, units, formula, and source for each calculation.
+
+### 3. Evidence-Based Responses
+
+- **Insufficient-Evidence Handling**
+
+  Abstain when the available documents do not support an answer.
+
+- **Clarifying Questions**
+
+  Ask for missing details when the company, fiscal year, or financial metric is ambiguous.
+
+- **Answer Verification**
+
+  Check citations and numerical claims against retrieved evidence before returning a response.
+
+### 4. Organization & Document Permissions
+
+- **Organization Isolation**
+
+  Limit document access to authorized members of the relevant organization.
+
+- **Document-Level Access**
+
+  Support organization-wide documents and restricted documents shared with specific members.
+
+- **API & Database Checks**
+
+  Combine application authorization with PostgreSQL Row-Level Security (RLS) to enforce access rules.
+
+## 💬 Example Questions
+
+> “What were the company's total revenues in fiscal year 2024?”
+>
+> “How much did operating cash flow change between 2023 and 2024?”
+>
+> “What was the revenue growth rate, and which figures were used to calculate it?”
+
+The goal is to make both the answer and the reasoning behind its numbers easy to inspect.
+
+## 🖥️ Tech Stack
+
+Technologies selected for the target architecture:
+
+### 🌐 Frontend
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+
+A web interface for document management, questions, and evidence inspection.
+
+### 🛠️ Backend & Database
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![pgvector](https://img.shields.io/badge/pgvector-336791?style=for-the-badge)
+
+API request handling, document permissions, metadata storage, and keyword/vector retrieval.
+
+### 📄 Document Processing & Calculations
+
+![PyMuPDF](https://img.shields.io/badge/PyMuPDF-455A64?style=for-the-badge)
+![Decimal](https://img.shields.io/badge/Python_Decimal-3776AB?style=for-the-badge&logo=python&logoColor=white)
+
+PDF text, table, and coordinate extraction, with decimal arithmetic for financial calculations.
+
+### ⚙️ Development & Testing
+
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+
+Reproducible local environments and automated regression checks.
+
+## 🧩 System Design
+
+The intended flow keeps authorization ahead of retrieval and verification ahead of the final answer.
+
+```mermaid
+flowchart LR
+    U[User question] --> A[API and authorization]
+    A --> R[Retrieve permitted evidence]
+    R --> G[Generate answer draft]
+    G --> V[Verify sources and calculations]
+    V --> O[Answer with evidence or clarification]
+    P[PDF processing worker] --> D[(PostgreSQL and pgvector)]
+    D --> R
 ```
 
-| 구성 | 기술 | 역할 |
-|---|---|---|
-| 웹 화면 | Next.js · TypeScript | 로그인, 문서 관리, 질문과 근거 표시 |
-| API | Python · FastAPI | 요청 처리와 문서 접근 권한 확인 |
-| 문서 처리 | Python · PyMuPDF | PDF 텍스트·표·좌표 추출 |
-| 데이터와 검색 | PostgreSQL · pgvector | 권한·문서 정보 및 검색 데이터 관리 |
-| 숫자 검증 | Python · Decimal | 단위·기간 확인과 계산 |
-| 개발·검증 환경 | Docker Compose · pytest · GitHub Actions | 환경 구성과 회귀 검사 |
+## 🔬 Evaluation Approach
 
-## 데이터와 범위
+The evaluation design compares a basic RAG baseline with focused changes to table handling, retrieval, answer verification, and calculation.
 
-공개된 영문 연차보고서를 가상 조직에 배정해 개발·평가합니다. 실제 기업의 내부 문서를 운영한 사례를 뜻하지 않습니다. 문서 출처와 버전은 [데이터 manifest](eval/manifests/s1_reports.json)에 기록합니다.
+- **Retrieval:** Can the system find all the evidence needed to answer a question?
+- **Grounding:** Do the cited sources actually support the answer?
+- **Numerical accuracy:** Are the values, periods, units, and calculations correct?
+- **Coverage:** How often does the system answer, and when does it unnecessarily abstain?
+- **Access control:** Can unauthorized documents appear in results or responses?
 
-질문 범위는 숫자 조회, 두 기간의 비교, 증가율·비율 계산과 문서 근거 확인입니다. 스캔 문서 OCR, 주가 예측, 투자 추천, 실시간 시장 데이터 수집, 모델 학습은 범위에서 제외합니다.
+Improvements are evaluated under comparable document, permission, and context-budget conditions. Measured results and limitations are documented separately from design goals.
 
-원본 PDF·추출 전문·로컬 DB·비밀 값은 Git에 포함하지 않습니다. 보고서는 발행처에서 내려받으며 공개 열람 가능 여부와 재배포 허가는 구분합니다.
+## 📚 Data & Scope
 
-## 문서와 실행 안내
+Public English annual-report PDFs are assigned to fictional organizations for development and evaluation. This project does not represent the operation of a service using real internal company documents.
 
-- [로컬 환경 구성·실행·테스트](docs/DEVELOPMENT.md)
-- [아키텍처와 권한 정책](docs/ARCHITECTURE.md)
-- [설계 선택과 트레이드오프](docs/DECISIONS_AND_INTERVIEW.md)
-- [평가 데이터와 실험 원칙](eval/README.md)
-- [개발 계획](docs/IMPLEMENTATION_PLAN.md) · [검증 결과와 작업 기록](docs/PROGRESS.md)
+The scope covers financial lookups, two-period comparisons, growth rates, ratios, and supporting evidence. Scanned-document OCR, stock-price prediction, investment recommendations, real-time market data, and model training are outside the scope.
 
-구현 범위와 실제 측정 결과는 위 문서에서 별도로 관리합니다.
+Original PDFs, extracted full text, local databases, and credentials are excluded from Git. Document URLs and version hashes are recorded in the [source manifest](eval/manifests/s1_reports.json); public availability is not treated as permission to redistribute a report.
+
+## 🚀 Getting Started
+
+See the [local development guide](docs/DEVELOPMENT.md) for environment setup, database migrations, API commands, and tests.
+
+## 📖 Documentation
+
+| Guide | What it covers |
+|---|---|
+| [Architecture](docs/ARCHITECTURE.md) | System boundaries, data flow, and access policies |
+| [Design Decisions](docs/DECISIONS_AND_INTERVIEW.md) | Alternatives, trade-offs, and validation methods |
+| [Evaluation Guide](eval/README.md) | Dataset authoring and experiment rules |
+| [Development Plan](docs/IMPLEMENTATION_PLAN.md) | Implementation scope and acceptance criteria |
+| [Engineering Log](docs/PROGRESS.md) | Implementation details, verified results, and limitations |
+
+Supporting engineering documents are maintained in Korean.

@@ -137,3 +137,11 @@ Codex Projects 등록 미완료: 제공된 도구에 로컬 프로젝트 추가 
 - 기존 실행·검증 안내는 `docs/DEVELOPMENT.md`로 이동해 보존. 목표 기능을 구현 완료로 표현하지 않음.
 - 문서 변경만 수행. 상대 링크와 diff 공백 검사로 검증하며 기능 테스트는 재실행하지 않음.
 - 미완료 개발 사항과 다음 단계는 기존 진행 기록 유지.
+
+## 2026-10-10 — 영문 README 시각 구성
+
+- 첨부 예시의 이모지 제목·번호별 기능 설명·분류별 기술 배지 구성을 참고해 README 전체를 영어로 작성.
+- Problem Statement, Key Features, Example Questions, Tech Stack, System Design, Evaluation, Data, Documentation 구성. Mermaid로 목표 흐름 표시.
+- 단계별 진행 현황과 완료 수량은 README에 넣지 않음. 미구현 기능은 intended experience/target architecture로 명시하고 실제 검증 기록은 별도 문서로 연결.
+- 상대 링크, 영어 본문, 코드 블록/배지 URL 구문, diff 공백 검사 수행. 문서만 변경하여 기능 테스트는 재실행하지 않음.
+- 다음 개발 작업과 기존 검증 한계는 이전 기록 유지.
