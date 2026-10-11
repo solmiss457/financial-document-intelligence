@@ -35,18 +35,18 @@ For each task, record the date, completed/changed files, validation commands/res
 ### Completed / Changed Files
 
 - Read required design documents and the original proposal; preserved the original proposal unchanged.
-- `eval/manifests/s1_reports.json`: two Berkshire reports (2023/2024), URLs, acquisition timestamps, hashes, page counts, and unverified redistribution permissions.
-- `scripts/probe_pdf.py`: extracts text/word coordinates across 302 pages and lines/text table candidates plus PNGs on four selected pages. SHA256 is checked first; full text stays in ignored local artifacts.
-- `eval/configs/pdf_probe.json` and `pdf_probe_expected.json`: source-compared rows and observed results for eight combinations.
-- `requirements-pdf-macos-arm64.lock`: PyMuPDF 1.26.7 and the macOS arm64 wheel hash.
-- `tests/ingestion/test_pdf_probe.py`: integration regression covering known successes/failures.
-- Updated README, evaluation guide, plan status, decision notes, and `docs/PDF_EXTRACTION_S1.md`.
+- `evaluation/manifests/s1_reports.json`: two Berkshire reports (2023/2024), URLs, acquisition timestamps, hashes, page counts, and unverified redistribution permissions.
+- `evaluation/tools/probe_pdf.py`: extracts text/word coordinates across 302 pages and lines/text table candidates plus PNGs on four selected pages. SHA256 is checked first; full text stays in ignored local artifacts.
+- `evaluation/configs/pdf_probe.json` and `pdf_probe_expected.json`: source-compared rows and observed results for eight combinations.
+- `backend/requirements-pdf-macos-arm64.lock`: PyMuPDF 1.26.7 and the macOS arm64 wheel hash.
+- `backend/tests/ingestion/test_pdf_probe.py`: integration regression covering known successes/failures.
+- Updated README, evaluation guide, plan status, decision notes, and `docs/archive/pdf-extraction-s1.md`.
 
 ### Actual Validation
 
-- `.venv/bin/python scripts/probe_pdf.py`: success; four pages × two strategies = eight table candidates checked.
+- `.venv/bin/python evaluation/tools/probe_pdf.py`: success; four pages × two strategies = eight table candidates checked.
 - lines: selected rows 8/8 pass; units omitted in 4/4 tables. text: selected rows 1/8 pass. Both strategies retain year headers in 4/4 tables.
-- `.venv/bin/python -m unittest discover -s tests/ingestion -p 'test_*.py' -v`: one regression test passed, comparing eight combinations and retaining known extraction failures as expected results.
+- `.venv/bin/python -m unittest discover -s backend/tests/ingestion -p 'test_*.py' -v`: one regression test passed, comparing eight combinations and retaining known extraction failures as expected results.
 - Codex visually compared four original-page PNGs; no independent human review.
 
 ### Failures / Limitations / Unfinished Work
@@ -64,11 +64,11 @@ S1-2 questions with source/version/permission fixtures, expected states, formula
 
 ### Completed / Validation
 
-- `eval/questions/s1_development.json`: **12 development-only questions**—four lookup, four calculation, two insufficient-evidence, two ambiguity.
-- `eval/configs/s1_access.json`: fixed fictional organization/user/document ACL conditions.
+- `evaluation/questions/s1_development.json`: **12 development-only questions**—four lookup, four calculation, two insufficient-evidence, two ambiguity.
+- `evaluation/configs/s1_access.json`: fixed fictional organization/user/document ACL conditions.
 - Codex compared values, rows, years, and units with four source-page images. Evidence records hashes, versions, pages, rows, and columns.
-- Two tests in `tests/test_questions.py` passed: contracts/Decimal answer checks and hash-pinned source-value presence.
-- `docs/S1_QUESTIONS.md` records review methods, split rules, and limitations.
+- Two tests in `backend/tests/test_questions.py` passed: contracts/Decimal answer checks and hash-pinned source-value presence.
+- `docs/archive/s1-questions.md` records review methods, split rules, and limitations.
 
 ### Unfinished / Next
 
@@ -79,18 +79,18 @@ Independent **human review is pending**. Do not call these finalized gold/holdou
 ### Completed / Changed Files
 
 - `compose.yaml`: PostgreSQL 17.9-alpine pinned by digest, bound to 127.0.0.1:55432, data in `storage/postgres`.
-- `scripts/init_local_env.py`, `local_db.py`, `migrate.py`, `prepare_test_db.py`, `check_clean_migrations.py`: random local credentials without printing secrets, checksum-verified migrations, and isolated test databases.
-- `db/migrations/001_security.sql`, `002_admin_deletion_status.sql`: five tables, composite FKs, least-privilege roles, ENABLE/FORCE RLS.
-- `services/api/{policy,db,main}.py`: pure policies, transaction-local context, pooling, role checks, minimal API with authentication denied by default.
-- `tests/authorization/`: **37 tests** against real PostgreSQL.
-- `requirements-api.lock`: installed direct/transitive dependency versions. Added `pytest.ini`, `.env.example`, `.github/workflows/s1.yml`.
-- Updated README, architecture, decisions, and `docs/S1_SECURITY_AND_API.md`.
+- `backend/scripts/init_local_env.py`, `backend/src/fdi/db/config.py`, `migrate.py`, `prepare_test_db.py`, `check_clean_migrations.py`: random local credentials without printing secrets, checksum-verified migrations, and isolated test databases.
+- `backend/migrations/001_security.sql`, `002_admin_deletion_status.sql`: five tables, composite FKs, least-privilege roles, ENABLE/FORCE RLS.
+- `backend/src/fdi/{auth/policy,db/session,api/main}.py`: pure policies, transaction-local context, pooling, role checks, minimal API with authentication denied by default.
+- `backend/tests/authorization/`: **37 tests** against real PostgreSQL.
+- `backend/requirements-api.lock`: installed direct/transitive dependency versions. Added `backend/pytest.ini`, `.env.example`, `.github/workflows/s1.yml`.
+- Updated README, architecture, decisions, and `docs/security.md`.
 
 ### Actual Validation
 
 - Development and test database migrations succeeded.
-- `.venv/bin/python -m scripts.check_clean_migrations`: two migrations applied to a newly created empty database, repeat execution succeeded, five FORCE RLS tables confirmed, temporary database removed.
-- `.venv/bin/python -m pytest -q`: **40 passed, 6 warnings (5.51s)**: 37 authorization/API + two question + one PDF regression. Warnings originate from Starlette/AnyIO and PyMuPDF deprecations.
+- `PYTHONPATH=backend/src .venv/bin/python -m backend.scripts.check_clean_migrations`: two migrations applied to a newly created empty database, repeat execution succeeded, five FORCE RLS tables confirmed, temporary database removed.
+- `.venv/bin/python -m pytest -c backend/pytest.ini -q`: **40 passed, 6 warnings (5.51s)**: 37 authorization/API + two question + one PDF regression. Warnings originate from Starlette/AnyIO and PyMuPDF deprecations.
 - Verified null user/org context after commit and rollback on the same pooled backend PID; A/B isolation, restricted ACLs, inactive identities, revocation, composite FKs, promotion/reassignment denial, and diagnostic non-disclosure.
 - Actual Uvicorn/localhost HTTP: health 200, ready 200, unauthenticated document list 401. The API was stopped cleanly after verification.
 - Python compileall passed. Remote GitHub CI execution was not verified in this implementation record.
@@ -110,7 +110,7 @@ Independent **human review is pending**. Do not call these finalized gold/holdou
 3. S2-2: admin upload/status/delete, worker/recovery, and B0 integration; preserve composite FKs and ready-state filtering for chunks/facts/jobs.
 4. Extend security regressions to actual authentication/retrieval/citation/download paths, then measure B0. Performance remains Not measured.
 
-Additional checks: `docker compose config --quiet` passed. The CI-equivalent local command (`pytest tests/authorization tests/test_questions.py -k 'not source_values' -q`) produced **38 passed, 1 deselected**. Relative Markdown links and evaluation JSON syntax were valid. These are not remote Linux CI results.
+Additional checks: `docker compose config --quiet` passed. The CI-equivalent local command (`pytest -c backend/pytest.ini backend/tests/authorization backend/tests/test_questions.py -k 'not source_values' -q`) produced **38 passed, 1 deselected**. Relative Markdown links and evaluation JSON syntax were valid. These are not remote Linux CI results.
 
 ## 2026-10-10 — Initial GitHub Publication
 
@@ -124,7 +124,7 @@ Additional checks: `docker compose config --quiet` passed. The CI-equivalent loc
 ## 2026-10-10 — README Project Overview
 
 - Replaced stage progress and completed quantities in README with purpose, problems, intended experience, technology structure, and data scope.
-- Preserved setup/testing instructions in `docs/DEVELOPMENT.md`. Intended features were not described as completed.
+- Preserved setup/testing instructions in `docs/development.md`. Intended features were not described as completed.
 - Documentation-only change; checked relative links and diff whitespace without rerunning functional tests. Existing unfinished work and next stages remained unchanged.
 
 ## 2026-10-10 — English README Presentation
@@ -138,7 +138,7 @@ Additional checks: `docker compose config --quiet` passed. The CI-equivalent loc
 
 ### Work
 
-- Translated all eight documents under `docs/` and `eval/README.md` to English, preserving commands, results, failure cases, and pending human-review/CI limitations.
+- Translated all eight documents under `docs/` and `evaluation/README.md` to English, preserving commands, results, failure cases, and pending human-review/CI limitations.
 - Updated README's documentation-language note and kept its project overview free of stage progress.
 - Preserve personal planning and agent instructions locally, remove them from Git tracking, and ignore future additions. The user also explicitly authorized removal from historical commits.
 - Create an ignored local Git bundle before rewriting history; retain original local files byte-for-byte. A rewritten history does not revoke copies already downloaded by others or necessarily remove cached GitHub objects.
@@ -154,3 +154,24 @@ Check public text for remaining Korean, relative links against the published fil
 - Published rewritten main using an explicit expected-SHA force-with-lease; the push succeeded. Synchronized local main/origin/main without changing working files.
 - Verified both local originals still exist with their saved SHA256 hashes and are ignored. Public branch/remote histories no longer contain the private paths. All tracked text is English and public Markdown links resolve.
 - This verifies reachable branch history, not erasure from third-party clones, forks, or GitHub's cached objects. Keep the backup local; do not push it. Existing other clones should be replaced or carefully rebased before further pushes.
+
+## 2026-10-10 — Repository Structure Before S2
+
+### Completed
+
+- Consolidated Python runtime, migrations, maintenance tools, locks, and tests under backend; moved the web placeholder to frontend and eval to evaluation.
+- Moved the PDF experiment tool into evaluation/tools. Grouped one-off reports under docs/archive and updated documentation links, commands, CI, Compose hints, and imports.
+- Preserved the three stable planning/log filenames and local-only file exclusions. Moved obsolete local bytecode directories into ignored work/restructure/legacy-caches.
+- Kept SQL migrations, dependency locks, and evaluation JSON byte-identical. No new feature implementation or dependency changes.
+
+### Actual Validation
+
+- Full suite: **40 passed, 6 existing deprecation warnings (5.26s)**.
+- Local CI subset: **38 passed, 1 deselected, 1 existing warning (1.83s)**.
+- Empty database: both migrations applied and repeat-verified; five FORCE RLS tables confirmed and temporary database removed.
+- Live Uvicorn: health 200, ready 200, organization document listing 401 without authentication; stopped after checks. An initial check used the nonexistent /documents route and correctly returned 404; validation was repeated on the actual organization-scoped route.
+
+### Unfinished / Next
+
+- Independent human review, real authentication, uploads, worker processing, and B0 remain pending; this reorganization does not advance feature acceptance.
+- Remote CI success is not claimed. Next implement the S2 authentication boundary in the new structure, then ingestion and baseline flow in small verified increments.

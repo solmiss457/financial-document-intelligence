@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: fdi
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${FDI_POSTGRES_PASSWORD:?Run scripts/init_local_env.py}
+      POSTGRES_PASSWORD: ${FDI_POSTGRES_PASSWORD:?Run backend/scripts/init_local_env.py}
     ports:
       - '127.0.0.1:55432:5432'
     volumes:

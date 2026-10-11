@@ -4,7 +4,7 @@ Locally verified on 2026-10-10 using PostgreSQL 17.9, Python 3.12.14, FastAPI 0.
 
 ## Implementation Boundary
 
-- `db/migrations/001_security.sql`: users, organizations, memberships, documents, document_grants. All five tables use ENABLE/FORCE RLS.
+- `backend/migrations/001_security.sql`: users, organizations, memberships, documents, document_grants. All five tables use ENABLE/FORCE RLS.
 - `002_admin_deletion_status.sql`: permits admins to inspect deletion metadata. Members and API document responses exclude deleting documents.
 - `fdi_owner`: NOLOGIN owner. `fdi_app`: LOGIN, NOSUPERUSER/NOBYPASSRLS/NOCREATEDB/NOCREATEROLE/NOINHERIT. API startup rejects unsafe role settings.
 - Composite grant foreign keys `(organization_id,document_id)` and `(organization_id,user_id)` prevent references to documents/members in another organization. The API role has no UPDATE privilege on document organization IDs.
@@ -28,7 +28,7 @@ Run this server only on 127.0.0.1. Document routes are unavailable outside tests
 
 ## Verified Results
 
-`.venv/bin/python -m pytest -q`: **40 passed**, with six dependency deprecation warnings. Breakdown: 37 authorization/API, two question, one PDF regression test. Passing known tests is not a general security guarantee.
+`.venv/bin/python -m pytest -c backend/pytest.ini -q`: **40 passed**, with six dependency deprecation warnings. Breakdown: 37 authorization/API, two question, one PDF regression test. Passing known tests is not a general security guarantee.
 
 - Active/inactive users and memberships, nonmembers, A/B admins and members, dual-organization membership, organization/restricted documents.
 - Grant allow/deny behavior, admin writes/member write denial, cross-organization document/user FK violations, organization reassignment and membership self-promotion denial.

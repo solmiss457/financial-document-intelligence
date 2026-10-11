@@ -12,8 +12,8 @@ node_modules/
 coverage/
 work/
 storage/
-eval/runs/*
-!eval/runs/.gitkeep
+evaluation/runs/*
+!evaluation/runs/.gitkeep
 
 # Local-only planning and agent instructions
 /AGENTS.md

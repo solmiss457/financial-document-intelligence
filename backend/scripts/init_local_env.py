@@ -2,7 +2,7 @@
 from pathlib import Path
 import secrets
 import os
-p = Path(__file__).resolve().parents[1] / '.env'
+p = Path(__file__).resolve().parents[2] / '.env'
 if p.exists():
     print('.env already exists; unchanged')
 else:

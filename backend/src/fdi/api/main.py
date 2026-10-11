@@ -6,8 +6,8 @@ import psycopg
 from psycopg_pool import PoolTimeout
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-from services.api.db import create_pool, request_connection
-from services.api.policy import Membership, can_read
+from fdi.db.session import create_pool, request_connection
+from fdi.auth.policy import Membership, can_read
 
 
 @dataclass(frozen=True)
@@ -25,7 +25,7 @@ def create_app(pool=None):
     async def lifespan(app):
         owned = pool is None
         if owned:
-            from scripts.local_db import dsn
+            from fdi.db.config import dsn
             app.state.pool = create_pool(dsn())
         else:
             app.state.pool = pool

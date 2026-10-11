@@ -8,7 +8,7 @@
 - Berkshire Hathaway [2024 Annual Report](https://www.berkshirehathaway.com/2024ar/2024ar.pdf): 150 pages.
 - These reports support comparisons across periods, multiple year columns, parenthesized negatives, and per-share unit exceptions.
 - A Microsoft 2024 PDF candidate returned HTTP 403 and was excluded. The sample lacks company diversity; results do not generalize to scans, multiple companies, or complex merged tables.
-- Source URL, acquisition time, SHA256, and version are in `eval/manifests/s1_reports.json`. Public availability was not treated as redistribution permission. Original PDFs and extracted full text are not distributed without verifying permission.
+- Source URL, acquisition time, SHA256, and version are in `evaluation/manifests/s1_reports.json`. Public availability was not treated as redistribution permission. Original PDFs and extracted full text are not distributed without verifying permission.
 
 ## Environment and Observed Results
 
@@ -26,18 +26,18 @@ Each strategy found four table candidates. Currency symbols and blank cells spli
 - Page text: expected years, unit wording, and printed labels were present on all four pages.
 - lines: year headers appeared in all four tables. All eight selected rows passed checks for row label, three values, value order, and parenthesized negatives. **Unit wording appeared in 0/4 extracted tables**, demonstrating context loss.
 - text: year headers and units appeared in all four tables. The same selected-row checks produced **1/8 passes and 7/8 failures**. Only the 2024 cash-flow row for equity-security purchases passed. This is not whole-table or financial-fact extraction accuracy.
-- Selected rows: total revenues/net earnings in the earnings statements and operating cash flow/equity-security purchases in the cash-flow statements. Source-comparison values are in `eval/configs/pdf_probe.json`.
+- Selected rows: total revenues/net earnings in the earnings statements and operating cash flow/equity-security purchases in the cash-flow statements. Source-comparison values are in `evaluation/configs/pdf_probe.json`.
 - Codex visually compared PNG renders of all four original pages. No independent human review has been completed. This does not establish human review of the 12 development questions.
 
 Checks remove whitespace and test value presence/order within the same extracted row. They do not guarantee year-to-cell mapping, every row, automatic title association, normalized units, per-share exceptions, or the meaning of restated figures. Bounding boxes, cells, and words were retained, but coordinate accuracy was not quantified across the full documents.
 
 ## Reproduction
 
-Download the reports and set up the environment using the [development guide](DEVELOPMENT.md), then run:
+Download the reports and set up the environment using the [development guide](../development.md), then run:
 
 ```sh
-.venv/bin/python scripts/probe_pdf.py
-.venv/bin/python -m unittest discover -s tests/ingestion -p 'test_*.py' -v
+.venv/bin/python evaluation/tools/probe_pdf.py
+.venv/bin/python -m unittest discover -s backend/tests/ingestion -p 'test_*.py' -v
 ```
 
 Outputs in `work/pdf-probe/`: page text/words JSONL, table bbox/cells/rows JSON, PNGs, and summary JSON. Standard output contains check results rather than document bodies. A SHA256 mismatch stops processing before extraction. Regression tests retain known failures as well as successes; passing does not mean the parser reads every table correctly.

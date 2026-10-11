@@ -152,19 +152,30 @@ Public English annual-report PDFs are assigned to fictional organizations for de
 
 The scope covers financial lookups, two-period comparisons, growth rates, ratios, and supporting evidence. Scanned-document OCR, stock-price prediction, investment recommendations, real-time market data, and model training are outside the scope.
 
-Original PDFs, extracted full text, local databases, and credentials are excluded from Git. Document URLs and version hashes are recorded in the [source manifest](eval/manifests/s1_reports.json); public availability is not treated as permission to redistribute a report.
+Original PDFs, extracted full text, local databases, and credentials are excluded from Git. Document URLs and version hashes are recorded in the [source manifest](evaluation/manifests/s1_reports.json); public availability is not treated as permission to redistribute a report.
+
+## 🗂️ Repository Layout
+
+```text
+frontend/     Web application
+backend/      Python API, authorization, database migrations, and tests
+evaluation/   Source manifests, questions, experiment configs, and tools
+docs/         Architecture, development guides, and engineering records
+```
+
+Local reports and database files live in ignored `storage/`; temporary artifacts live in ignored `work/`. Shared runtime configuration stays at the repository root.
 
 ## 🚀 Getting Started
 
-See the [local development guide](docs/DEVELOPMENT.md) for environment setup, database migrations, API commands, and tests.
+See the [local development guide](docs/development.md) for environment setup, database migrations, API commands, and tests.
 
 ## 📖 Documentation
 
 | Guide | What it covers |
 |---|---|
-| [Architecture](docs/ARCHITECTURE.md) | System boundaries, data flow, and access policies |
+| [Architecture](docs/architecture.md) | System boundaries, data flow, and access policies |
 | [Design Decisions](docs/DECISIONS_AND_INTERVIEW.md) | Alternatives, trade-offs, and validation methods |
-| [Evaluation Guide](eval/README.md) | Dataset authoring and experiment rules |
+| [Evaluation Guide](evaluation/README.md) | Dataset authoring and experiment rules |
 | [Development Plan](docs/IMPLEMENTATION_PLAN.md) | Implementation scope and acceptance criteria |
 | [Engineering Log](docs/PROGRESS.md) | Implementation details, verified results, and limitations |
 

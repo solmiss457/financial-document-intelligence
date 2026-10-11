@@ -6,20 +6,33 @@ Written on 2026-10-10. Proposed goals are distinct from completed work.
 
 ```text
 FDI/
+  frontend/                 Web UI (placeholder until implementation)
+  backend/
+    src/fdi/api/            HTTP routes
+    src/fdi/auth/           Pure authorization policies
+    src/fdi/db/             Configuration and pooled DB sessions
+    migrations/            Immutable SQL migrations
+    scripts/               Local environment and DB management tools
+    tests/                 Authorization, API, PDF and question regressions
+    pytest.ini             Test discovery and import configuration
+    requirements-*.lock    Existing dependency locks, unchanged versions
+  evaluation/
+    manifests/             Source URLs, hashes and versions
+    questions/             Development and future final evaluation questions
+    configs/               Fixed experiment settings and expectations
+    tools/                 PDF extraction feasibility probe
+    runs/                  Local results, excluded from Git
+  docs/
+    architecture.md        Target design and implemented boundaries
+    development.md         Executable setup and verification commands
+    security.md            Authorization behavior and limitations
+    archive/               Original S1 extraction and question reports
+    IMPLEMENTATION_PLAN.md Development plan
+    PROGRESS.md            Engineering log
+    DECISIONS_AND_INTERVIEW.md Design decisions and trade-offs
+  .github/workflows/       Automated checks
+  compose.yaml             Local services; persistent data stays in storage/
   README.md
-  apps/web/                 Next.js / TypeScript UI and server sessions
-  services/api/             FastAPI, authorization, retrieval, validation, calculation
-  services/worker/          PDF extraction, chunks, embeddings, job recovery
-  db/migrations/            Tables, constraints, and RLS migrations
-  eval/manifests/           Document URLs, acquisition dates, SHA256, versions
-  eval/questions/           Development/final questions and original evidence
-  eval/configs/             Fixed B0 and experiment configurations
-  eval/runs/                Local results, excluded from Git
-  tests/authorization/      Organization/document access and revocation
-  tests/calculation/        Decimal, period, and unit validation
-  tests/ingestion/          Processing, retries, deletion, and recovery
-  docs/                     Design decisions and engineering records
-  .github/workflows/        Automated checks
 ```
 
 At S0, Docker Compose and dependency lockfiles were deferred until runtime validation. S1 additions are recorded in the engineering log. Private planning and agent instruction files are local-only and are not required to run the public repository.
@@ -57,4 +70,10 @@ OIDC provider/library, LLM provider/model, embedding model/version, final report
 
 ## Progress as of 2026-10-10
 
-S1-1: extraction experiment on two reports and four representative tables completed; see [results](PDF_EXTRACTION_S1.md). S1-2: 12 questions authored and compared with sources by Codex. S1-3: DB/RLS/minimal API implemented, with 40 local tests passing. Independent human review is pending. CI configuration was written; remote execution was not verified in this implementation record. See [security validation](S1_SECURITY_AND_API.md) and [question review scope](S1_QUESTIONS.md).
+S1-1: extraction experiment on two reports and four representative tables completed; see [results](archive/pdf-extraction-s1.md). S1-2: 12 questions authored and compared with sources by Codex. S1-3: DB/RLS/minimal API implemented, with 40 local tests passing. Independent human review is pending. CI configuration was written; remote execution was not verified in this implementation record. See [security validation](security.md) and [question review scope](archive/s1-questions.md).
+
+## Repository Organization Before S2
+
+The existing implementation is grouped into frontend, backend, evaluation, and docs. API and future worker processes can share the fdi Python package while remaining separate runtime processes. Add ingestion/retrieval/answering/calculations/worker modules when their implementations begin, rather than adding empty directories now. Existing SQL migration bytes and dependency lock versions are preserved. Dependency-tool consolidation is a separate change.
+
+PROGRESS.md, IMPLEMENTATION_PLAN.md, and DECISIONS_AND_INTERVIEW.md retain their names because local project instructions refer to these stable entry points. One-off S1 reports live in docs/archive. Private files, storage, .env, and work artifacts remain local and ignored.

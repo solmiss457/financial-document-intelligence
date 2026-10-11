@@ -2,8 +2,8 @@ import os
 from uuid import UUID
 import psycopg
 import pytest
-from scripts.local_db import dsn
-from services.api.db import create_pool
+from fdi.db.config import dsn
+from fdi.db.session import create_pool
 
 
 def uid(n): return UUID(int=n)

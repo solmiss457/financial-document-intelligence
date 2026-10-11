@@ -2,7 +2,7 @@
 import hashlib
 import psycopg
 from psycopg import sql
-from scripts.local_db import ROOT, dsn, settings
+from fdi.db.config import ROOT, dsn, settings
 
 
 def migrate():
@@ -10,7 +10,7 @@ def migrate():
         conn.execute('SELECT pg_advisory_xact_lock(884213)')
         conn.execute('CREATE TABLE IF NOT EXISTS public.fdi_migrations (name text PRIMARY KEY, sha256 text NOT NULL)')
         conn.execute('REVOKE ALL ON public.fdi_migrations FROM PUBLIC')
-        for file in sorted((ROOT / 'db/migrations').glob('*.sql')):
+        for file in sorted((ROOT / 'backend/migrations').glob('*.sql')):
             digest = hashlib.sha256(file.read_bytes()).hexdigest()
             existing = conn.execute('SELECT sha256 FROM public.fdi_migrations WHERE name=%s', (file.name,)).fetchone()
             if existing:

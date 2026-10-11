@@ -38,7 +38,7 @@ Record failures, commands, result artifacts, and limitations for each stage. Kno
 - **Alternatives/costs:** OCR is unnecessary for these text PDFs and outside scope. Other parsers or manual coordinate corrections may help, but fitting these specific tables would not establish generalization. Record failures first.
 - **Validation:** Visual comparison of four source-page images and regression against hash-pinned PDFs, including known failures. Codex-only comparison; independent human review and whole-table accuracy measurement remain pending.
 - **Interview framing:** “The parser found the tables but dropped their units. I separated table candidates from verified financial facts and retained original pages and coordinates. These are selected-row checks on a small sample, not a demonstrated RAG improvement.”
-- **Baseline:** lines/text is a parser-strategy comparison, not a replacement for B0/R1 RAG evaluation. Retrieval/answer performance remains unmeasured.
+- **Baseline:** lines/text is a parser-strategy comparison, not a replacement for B0/R1 RAG evaluation. Retrievaluation/answer performance remains unmeasured.
 
 ## 2026-10-10 — S1-2 Questions and S1-3 Authorization
 
@@ -50,7 +50,7 @@ Twelve development questions link to original locations, hashes, units, and peri
 
 Retain both pure API policies and RLS. API-only checks are simpler but cannot defend omitted SQL checks. RLS alone does not express the distinction between product responses and database metadata access as clearly. The cost is maintaining regression checks for both. Thirty-seven authorization/API tests verified allow/deny behavior.
 
-Helpers remain SECURITY INVOKER, with a one-way users → memberships → grants → documents dependency to avoid recursion. This avoids SECURITY DEFINER owner-bypass risks and privilege-management complexity, while leaving membership administration for separate design. Composite FKs reject organization mismatches. See `docs/S1_SECURITY_AND_API.md`.
+Helpers remain SECURITY INVOKER, with a one-way users → memberships → grants → documents dependency to avoid recursion. This avoids SECURITY DEFINER owner-bypass risks and privilege-management complexity, while leaving membership administration for separate design. Composite FKs reject organization mismatches. See `docs/security.md`.
 
 ### Test Boundary Before Real Authentication
 
@@ -71,3 +71,15 @@ The first deletion test failed because SELECT RLS also blocked transition to del
 ## 2026-10-10 — Public Documentation Boundary
 
 Keep personal planning and agent instructions on the local machine and exclude them from future commits. Publish reproducible implementation, architecture, evaluation, and decision documentation in English. The user authorized removing the two private files from historical commits as well. History rewriting changes commit IDs and requires existing clones to resynchronize; third-party copies and cached objects are outside the scope of a Git push.
+
+## Repository Layout Before S2
+
+**Decision:** Group code by responsibility in frontend, backend, evaluation, and docs. Keep API authorization and database code in a shared `backend/src/fdi` package. Place maintenance scripts and migrations beside that package, and evaluation tools beside their fixtures. Add future worker/retrieval/calculation modules when implemented.
+
+**Reason and alternative:** The earlier apps/services/db/scripts/tests layout scattered one backend across several root folders. A service-per-folder layout would be useful with independently maintained services, but is unnecessary for the current project. Shared Python code can still run in separate API and worker processes later.
+
+**Trade-offs:** Explicit `PYTHONPATH` or Uvicorn `--app-dir` is required until a separate packaging decision. Existing lockfiles and dependency versions remain unchanged to isolate structural regressions. Three planning/log entry points keep their uppercase names to preserve local instruction paths; one-off reports move into docs/archive.
+
+**Validation:** All 40 existing tests passed after relocation; the local CI subset passed 38 tests with one deselected. Empty-database migrations and repeat application succeeded with five FORCE RLS tables. Live HTTP health/ready returned 200 and the organization document route returned 401 without authentication. SQL, lockfile, and evaluation JSON bytes match their previous versions.
+
+**Limits:** This refactor adds no product capabilities. Remote CI and independent human question review are not established by these local checks.

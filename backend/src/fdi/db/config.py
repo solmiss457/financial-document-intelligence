@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 from psycopg.conninfo import make_conninfo
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[4]
 
 
 def settings():

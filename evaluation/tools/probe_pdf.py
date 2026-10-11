@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pymupdf
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'work/pdf-probe'
 
 
@@ -15,8 +15,8 @@ def compact(value):
 
 
 def run():
-    manifest = json.loads((ROOT / 'eval/manifests/s1_reports.json').read_text())
-    cases = json.loads((ROOT / 'eval/configs/pdf_probe.json').read_text())
+    manifest = json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())
+    cases = json.loads((ROOT / 'evaluation/configs/pdf_probe.json').read_text())
     OUT.mkdir(parents=True, exist_ok=True)
     results = []
     for source in manifest:

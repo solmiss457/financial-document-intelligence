@@ -1,8 +1,8 @@
 """Create only the dedicated fdi_test database; never drop databases."""
 import os
 import psycopg
-from scripts.local_db import dsn
-from scripts.migrate import migrate
+from fdi.db.config import dsn
+from backend.scripts.migrate import migrate
 
 if __name__ == '__main__':
     with psycopg.connect(dsn(admin=True), autocommit=True) as conn:

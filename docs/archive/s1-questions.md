@@ -1,6 +1,6 @@
 # S1-2: Twelve Development Questions
 
-Dataset: `eval/questions/s1_development.json`. Permission fixture: `eval/configs/s1_access.json`.
+Dataset: `evaluation/questions/s1_development.json`. Permission fixture: `evaluation/configs/s1_access.json`.
 Authored and compared against source images by Codex on 2026-10-10. Independent human review is **pending**. Do not describe this as a finalized gold set or a human-reviewed dataset based on automated authoring alone.
 
 | Type | Count | Coverage |
@@ -20,4 +20,4 @@ The access fixture represents an active member of fictional organization A with 
 
 All questions are development-only. Questions sharing tables/facts are linked through evidence_group_ids and must remain separate from final evaluation questions. There are zero final evaluation questions and zero B0/improvement evaluation runs. Broader data selection must address the bias toward simple representative tables from one company.
 
-Validation: two tests in `tests/test_questions.py` passed, covering the 12 question contracts, calculations, source locations, and value presence in hash-pinned PDFs. CI without original PDFs runs only the contract check.
+Validation: two tests in `backend/tests/test_questions.py` passed, covering the 12 question contracts, calculations, source locations, and value presence in hash-pinned PDFs. CI without original PDFs runs only the contract check.

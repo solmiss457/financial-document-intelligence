@@ -3,8 +3,8 @@ import os
 from uuid import uuid4
 import psycopg
 from psycopg import sql
-from scripts.local_db import dsn
-from scripts.migrate import migrate
+from fdi.db.config import dsn
+from backend.scripts.migrate import migrate
 
 
 def main():

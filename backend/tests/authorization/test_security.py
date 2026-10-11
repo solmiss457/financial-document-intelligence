@@ -2,10 +2,10 @@ from uuid import UUID
 import pytest
 import psycopg
 from fastapi.testclient import TestClient
-from services.api.db import request_connection, create_pool
-from services.api.main import create_app, authenticated_principal, Principal
-from services.api.policy import Membership, can_read, can_manage
-from scripts.local_db import dsn
+from fdi.db.session import request_connection, create_pool
+from fdi.api.main import create_app, authenticated_principal, Principal
+from fdi.auth.policy import Membership, can_read, can_manage
+from fdi.db.config import dsn
 
 
 def u(n): return UUID(int=n)

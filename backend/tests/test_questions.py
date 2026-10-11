@@ -3,13 +3,13 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import hashlib
 
-ROOT = Path(__file__).resolve().parents[1]
-QUESTIONS = json.loads((ROOT / 'eval/questions/s1_development.json').read_text())
+ROOT = Path(__file__).resolve().parents[2]
+QUESTIONS = json.loads((ROOT / 'evaluation/questions/s1_development.json').read_text())
 
 
 def test_question_contract_and_ground_truth():
     assert len(QUESTIONS) == len({q['question_id'] for q in QUESTIONS}) == 12
-    manifest = {d['document_id']: d for d in json.loads((ROOT / 'eval/manifests/s1_reports.json').read_text())}
+    manifest = {d['document_id']: d for d in json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())}
     for q in QUESTIONS:
         assert q['split'] == 'development'
         assert q['human_review_status'] == 'pending'
@@ -39,7 +39,7 @@ def test_question_contract_and_ground_truth():
 def test_source_values_present_on_hash_pinned_pages():
     """Presence check supplements visual review; does not prove row/column semantics."""
     import pymupdf
-    manifest = json.loads((ROOT / 'eval/manifests/s1_reports.json').read_text())
+    manifest = json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())
     for d in manifest:
         path = ROOT / d['local_path']
         assert hashlib.sha256(path.read_bytes()).hexdigest() == d['sha256']
