@@ -22,7 +22,7 @@ def database(monkeypatch):
     admin = psycopg.connect(dsn(admin=True), autocommit=True)
     assert admin.info.dbname == 'fdi_test'  # refuse destructive fixtures elsewhere
     admin.execute('TRUNCATE fdi.chunks,fdi.document_pages,fdi.ingestion_jobs,fdi.document_grants,fdi.documents,'
-                  'fdi.memberships,fdi.organizations,fdi.users')
+                  'fdi.invitations,fdi.user_identities,fdi.memberships,fdi.organizations,fdi.users')
     for n in [11,12,13,14,15,16,17,21]:
         admin.execute('INSERT INTO fdi.users VALUES (%s,%s)', (uid(n), n != 15))
     for n in [1,2]: admin.execute('INSERT INTO fdi.organizations VALUES (%s,%s)', (uid(n),f'Organization {n}'))

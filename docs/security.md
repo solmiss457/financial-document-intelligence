@@ -75,3 +75,13 @@ Limits: the worker trusts its own organization context; a compromised worker cre
 - Logs contain question ID, organization, user, state, counts, tokens, and latency; tests assert that question text and evidence text are absent. LLM errors are reduced to the exception type.
 - Requests use `store=false`. Only authorized excerpts of public reports are sent to OpenAI; provider retention terms were not reviewed for real internal documents, which remain out of scope.
 - Limits: no OIDC yet, so the route is unreachable outside tests; no rate limiting or per-user cost limits.
+
+## Authentication and Administration (2026-10-11)
+
+- **Tokens.** ES256 only, `iss`/`aud` fixed, lifetime ≤ 300 s, trusted identity-provider issuers only, all claims required and typed. Tests reject expired, wrong-audience, wrong-issuer, over-long, untrusted-provider, missing-claim, wrong-key, `alg: none`, and HS256-with-public-key (algorithm confusion) tokens. FastAPI cannot mint tokens because it has no private key. `X-User-ID` and similar headers are ignored.
+- **Linking.** Google `(issuer, subject)` identifies an account; email is used only to match invitations and only when `email_verified` is true. Signing in alone creates nothing.
+- **SECURITY DEFINER exception.** Earlier policies avoided SECURITY DEFINER. Admin visibility of all memberships needs a check that reads memberships while a memberships policy is evaluated, which recurses under RLS. `fdi.is_org_admin(org)` is the single exception: owned by NOLOGIN `fdi_policy` (BYPASSRLS, SELECT on memberships and users only), fixed `search_path`, EXECUTE granted only to `fdi_app`, and it returns a boolean about the current request user. Replacing it with `SELECT true` made 37 tests fail.
+- **Admin limits.** Admins cannot change their own membership (avoids self-lockout and self-escalation paths); `organization_id` and `user_id` of memberships are not updatable; a member cannot promote anyone; admins of one organization see 404 for another.
+- **Uploads and deletion** follow the same RLS; non-admin uploads are rejected before anything is stored. Removing the invitation email check made the invitation test fail.
+- **Verified.** 22 API flow tests through real signed tokens and PostgreSQL, 11 token tests, updated privilege tests (253 total). A live Uvicorn run with locally minted tokens: no token 401, invitation shown and accepted, admin views working, other organization 404, no emails in server logs.
+- **Limits.** No rate limiting, no CSRF exposure yet (no browser calls the API; Next.js will handle cookies and CSRF in P4), no audit-event table, and key rotation is manual (replace the key pair and restart).

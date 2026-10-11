@@ -195,3 +195,17 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Risk recorded.** G2's first runs over-rejected because of verifier defects (string comparison, label ratio, years followed by punctuation, placeholders). They were found by reading development rejections and fixed with tests; the final test must show whether G2 over-rejects on new companies.
 
 **Interview framing.** "The wrong answer wasn't a hallucination: the number, label, and year were all in the cited table, but that table was the parent company alone. So citation checks weren't enough; I added scope rules and row-and-column verification in code. Wrong figures went to zero on the development set with one extra deferral. My first verifier rejected correct answers for trivial reasons like '2024,' being read as an amount, which I only found by reading every rejection."
+
+## 2026-10-11 — Product Backend: Google Sign-In Boundary, Invitations, Uploads (P1–P3)
+
+**Google via the web server, verified by the API.** The project owner chose Google. Next.js (Auth.js) will hold the Google session in an HttpOnly cookie and sign a 5-minute ES256 token per API call. Alternatives: forwarding Google ID tokens to FastAPI (no extra key, but 1-hour tokens and refresh handling in the browser session) or FastAPI running the OIDC flow itself (one more public endpoint). Asymmetric keys mean a compromised API cannot impersonate users.
+
+**Identity, not email, is the account key.** `(issuer, subject)` links accounts; email matters only for accepting invitations, and only when Google marks it verified. Microsoft Entra ID was considered; its email claim is not guaranteed verified, so invitation matching would need tenant/object IDs. The design allows adding it as a second issuer.
+
+**A separate auth role.** Before a user is known there is no organization context for RLS. Rather than widen `fdi_app`, `fdi_auth` handles exactly identity resolution, `/me`, and acceptance, with no document access.
+
+**One SECURITY DEFINER function.** Recorded in security.md: admins listing all memberships cannot be expressed without a policy reading memberships during memberships' own policy. A boolean-only definer function owned by a NOLOGIN BYPASSRLS role is the smallest exception; the alternative of trusting an app-set "is admin" setting would move the check out of the database.
+
+**Deletion as a job.** `deleting` takes effect in the same request; physical removal happens in the worker with retries, so a crash cannot leave content readable.
+
+**Interview framing.** "Sign-in proves who you are, not what you can see. The API trusts only a short-lived token signed by the web server, maps the Google subject to a user, and everything else, including admin checks, is decided in PostgreSQL. I had to make one SECURITY DEFINER exception to let admins see their members without recursive policies, and I verified it by replacing it with 'always true' and watching 37 tests fail."

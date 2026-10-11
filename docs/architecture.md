@@ -74,3 +74,15 @@ Migration 005 adds `documents.fiscal_year_end`, set at registration (later: uplo
 - G2: each figure must be found in its cited excerpt's matching row and period column; a figure found only in another retrieved excerpt gets its citation repaired; every number in the answer must be a verified figure or the Decimal result. Failures return `insufficient_evidence` with reason codes in `meta`.
 
 G2 runs before G1's scope rule so scope is judged on repaired citations. The API default remains B0 until the configuration is frozen.
+
+## Authentication, Administration, and Document Management (P1–P3, 2026-10-11)
+
+Next.js (P4) signs users in with Google and forwards a short-lived ES256 token per API call; FastAPI verifies it with the public key only and maps the Google `(issuer, subject)` to an internal user through `fdi.user_identities`. Contract: [API](api.md).
+
+- **Roles.** `fdi_auth` (new) resolves identities, lists the caller's organizations and invitations, and accepts invitations; it has no access to documents. `fdi_app` gains admin-only management (members, invitations, document metadata, grants, deletion jobs) within the request's organization. `fdi_worker` can delete only documents already marked `deleting`.
+- **Admin check without recursion.** Policies that let admins see and manage all memberships call `fdi.is_org_admin(org)`, a SECURITY DEFINER function owned by a dedicated NOLOGIN, BYPASSRLS role (`fdi_policy`) that returns only whether the current request user is an active admin of that organization.
+- **Invitations.** Bound to a lowercase email, expiring, one pending per organization and email. Acceptance requires a provider-verified matching email, creates the internal user on first acceptance, and never reactivates a deactivated membership.
+- **Uploads.** Admin-only; PDF magic bytes, 50 MB limit, SHA-256 de-duplication per organization, random storage key, registration as `queued` with an R1 ingestion job. A failed registration removes the stored file.
+- **Deletion.** `deleting` hides the document from reads, retrieval, and page images at once; a `delete` job removes the original and the row, and foreign-key cascades remove pages, chunks, grants, and jobs.
+- **Citation pages.** Rendered on demand from the stored original after checking `document_pages` RLS (readable and ready) and the original's hash; the cited chunk's boxes are outlined. Originals are never served.
+- **Questions** now use the G2 configuration by default.

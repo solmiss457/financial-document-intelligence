@@ -60,7 +60,7 @@ def claim(pool, worker_id, lease_seconds):
                 WHERE attempts < max_attempts
                 AND (status='queued' OR (status='running' AND lease_expires_at < now()))
                 ORDER BY created_at, id FOR UPDATE SKIP LOCKED LIMIT 1)
-            RETURNING id, organization_id, document_id, attempts, max_attempts, chunker''',
+            RETURNING id, organization_id, document_id, attempts, max_attempts, chunker, kind''',
             (worker_id, lease_seconds)).fetchone()
 
 
@@ -162,8 +162,34 @@ def _record_failure(pool, job, worker_id, exc):
                 'failed' if final else 'will retry', error)
 
 
+def delete_document(pool, job, worker_id, storage):
+    """Deletion job: remove the original, then the row; FK cascades remove pages, chunks, grants, and
+    jobs (this one included). Only documents already marked deleting can be removed."""
+    with organization_connection(pool, job['organization_id']) as conn:
+        _lock_own_job(conn, job, worker_id)
+        doc = conn.execute('SELECT storage_key, status FROM fdi.documents WHERE id=%s FOR UPDATE',
+                           (job['document_id'],)).fetchone()
+        if not doc or doc['status'] != 'deleting':
+            _finish_job(conn, job, 'cancelled', 'Document is not marked for deletion')
+            return 'cancelled'
+        storage.path(doc['storage_key']).unlink(missing_ok=True)
+        conn.execute('DELETE FROM fdi.documents WHERE id=%s', (job['document_id'],))
+    log.info('job %s deleted document %s', job['id'], job['document_id'])
+    return 'deleted'
+
+
 def process(pool, job, worker_id, storage, embedder, settings=Settings(), chunkers=None):
     started = time.monotonic()
+    if job.get('kind') == 'delete':
+        try:
+            return delete_document(pool, job, worker_id, storage)
+        except LeaseLost:
+            log.warning('job %s lease lost; deletion will be retried', job['id'])
+            return 'lease_lost'
+        except Exception as exc:
+            _record_failure(pool, job, worker_id, exc)
+            return 'failed'
+
     chunker = job['chunker']
     chunk = (chunkers or CHUNKERS).get(chunker)
     try:

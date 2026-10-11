@@ -132,12 +132,21 @@ def test_worker_scoped_to_context_organization(content):
 
 @pytest.mark.parametrize('sql', ['SELECT * FROM fdi.memberships', 'SELECT * FROM fdi.users',
     'SELECT * FROM fdi.document_grants', "UPDATE fdi.documents SET title='x'", "UPDATE fdi.documents SET visibility='organization'",
-    'DELETE FROM fdi.documents', 'DELETE FROM fdi.ingestion_jobs', "INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key) VALUES (gen_random_uuid(),gen_random_uuid(),'x')"])
+    'DELETE FROM fdi.ingestion_jobs', "INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key) VALUES (gen_random_uuid(),gen_random_uuid(),'x')"])
 def test_worker_least_privilege(content, sql):
     _, _, worker = content
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         with organization_connection(worker, u(1)) as conn:
             conn.execute(sql)
+
+
+def test_worker_deletes_only_deleting_documents_of_its_context(content):
+    admin, _, worker = content
+    with organization_connection(worker, u(1)) as conn:
+        assert conn.execute('DELETE FROM fdi.documents WHERE id=%s', (u(101),)).rowcount == 0   # ready
+        assert conn.execute('DELETE FROM fdi.documents WHERE id=%s', (u(103),)).rowcount == 0   # other organization
+        assert conn.execute('DELETE FROM fdi.documents WHERE id=%s', (u(105),)).rowcount == 1   # deleting
+    assert admin.execute('SELECT count(*) FROM fdi.chunks WHERE document_id=%s', (u(105),)).fetchone()[0] == 0
 
 
 def test_worker_role_attributes(content):

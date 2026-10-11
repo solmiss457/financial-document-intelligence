@@ -20,7 +20,7 @@ def main():
                 expected = len(list((ROOT / 'backend/migrations').glob('*.sql')))
                 assert conn.execute('SELECT count(*) FROM public.fdi_migrations').fetchone()[0] == expected
                 tables, forced = conn.execute("SELECT count(*), count(*) FILTER (WHERE c.relrowsecurity AND c.relforcerowsecurity) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='fdi' AND c.relkind='r'").fetchone()
-                assert tables == forced == 8
+                assert tables == forced == 10
             print(f'Empty database: {expected} migrations applied, repeat verified, {forced}/{tables} tables FORCE RLS')
         finally:
             if previous is None: os.environ.pop('FDI_DB_NAME', None)

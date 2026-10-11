@@ -356,3 +356,23 @@ Step 4: revise development questions for the multi-company corpus (human review)
 ### Next
 
 Freeze the configuration (G2) and acceptance criteria, then author and review final evaluation questions for Coca-Cola, JPMorgan, and Nike.
+
+## 2026-10-11 — P1–P3: Authentication Boundary, Administration, Document Management
+
+### Completed / Changed Files
+
+- Migration `006_auth_and_admin.sql`: `user_identities`, `invitations`, `documents.created_at`, `ingestion_jobs.kind`, roles `fdi_auth` and `fdi_policy`, `fdi.is_org_admin()`, admin and worker policies (10 FORCE RLS tables).
+- `fdi/auth/tokens.py` (ES256 verification and reference minting), `fdi/auth/identity.py` (resolution, `/me`, acceptance); `fdi/api/{deps,identity_routes,admin_routes,document_routes}.py`; `main.py` wires routers, an auth pool, the public key, storage, and G2 as the default answer configuration.
+- Worker deletion jobs; `init_local_env.py` creates the ES256 key pair in ignored `storage/keys`; `bootstrap_organization.py`; `docs/api.md`. API lock adds PyJWT 2.14.0, cryptography 50.0.1, python-multipart 0.0.32.
+
+### Validation
+
+- Full suite: 253 passed. Empty-database migrations: 6 applied, 10/10 FORCE RLS.
+- Mutation checks: `is_org_admin` → `SELECT true` failed 37 tests; removing the invitation email match failed the invitation test; both restored.
+- Privilege tests rewritten for the new admin and worker rights rather than removed (other organization, self, member promotion, immutable key columns, worker deleting only `deleting` documents).
+- Live Uvicorn smoke test with locally minted tokens: 401 without token, invitation listed and accepted, members and documents for the new admin, 404 for another organization, no emails in the server log. A "Smoke Test Org" now exists in the local development database.
+
+### Limitations / Next
+
+- No browser UI yet; Google OAuth client credentials are needed for P4. No rate limiting, audit table, or automated key rotation. Upload size is checked after reading up to 50 MB into memory.
+- Next: P4 Next.js (Auth.js with Google, English UI), then P5 mock-OIDC end-to-end tests, Docker Compose for all services, and CI.

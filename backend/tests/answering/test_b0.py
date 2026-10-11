@@ -132,7 +132,7 @@ def test_logs_exclude_question_and_document_text(corpus, caplog):
 
 def api(corpus, llm, user=None):
     _, pool, embedder = corpus
-    app = create_app(pool, embedder=embedder, llm=llm)
+    app = create_app(pool, embedder=embedder, llm=llm, answer_config=B0Config())
     if user is not None:
         app.dependency_overrides[authenticated_principal] = lambda: Principal(u(user))
     return TestClient(app)

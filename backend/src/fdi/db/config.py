@@ -4,7 +4,7 @@ from pathlib import Path
 from psycopg.conninfo import make_conninfo
 ROOT = Path(__file__).resolve().parents[4]
 ROLES = {'admin': ('postgres', 'FDI_POSTGRES_PASSWORD'), 'app': ('fdi_app', 'FDI_APP_PASSWORD'),
-         'worker': ('fdi_worker', 'FDI_WORKER_PASSWORD')}
+         'worker': ('fdi_worker', 'FDI_WORKER_PASSWORD'), 'auth': ('fdi_auth', 'FDI_AUTH_PASSWORD')}
 
 
 def settings():

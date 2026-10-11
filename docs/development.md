@@ -58,11 +58,13 @@ docker compose up -d --wait db
 .venv/bin/python -m evaluation.tools.evidence_ranks
 # LLM vs Decimal arithmetic on identical ground-truth inputs (calls OpenAI).
 .venv/bin/python -m evaluation.tools.arithmetic_check --repeats 5
+# Create an organization and invite its first administrator (see docs/api.md).
+.venv/bin/python -m backend.scripts.bootstrap_organization --name "Acme Research" --admin-email you@gmail.com
 # Start the local API.
 .venv/bin/python -m uvicorn fdi.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-`/health` and `/ready` return 200; document and question routes return 401 by default because authentication is not implemented. `POST /organizations/{id}/questions` with `{"question": ...}` runs B0 (see `evaluation/configs/b0_answer.json`) and needs `OPENAI_API_KEY` in the local `.env`; add it by editing the file yourself and do not print or commit it. Without a key the route returns 503. Tests use a fake LLM and never call the network. Test identity headers such as X-User-ID are not supported. Tests reset only fixtures in `fdi_test`. `check_clean_migrations` creates a temporary database, applies and repeats migrations, then deletes only the database it created.
+`/health` and `/ready` return 200; every other route requires a web-signed ES256 token (see [API contract](api.md)); without one it returns 401. The API process also needs PyMuPDF (citation page images). `POST /organizations/{id}/questions` with `{"question": ...}` runs B0 (see `evaluation/configs/b0_answer.json`) and needs `OPENAI_API_KEY` in the local `.env`; add it by editing the file yourself and do not print or commit it. Without a key the route returns 503. Tests use a fake LLM and never call the network. Test identity headers such as X-User-ID are not supported. Tests reset only fixtures in `fdi_test`. `check_clean_migrations` creates a temporary database, applies and repeats migrations, then deletes only the database it created.
 
 The worker downloads the pinned embedding model into ignored `work/models` on first use and copies registered PDFs into ignored `storage/documents` under random keys. It logs IDs, counts, and outcomes, not document text. B0 ingestion settings are recorded in `evaluation/configs/b0_ingestion.json`.
 

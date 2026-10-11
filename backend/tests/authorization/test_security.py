@@ -95,10 +95,21 @@ def test_composite_fk_blocks_cross_org_grants(database,org,doc,user):
 def test_admin_cannot_move_document_or_escalate_membership(database):
     _,pool=database
     for statement in ['UPDATE fdi.documents SET organization_id=%s WHERE id=%s',
-                      "UPDATE fdi.memberships SET role='admin' WHERE organization_id=%s AND user_id=%s"]:
+                      'UPDATE fdi.memberships SET organization_id=%s WHERE user_id=%s',
+                      'UPDATE fdi.memberships SET user_id=%s WHERE user_id=%s']:
         with pytest.raises(psycopg.errors.InsufficientPrivilege):
             with request_connection(pool,u(13),u(1)) as conn:
                 conn.execute(statement,(u(2),u(101)))
+    promote="UPDATE fdi.memberships SET role='admin' WHERE organization_id=%s AND user_id=%s"
+    with request_connection(pool,u(13),u(1)) as conn:
+        assert conn.execute(promote,(u(2),u(21))).rowcount==0   # other organization
+        assert conn.execute(promote,(u(1),u(13))).rowcount==0   # own membership
+        assert conn.execute("UPDATE fdi.memberships SET active=false WHERE organization_id=%s AND user_id=%s",(u(1),u(13))).rowcount==0
+    with request_connection(pool,u(11),u(1)) as conn:          # members cannot promote anyone
+        assert conn.execute(promote,(u(1),u(11))).rowcount==0
+        assert conn.execute(promote,(u(1),u(12))).rowcount==0
+    with request_connection(pool,u(13),u(1)) as conn:          # admins manage other members of their org
+        assert conn.execute(promote,(u(1),u(12))).rowcount==1
     with request_connection(pool,u(13),u(1)) as conn:
         assert conn.execute("UPDATE fdi.documents SET title='bad' WHERE id=%s",(u(104),)).rowcount==0
         assert conn.execute("UPDATE fdi.documents SET title='updated' WHERE id=%s",(u(101),)).rowcount==1
@@ -132,7 +143,7 @@ def test_api_acl_404_and_canary_isolation(database,caplog):
     with TestClient(app) as client:
         listing=client.get(f'/organizations/{u(1)}/documents')
         assert listing.status_code==200
-        assert [r['id'] for r in listing.json()['documents']]==[str(u(101)),str(u(106))]
+        assert sorted(r['id'] for r in listing.json()['documents'])==[str(u(101)),str(u(106))]
         assert 'CANARY_ORG_2' not in listing.text
         assert 'DOC_102' not in listing.text
         for org,doc in [(1,102),(1,104),(2,104),(1,999)]:
@@ -161,7 +172,7 @@ def test_rls_enabled_for_all_tables_and_no_role_escalation(database):
     _,pool=database
     with pool.connection() as conn:
         rows=conn.execute("SELECT relrowsecurity,relforcerowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='fdi' AND relkind='r'").fetchall()
-        assert len(rows)==8 and all(all(r.values()) for r in rows)
+        assert len(rows)==10 and all(all(r.values()) for r in rows)
         assert conn.execute("SELECT 1 FROM pg_auth_members WHERE member=(SELECT oid FROM pg_roles WHERE rolname=current_user)").fetchall()==[]
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         with pool.connection() as conn: conn.execute('SET ROLE fdi_owner')

@@ -1,49 +1,51 @@
-"""S1 API skeleton. No production identity provider is configured yet."""
+"""FDI API. Browsers never call it directly: the Next.js server forwards short-lived signed identity
+tokens (see fdi.auth.tokens). Bind to 127.0.0.1 or a private network only."""
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
 from uuid import UUID
 import psycopg
 from psycopg_pool import PoolTimeout
-from fastapi import Depends, FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
-from fdi.db.session import create_pool, request_connection
-from fdi.auth.policy import Membership, can_read
-from fdi.answering.b0 import B0Config, NotMember, answer_question
+from pydantic import BaseModel, Field
+from fdi.answering.b0 import CONFIGS, NotMember, answer_question
 from fdi.answering.llm import LLMError
+from fdi.api import admin_routes, document_routes, identity_routes
+from fdi.api.deps import Principal, authenticated_principal, member_id
+from fdi.api.document_routes import read_documents  # noqa: F401  (kept for tests and tools)
+from fdi.auth.tokens import load_public_key
+from fdi.db.session import create_pool
+from fdi.storage import LocalStorage
 
-
-@dataclass(frozen=True)
-class Principal:
-    user_id: UUID
-
-
-def authenticated_principal() -> Principal:
-    # Only tests override this dependency. Never trust X-User-ID or org claims.
-    raise HTTPException(401, 'Authentication required')
+__all__ = ['create_app', 'authenticated_principal', 'Principal']
 
 
 class QuestionRequest(BaseModel):
     question: str = Field(min_length=1, max_length=1000)
 
 
-def create_app(pool=None, embedder=None, llm=None, answer_config=B0Config()):
+def create_app(pool=None, embedder=None, llm=None, answer_config=CONFIGS['G2'], auth_pool=None,
+               public_key=None, storage=None):
+    """Owns its pools when none are passed. Tests pass pools, keys, and storage explicitly."""
     @asynccontextmanager
     async def lifespan(app):
         owned = pool is None
         if owned:
             from fdi.db.config import dsn
             app.state.pool = create_pool(dsn())
+            app.state.auth_pool = create_pool(dsn(role='auth'), max_size=2, expected_role='fdi_auth')
+            app.state.public_key = load_public_key()
         else:
-            app.state.pool = pool
+            app.state.pool, app.state.auth_pool, app.state.public_key = pool, auth_pool, public_key
         try:
             yield
         finally:
             if owned:
                 app.state.pool.close()
+                app.state.auth_pool.close()
 
     app = FastAPI(title='FDI', lifespan=lifespan)
     app.state.embedder, app.state.llm = embedder, llm
+    app.state.storage = storage or LocalStorage()
 
     @app.exception_handler(psycopg.Error)
     @app.exception_handler(PoolTimeout)
@@ -60,31 +62,9 @@ def create_app(pool=None, embedder=None, llm=None, answer_config=B0Config()):
             conn.execute('SELECT 1 FROM fdi.documents LIMIT 0')
         return {'status': 'ready'}
 
-    def read_documents(org, principal, document_id=None):
-        with request_connection(app.state.pool, principal.user_id, org) as conn:
-            row = conn.execute('SELECT role,active FROM fdi.memberships WHERE organization_id=%s AND user_id=%s',
-                               (org, principal.user_id)).fetchone()
-            membership = Membership(org, row['role'], row['active'], True) if row else None
-            if not membership:
-                raise HTTPException(404, 'Not found')
-            records = conn.execute('''SELECT d.id,d.organization_id,d.title,d.visibility,d.status,
-                EXISTS(SELECT 1 FROM fdi.document_grants g WHERE g.organization_id=d.organization_id
-                AND g.document_id=d.id AND g.user_id=%s) AS granted FROM fdi.documents d
-                WHERE d.organization_id=%s AND (%s::uuid IS NULL OR d.id=%s::uuid) ORDER BY d.id''',
-                (principal.user_id, org, document_id, document_id)).fetchall()
-            return [dict(id=str(r['id']), title=r['title'], status=r['status']) for r in records
-                    if can_read(membership, r['organization_id'], r['visibility'], r['granted'], r['status'])]
-
-    @app.get('/organizations/{organization_id}/documents')
-    def documents(organization_id: UUID, principal: Principal = Depends(authenticated_principal)):
-        return {'documents': read_documents(organization_id, principal)}
-
-    @app.get('/organizations/{organization_id}/documents/{document_id}')
-    def document(organization_id: UUID, document_id: UUID, principal: Principal = Depends(authenticated_principal)):
-        rows = read_documents(organization_id, principal, document_id)
-        if not rows:
-            raise HTTPException(404, 'Not found')
-        return rows[0]
+    app.include_router(identity_routes.router)
+    app.include_router(admin_routes.router)
+    app.include_router(document_routes.router)
 
     def answer_dependencies():
         # Loaded on first use so the API starts without the model or an LLM key.
@@ -97,14 +77,15 @@ def create_app(pool=None, embedder=None, llm=None, answer_config=B0Config()):
         return app.state.embedder, app.state.llm
 
     @app.post('/organizations/{organization_id}/questions')
-    def ask(organization_id: UUID, body: QuestionRequest, principal: Principal = Depends(authenticated_principal)):
+    def ask(organization_id: UUID, body: QuestionRequest, request: Request,
+            principal: Principal = Depends(authenticated_principal)):
+        user_id = member_id(principal)
         try:
             embedder, llm = answer_dependencies()
         except LLMError:
             raise HTTPException(503, 'Service unavailable')
         try:
-            return answer_question(app.state.pool, principal.user_id, organization_id, body.question,
-                                   embedder, llm, answer_config)
+            return answer_question(app.state.pool, user_id, organization_id, body.question, embedder, llm, answer_config)
         except NotMember:
             raise HTTPException(404, 'Not found')
         except ValueError:

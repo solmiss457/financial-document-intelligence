@@ -21,7 +21,7 @@ def migrate():
             conn.execute('RESET ROLE')
             conn.execute('INSERT INTO public.fdi_migrations VALUES (%s,%s)', (file.name,digest))
         # psycopg safely quotes value; never print the query or password.
-        for role, key in (('fdi_app', 'FDI_APP_PASSWORD'), ('fdi_worker', 'FDI_WORKER_PASSWORD')):
+        for role, key in (('fdi_app', 'FDI_APP_PASSWORD'), ('fdi_worker', 'FDI_WORKER_PASSWORD'), ('fdi_auth', 'FDI_AUTH_PASSWORD')):
             if conn.execute('SELECT 1 FROM pg_roles WHERE rolname=%s', (role,)).fetchone():
                 conn.execute(sql.SQL('ALTER ROLE {} PASSWORD {}').format(sql.Identifier(role), sql.Literal(settings()[key])))
     print('Migrations verified and applied')
