@@ -1,0 +1,162 @@
+[
+  {
+    "case": "berkshire-2023-earnings",
+    "strategy": "lines",
+    "tables": 1,
+    "shapes": [
+      [
+        46,
+        13
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": false,
+      "total_revenues": true,
+      "net_earnings_parentheses": true
+    }
+  },
+  {
+    "case": "berkshire-2023-earnings",
+    "strategy": "text",
+    "tables": 1,
+    "shapes": [
+      [
+        57,
+        7
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": true,
+      "total_revenues": false,
+      "net_earnings_parentheses": false
+    }
+  },
+  {
+    "case": "berkshire-2023-cashflows",
+    "strategy": "lines",
+    "tables": 1,
+    "shapes": [
+      [
+        46,
+        13
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": false,
+      "operating_cash": true,
+      "purchase_parentheses": true
+    }
+  },
+  {
+    "case": "berkshire-2023-cashflows",
+    "strategy": "text",
+    "tables": 1,
+    "shapes": [
+      [
+        49,
+        12
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": true,
+      "operating_cash": false,
+      "purchase_parentheses": false
+    }
+  },
+  {
+    "case": "berkshire-2024-earnings",
+    "strategy": "lines",
+    "tables": 1,
+    "shapes": [
+      [
+        46,
+        12
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": false,
+      "total_revenues": true,
+      "net_earnings_parentheses": true
+    }
+  },
+  {
+    "case": "berkshire-2024-earnings",
+    "strategy": "text",
+    "tables": 1,
+    "shapes": [
+      [
+        56,
+        11
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": true,
+      "total_revenues": false,
+      "net_earnings_parentheses": false
+    }
+  },
+  {
+    "case": "berkshire-2024-cashflows",
+    "strategy": "lines",
+    "tables": 1,
+    "shapes": [
+      [
+        47,
+        13
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": false,
+      "operating_cash": true,
+      "purchase_parentheses": true
+    }
+  },
+  {
+    "case": "berkshire-2024-cashflows",
+    "strategy": "text",
+    "tables": 1,
+    "shapes": [
+      [
+        50,
+        12
+      ]
+    ],
+    "checks": {
+      "page_years": true,
+      "page_unit": true,
+      "page_label": true,
+      "table_year_header": true,
+      "table_unit": true,
+      "operating_cash": false,
+      "purchase_parentheses": true
+    }
+  }
+]

@@ -1,0 +1,16 @@
+# Secrets and local files
+.env
+.env.*
+!.env.example
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+.next/
+coverage/
+work/
+storage/
+eval/runs/*
+!eval/runs/.gitkeep

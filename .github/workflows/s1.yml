@@ -1,0 +1,23 @@
+name: S1 security and development questions
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  s1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.14'
+      - run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -r requirements-api.lock
+          .venv/bin/python scripts/init_local_env.py
+          docker compose up -d --wait db
+          .venv/bin/python -m scripts.migrate
+          .venv/bin/python -m scripts.migrate
+          .venv/bin/python -m scripts.prepare_test_db
+          .venv/bin/python -m pytest tests/authorization tests/test_questions.py -k 'not source_values' -q
+      - if: always()
+        run: docker compose down

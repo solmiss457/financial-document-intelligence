@@ -1,0 +1,843 @@
+[
+  {
+    "question_id": "dev-01",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-earnings"
+    ],
+    "question": "According to the 2024 annual report, what were Berkshire Hathaway consolidated total revenues in 2024, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "371433",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2024",
+          "value": "371433",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2024",
+        "value": "371433",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-02",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2023-earnings"
+    ],
+    "question": "According to the 2023 annual report, what was consolidated net earnings (loss), before attribution to noncontrolling interests, in 2022, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "-21998",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2023",
+          "document_version": "2023 Annual Report (hash-pinned downloaded version)",
+          "sha256": "2132b85f9c472a6f0b141551adb08d93f88db28e6a3794e7e2b13ca3f8a57b5b",
+          "pdf_page": 96,
+          "printed_page_label": "K-72",
+          "table_id": "earnings",
+          "row_label": "Net earnings (loss)",
+          "column_label": "2022",
+          "value": "-21998",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2022-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2023",
+        "document_version": "2023 Annual Report (hash-pinned downloaded version)",
+        "sha256": "2132b85f9c472a6f0b141551adb08d93f88db28e6a3794e7e2b13ca3f8a57b5b",
+        "pdf_page": 96,
+        "printed_page_label": "K-72",
+        "table_id": "earnings",
+        "row_label": "Net earnings (loss)",
+        "column_label": "2022",
+        "value": "-21998",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2022-12-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-03",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2023-cashflows"
+    ],
+    "question": "According to the 2023 annual report, what were net cash flows from operating activities in 2023, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "49196",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2023",
+          "document_version": "2023 Annual Report (hash-pinned downloaded version)",
+          "sha256": "2132b85f9c472a6f0b141551adb08d93f88db28e6a3794e7e2b13ca3f8a57b5b",
+          "pdf_page": 98,
+          "printed_page_label": "K-74",
+          "table_id": "cashflows",
+          "row_label": "Net cash flows from operating activities",
+          "column_label": "2023",
+          "value": "49196",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2023-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2023",
+        "document_version": "2023 Annual Report (hash-pinned downloaded version)",
+        "sha256": "2132b85f9c472a6f0b141551adb08d93f88db28e6a3794e7e2b13ca3f8a57b5b",
+        "pdf_page": 98,
+        "printed_page_label": "K-74",
+        "table_id": "cashflows",
+        "row_label": "Net cash flows from operating activities",
+        "column_label": "2023",
+        "value": "49196",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2023-12-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-04",
+    "type": "lookup",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-cashflows"
+    ],
+    "question": "In the 2024 annual report cash flow statement, what signed amount is shown for purchases of equity securities in 2024, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "-9237",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 92,
+          "printed_page_label": "K-70",
+          "table_id": "cashflows",
+          "row_label": "Purchases of equity securities",
+          "column_label": "2024",
+          "value": "-9237",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 92,
+        "printed_page_label": "K-70",
+        "table_id": "cashflows",
+        "row_label": "Purchases of equity securities",
+        "column_label": "2024",
+        "value": "-9237",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-05",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-earnings"
+    ],
+    "question": "Using the 2024 annual report, how much did total revenues change from 2023 to 2024, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "6951",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2024",
+          "value": "371433",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        },
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2023",
+          "value": "364482",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2023-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2024",
+        "value": "371433",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      },
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2023",
+        "value": "364482",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2023-12-31"
+      }
+    ],
+    "formula": "difference",
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-06",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-earnings"
+    ],
+    "question": "Using the 2024 annual report, what was total revenue growth from 2023 to 2024, rounded to two decimal places?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "1.91",
+      "unit": "percent"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2024",
+          "value": "371433",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        },
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2023",
+          "value": "364482",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2023-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2024",
+        "value": "371433",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      },
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2023",
+        "value": "364482",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2023-12-31"
+      }
+    ],
+    "formula": "growth_percent",
+    "tolerance": "0.005",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-07",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-cashflows"
+    ],
+    "question": "Using the 2024 annual report, how much did operating cash flow change from 2023 to 2024, in USD millions?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "-18604",
+      "unit": "USD million"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 92,
+          "printed_page_label": "K-70",
+          "table_id": "cashflows",
+          "row_label": "Net cash flows from operating activities",
+          "column_label": "2024",
+          "value": "30592",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        },
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 92,
+          "printed_page_label": "K-70",
+          "table_id": "cashflows",
+          "row_label": "Net cash flows from operating activities",
+          "column_label": "2023",
+          "value": "49196",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2023-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 92,
+        "printed_page_label": "K-70",
+        "table_id": "cashflows",
+        "row_label": "Net cash flows from operating activities",
+        "column_label": "2024",
+        "value": "30592",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      },
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 92,
+        "printed_page_label": "K-70",
+        "table_id": "cashflows",
+        "row_label": "Net cash flows from operating activities",
+        "column_label": "2023",
+        "value": "49196",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2023-12-31"
+      }
+    ],
+    "formula": "difference",
+    "tolerance": "0",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-08",
+    "type": "calculation",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-cashflows",
+      "berkshire-2024-earnings"
+    ],
+    "question": "Using the 2024 annual report, what was 2024 operating cash flow as a percentage of 2024 total revenues, rounded to two decimal places?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "answered",
+    "expected_answer": {
+      "value": "8.24",
+      "unit": "percent"
+    },
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 92,
+          "printed_page_label": "K-70",
+          "table_id": "cashflows",
+          "row_label": "Net cash flows from operating activities",
+          "column_label": "2024",
+          "value": "30592",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        },
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2024",
+          "value": "371433",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 92,
+        "printed_page_label": "K-70",
+        "table_id": "cashflows",
+        "row_label": "Net cash flows from operating activities",
+        "column_label": "2024",
+        "value": "30592",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      },
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2024",
+        "value": "371433",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      }
+    ],
+    "formula": "ratio_percent",
+    "tolerance": "0.005",
+    "reason": null,
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-09",
+    "type": "insufficient_evidence",
+    "split": "development",
+    "evidence_group_ids": [],
+    "question": "What were Berkshire Hathaway total revenues for the full year 2025?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "insufficient_evidence",
+    "expected_answer": null,
+    "alternative_evidence_sets": [],
+    "inputs": [],
+    "formula": null,
+    "tolerance": null,
+    "reason": "Authorized corpus contains only 2023 and 2024 annual reports; no 2025 full-year results. No external retrieval allowed.",
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-10",
+    "type": "insufficient_evidence",
+    "split": "development",
+    "evidence_group_ids": [],
+    "question": "Using these reports, predict the exact closing price of Berkshire Hathaway Class B shares on December 31, 2027.",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "insufficient_evidence",
+    "expected_answer": null,
+    "alternative_evidence_sets": [],
+    "inputs": [],
+    "formula": null,
+    "tolerance": null,
+    "reason": "Future price prediction is outside supported scope; these historical reports cannot establish that future fact.",
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-11",
+    "type": "ambiguous",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-earnings"
+    ],
+    "question": "What were Berkshire Hathaway total revenues?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "needs_clarification",
+    "expected_answer": null,
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2024",
+          "value": "371433",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        },
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Total revenues",
+          "column_label": "2023",
+          "value": "364482",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2023-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2024",
+        "value": "371433",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      },
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Total revenues",
+        "column_label": "2023",
+        "value": "364482",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2023-12-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": null,
+    "reason": "Ask for fiscal year and preferred report version; multiple annual columns exist.",
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  },
+  {
+    "question_id": "dev-12",
+    "type": "ambiguous",
+    "split": "development",
+    "evidence_group_ids": [
+      "berkshire-2024-earnings"
+    ],
+    "question": "How much did Berkshire Hathaway earn in 2024?",
+    "organization_id": "00000000-0000-0000-0000-000000000001",
+    "user_id": "00000000-0000-0000-0000-00000000000b",
+    "authorized_document_ids": [
+      "berkshire-2023",
+      "berkshire-2024"
+    ],
+    "expected_state": "needs_clarification",
+    "expected_answer": null,
+    "alternative_evidence_sets": [
+      [
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Net earnings (loss)",
+          "column_label": "2024",
+          "value": "89561",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        },
+        {
+          "document_id": "berkshire-2024",
+          "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+          "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+          "pdf_page": 90,
+          "printed_page_label": "K-68",
+          "table_id": "earnings",
+          "row_label": "Net earnings (loss) attributable to Berkshire shareholders",
+          "column_label": "2024",
+          "value": "88995",
+          "currency": "USD",
+          "scale": "1000000",
+          "period_type": "annual",
+          "period_end": "2024-12-31"
+        }
+      ]
+    ],
+    "inputs": [
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Net earnings (loss)",
+        "column_label": "2024",
+        "value": "89561",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      },
+      {
+        "document_id": "berkshire-2024",
+        "document_version": "2024 Annual Report (hash-pinned downloaded version)",
+        "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+        "pdf_page": 90,
+        "printed_page_label": "K-68",
+        "table_id": "earnings",
+        "row_label": "Net earnings (loss) attributable to Berkshire shareholders",
+        "column_label": "2024",
+        "value": "88995",
+        "currency": "USD",
+        "scale": "1000000",
+        "period_type": "annual",
+        "period_end": "2024-12-31"
+      }
+    ],
+    "formula": null,
+    "tolerance": null,
+    "reason": "Ask whether consolidated net earnings or earnings attributable to Berkshire shareholders is intended. Do not silently select a metric.",
+    "reviewed_by": "Codex: source image comparison; not independent human review",
+    "reviewed_at": "2026-10-10",
+    "human_review_status": "pending"
+  }
+]

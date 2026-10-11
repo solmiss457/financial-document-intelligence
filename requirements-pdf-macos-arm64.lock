@@ -1,0 +1,2 @@
+# Python 3.12, macOS arm64; other platforms require their own verified wheel hash.
+PyMuPDF==1.26.7 --hash=sha256:31aa9c8377ea1eea02934b92f4dcf79fb2abba0bf41f8a46d64c3e31546a3c02

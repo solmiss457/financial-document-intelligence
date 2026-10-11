@@ -1,0 +1,134 @@
+[
+  {
+    "id": "berkshire-2023-earnings",
+    "document_id": "berkshire-2023",
+    "pdf_page": 96,
+    "printed_page": "K-72",
+    "years": [
+      "2023",
+      "2022",
+      "2021"
+    ],
+    "unit": "dollars in millions except per share amounts",
+    "anchors": [
+      {
+        "id": "total_revenues",
+        "row": "Total revenues",
+        "values": [
+          "364,482",
+          "302,020",
+          "276,185"
+        ]
+      },
+      {
+        "id": "net_earnings_parentheses",
+        "row": "Net earnings (loss)",
+        "values": [
+          "97,147",
+          "(21,998)",
+          "90,949"
+        ]
+      }
+    ],
+    "review": "Codex visual comparison of full rendered PDF page, 2026-10-10; human independent review pending"
+  },
+  {
+    "id": "berkshire-2023-cashflows",
+    "document_id": "berkshire-2023",
+    "pdf_page": 98,
+    "printed_page": "K-74",
+    "years": [
+      "2023",
+      "2022",
+      "2021"
+    ],
+    "unit": "dollars in millions",
+    "anchors": [
+      {
+        "id": "operating_cash",
+        "row": "Net cash flows from operating activities",
+        "values": [
+          "49,196",
+          "37,350",
+          "39,427"
+        ]
+      },
+      {
+        "id": "purchase_parentheses",
+        "row": "Purchases of equity securities",
+        "values": [
+          "(16,462)",
+          "(67,930)",
+          "(8,448)"
+        ]
+      }
+    ],
+    "review": "Codex visual comparison of full rendered PDF page, 2026-10-10; human independent review pending"
+  },
+  {
+    "id": "berkshire-2024-earnings",
+    "document_id": "berkshire-2024",
+    "pdf_page": 90,
+    "printed_page": "K-68",
+    "years": [
+      "2024",
+      "2023",
+      "2022"
+    ],
+    "unit": "dollars in millions except per share amounts",
+    "anchors": [
+      {
+        "id": "total_revenues",
+        "row": "Total revenues",
+        "values": [
+          "371,433",
+          "364,482",
+          "302,020"
+        ]
+      },
+      {
+        "id": "net_earnings_parentheses",
+        "row": "Net earnings (loss)",
+        "values": [
+          "89,561",
+          "97,147",
+          "(21,998)"
+        ]
+      }
+    ],
+    "review": "Codex visual comparison of full rendered PDF page, 2026-10-10; human independent review pending"
+  },
+  {
+    "id": "berkshire-2024-cashflows",
+    "document_id": "berkshire-2024",
+    "pdf_page": 92,
+    "printed_page": "K-70",
+    "years": [
+      "2024",
+      "2023",
+      "2022"
+    ],
+    "unit": "dollars in millions",
+    "anchors": [
+      {
+        "id": "operating_cash",
+        "row": "Net cash flows from operating activities",
+        "values": [
+          "30,592",
+          "49,196",
+          "37,350"
+        ]
+      },
+      {
+        "id": "purchase_parentheses",
+        "row": "Purchases of equity securities",
+        "values": [
+          "(9,237)",
+          "(16,462)",
+          "(67,930)"
+        ]
+      }
+    ],
+    "review": "Codex visual comparison of full rendered PDF page, 2026-10-10; human independent review pending"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "document_id": "berkshire-2023",
+    "company": "Berkshire Hathaway Inc.",
+    "fiscal_year": 2023,
+    "source_url": "https://www.berkshirehathaway.com/2023ar/2023ar.pdf",
+    "acquired_at": "2026-10-10T19:48:30.752250+00:00",
+    "sha256": "2132b85f9c472a6f0b141551adb08d93f88db28e6a3794e7e2b13ca3f8a57b5b",
+    "version": "2023 Annual Report (hash-pinned downloaded version)",
+    "redistribution_notes": "Publicly accessible; no redistribution license verified. Do not commit or redistribute PDF or extracted full text. Download from publisher.",
+    "local_path": "storage/reports/berkshire-2023.pdf",
+    "page_count": 152
+  },
+  {
+    "document_id": "berkshire-2024",
+    "company": "Berkshire Hathaway Inc.",
+    "fiscal_year": 2024,
+    "source_url": "https://www.berkshirehathaway.com/2024ar/2024ar.pdf",
+    "acquired_at": "2026-10-10T19:48:30.755305+00:00",
+    "sha256": "6aa0a501680c50a57e0a1a2e841b46800e1fed828a8a7889d83d8eae7953e4bb",
+    "version": "2024 Annual Report (hash-pinned downloaded version)",
+    "redistribution_notes": "Publicly accessible; no redistribution license verified. Do not commit or redistribute PDF or extracted full text. Download from publisher.",
+    "local_path": "storage/reports/berkshire-2024.pdf",
+    "page_count": 150
+  }
+]

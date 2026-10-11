@@ -1,0 +1,20 @@
+{
+  "organization_id": "00000000-0000-0000-0000-000000000001",
+  "user_id": "00000000-0000-0000-0000-00000000000b",
+  "role": "member",
+  "active": true,
+  "documents": [
+    {
+      "document_id": "berkshire-2024",
+      "db_id": "00000000-0000-0000-0000-000000000065",
+      "visibility": "organization",
+      "grant": false
+    },
+    {
+      "document_id": "berkshire-2023",
+      "db_id": "00000000-0000-0000-0000-000000000066",
+      "visibility": "restricted",
+      "grant": true
+    }
+  ]
+}
