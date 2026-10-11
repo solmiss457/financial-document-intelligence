@@ -177,3 +177,21 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Unplanned benefit.** When an input was missing, the model wrote "[missing]" into the value; the parser refused it and the system abstained instead of reporting a guessed ratio.
 
 **Interview framing.** "Once retrieval found the right numbers, some answers were still wrong in the second decimal. Giving the model the exact reviewed inputs showed it misrounded 3 of 40 times, always at a rounding boundary, and the same question could come out 6.43% in one run and 6.42% in the next. I moved arithmetic into Decimal code with unit and period checks, so those errors went to zero and missing inputs became abstentions."
+
+## 2026-10-11 — G1/G2: Code Checks Instead of a Second LLM Judge
+
+**Decision.** Evidence assessment and claim verification run in code over structured output (`facts`, calculation inputs) and the R1 table rows, not as a second LLM call. Cheaper, deterministic, and explainable per rejection; limited to what rows and metadata can express (metric ambiguity such as "earn" is not detected).
+
+**Root cause first.** The recurring wrong answer (dev-03, 7,611) was textually supported: label, year, and value all matched the cited excerpt, which was the parent-only Schedule I. A citation-existence check would have passed it. The fix had to be scope (consolidated vs parent-only vs pro forma), which the plan already names as a numeric-interpretation risk.
+
+**Fiscal year end as metadata.** Inferring it from retrieved headers missed Apple and Walmart and mis-flagged Berkshire. Recording it per document (an upload field in the product) made the period check flag exactly the three ambiguous development questions.
+
+**Narrow scope rule.** Requiring consolidated tables for every figure would reject correct answers from MD&A narrative and summary tables. The rule rejects only parent-only and pro forma sources and figures that contradict a consolidated row for the same label and year.
+
+**Repair before reject.** In verified runs the model sometimes cited a neighbouring excerpt for a correct figure. G2 re-attributes the citation when another retrieved excerpt contains the figure in the right row and column, and withholds the answer only when no excerpt supports it.
+
+**Results (development).** Wrong figures stated as answers: N2 1 per run (dev-03), G1 0, G2 0; accuracy 85% for all three; false deferral 10% → 15%. Costs: dev-11 lost its correct clarification state when the pro forma figure was blocked; G2 adds about 300 ms at p50.
+
+**Risk recorded.** G2's first runs over-rejected because of verifier defects (string comparison, label ratio, years followed by punctuation, placeholders). They were found by reading development rejections and fixed with tests; the final test must show whether G2 over-rejects on new companies.
+
+**Interview framing.** "The wrong answer wasn't a hallucination: the number, label, and year were all in the cited table, but that table was the parent company alone. So citation checks weren't enough; I added scope rules and row-and-column verification in code. Wrong figures went to zero on the development set with one extra deferral. My first verifier rejected correct answers for trivial reasons like '2024,' being read as an amount, which I only found by reading every rejection."

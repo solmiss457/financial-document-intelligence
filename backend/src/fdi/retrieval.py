@@ -14,30 +14,31 @@ class Evidence:
     spans: list
     text: str
     score: float
+    fiscal_year_end: object = None  # date of the document's fiscal year end, when recorded
 
 
 def retrieve_vector(conn, query_literal, chunker, k):
     """Exact cosine search (no ANN index) over authorized chunks of one chunker."""
-    rows = conn.execute('''SELECT c.id, c.document_id, d.title, c.page_start, c.page_end, c.spans, c.text,
+    rows = conn.execute('''SELECT c.id, c.document_id, d.title, c.page_start, c.page_end, c.spans, c.text, d.fiscal_year_end,
             1 - (c.embedding <=> %s::vector) AS score
         FROM fdi.chunks c JOIN fdi.documents d ON d.organization_id=c.organization_id AND d.id=c.document_id
         WHERE c.chunker=%s ORDER BY c.embedding <=> %s::vector, c.id LIMIT %s''',
         (query_literal, chunker, query_literal, k)).fetchall()
     return [Evidence(r['id'], r['document_id'], r['title'], r['page_start'], r['page_end'], r['spans'],
-                     r['text'], float(r['score'])) for r in rows]
+                     r['text'], float(r['score']), r['fiscal_year_end']) for r in rows]
 
 
 def retrieve_keyword(conn, question, chunker, k):
     """PostgreSQL full-text search (not BM25). Question terms are OR-ed so long questions still
     match; ts_rank_cd normalization 1 divides by the log of chunk length."""
-    rows = conn.execute('''SELECT c.id, c.document_id, d.title, c.page_start, c.page_end, c.spans, c.text,
+    rows = conn.execute('''SELECT c.id, c.document_id, d.title, c.page_start, c.page_end, c.spans, c.text, d.fiscal_year_end,
             ts_rank_cd(c.search_text, query.q, 1) AS score
         FROM fdi.chunks c JOIN fdi.documents d ON d.organization_id=c.organization_id AND d.id=c.document_id,
             LATERAL (SELECT NULLIF(replace(plainto_tsquery('english', %s)::text, ' & ', ' | '), '')::tsquery AS q) query
         WHERE c.chunker=%s AND query.q IS NOT NULL AND c.search_text @@ query.q
         ORDER BY score DESC, c.id LIMIT %s''', (question, chunker, k)).fetchall()
     return [Evidence(r['id'], r['document_id'], r['title'], r['page_start'], r['page_end'], r['spans'],
-                     r['text'], float(r['score'])) for r in rows]
+                     r['text'], float(r['score']), r['fiscal_year_end']) for r in rows]
 
 
 def reciprocal_rank_fusion(rankings, k, rrf_k=60):

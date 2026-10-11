@@ -333,3 +333,26 @@ Step 4: revise development questions for the multi-company corpus (human review)
 - Identical inputs: LLM 37/40, Decimal 40/40.
 - End to end, same session: strict answerable accuracy R3 80/80/75%, N2 85/85/85%; wrong calculation results R3 1 (5 across six R3 runs), N2 0; recall unchanged at 57.5%. About $0.40 including the arithmetic check.
 - Report: `docs/experiments/n2-decimal-calculation-2026-10-11.md`. Next: G1/G2 on N2.
+
+## 2026-10-11 — G1/G2 Evidence Assessment and Claim Verification
+
+### Completed / Changed Files
+
+- `fdi/answering/verification.py` (period flags, company matching, scope classification, consolidated-conflict rule, row/column figure verification, answer-number check); G1/G2 configurations, `facts` output, citation repair, and reason codes in `fdi/answering/b0.py`.
+- Migration `005_document_fiscal_year_end.sql`; `register_reports` records fiscal year ends; Berkshire fiscal year ends added to the manifest; retrieval returns them with evidence.
+- Tests: `test_guarded.py` (32 cases). Full suite: 231 passed. Empty-database migrations: 5 applied, 8/8 FORCE RLS.
+
+### Results (development, 3 runs each)
+
+- Wrong figures stated as answers: N2 1/run (dev-03 from parent-only Schedule I), G1 0, G2 0. Answered instead of asking: N2 1–2, G1 1, G2 0–1. Strict answerable accuracy 85% for N2/G1/G2; false deferral 10% → 15%.
+- Diagnostic before LLM runs: period checks flag exactly dev-11, dev-20, dev-28.
+- Report: `docs/experiments/g1-g2-guards-2026-10-11.md`. About $1.4 including three superseded G2 runs.
+
+### Failures / Limitations
+
+- First G1 design (header-inferred fiscal year ends, consolidated-only rule) failed the diagnostic and was replaced. First G2 runs over-rejected because of verifier defects; fixed with tests. Both were tuned while reading development results.
+- dev-11 loses its clarification state; metric ambiguity (dev-12) is not detected; provisional answers are often incomplete (dev-28). dev-03 and dev-14 still need retrieval improvements.
+
+### Next
+
+Freeze the configuration (G2) and acceptance criteria, then author and review final evaluation questions for Coca-Cola, JPMorgan, and Nike.

@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass
 from uuid import uuid4
 from fdi.answering.llm import LLMError
+from fdi.answering import verification as v
 from fdi.calculation import CalculationError, calculate
 from fdi.db.session import request_connection
 from fdi.ingestion.embedding import vector_literal
@@ -77,6 +78,25 @@ _calc['properties'] = {'operation': {'type': 'string', 'enum': ['difference', 'g
 DECIMAL_PROMPT_VERSION = 'n2-v1-' + hashlib.sha256((DECIMAL_INSTRUCTIONS + repr(DECIMAL_SCHEMA)).encode()).hexdigest()[:12]
 CALCULATION_FAILED = 'The requested calculation could not be completed reliably from the evidence ({reason}).'
 
+# G1/G2: N2 plus a list of every stated figure, a consolidated-scope rule, and code checks.
+GUARDED_RULES = (
+    '- List every figure you state from the evidence in facts (calculation inputs go in calculation), copying each value '
+    'exactly as printed in the excerpt, including parentheses for negatives, with its row label, unit, period, and evidence ID. '
+    'State figures in the answer exactly as printed in their units; do not round or convert them, for example to billions.\n'
+    '- Unless the question asks for a segment, parent-company-only, or pro forma figure, use figures from the consolidated '
+    'financial statements.\n'
+    '- The system may add "System checks" after the evidence. If a system check says the period is ambiguous, set state to '
+    '"needs_clarification" and follow the clarification rule.\n')
+GUARDED_INSTRUCTIONS = DECIMAL_INSTRUCTIONS.replace('- Always state units', GUARDED_RULES + '- Always state units')
+assert GUARDED_INSTRUCTIONS != DECIMAL_INSTRUCTIONS
+GUARDED_SCHEMA = copy.deepcopy(DECIMAL_SCHEMA)
+GUARDED_SCHEMA['required'] = ['state', 'answer', 'citations', 'facts', 'calculation']
+GUARDED_SCHEMA['properties']['facts'] = copy.deepcopy(_calc['properties']['inputs'])
+GUARDED_PROMPT_VERSION = 'g-v1-' + hashlib.sha256((GUARDED_INSTRUCTIONS + repr(GUARDED_SCHEMA)).encode()).hexdigest()[:12]
+SCOPE_FAILED = ('The figures I found come from {scope} tables rather than the consolidated financial statements, '
+                'so I cannot answer reliably from the available evidence.')
+VERIFY_FAILED = 'I could not verify every figure in the answer against its cited source, so I am not providing it.'
+
 
 @dataclass(frozen=True)
 class B0Config:
@@ -90,6 +110,7 @@ class B0Config:
     reasoning_effort: str = 'low'
     max_question_chars: int = 1000
     calculation: str = 'llm'  # 'llm' or 'decimal'
+    checks: tuple = ()        # 'g1' evidence assessment, 'g2' claim verification
 
 
 CONFIGS = {
@@ -98,10 +119,14 @@ CONFIGS = {
     'R2': B0Config(name='R2', retrieval='hybrid'),
     'R3': B0Config(name='R3', chunker=R1_CHUNKER, retrieval='hybrid'),
     'N2': B0Config(name='N2', chunker=R1_CHUNKER, retrieval='hybrid', calculation='decimal'),
+    'G1': B0Config(name='G1', chunker=R1_CHUNKER, retrieval='hybrid', calculation='decimal', checks=('g1',)),
+    'G2': B0Config(name='G2', chunker=R1_CHUNKER, retrieval='hybrid', calculation='decimal', checks=('g1', 'g2')),
 }
 
 
 def prompt_for(config):
+    if config.checks:
+        return GUARDED_INSTRUCTIONS, GUARDED_SCHEMA, GUARDED_PROMPT_VERSION
     if config.calculation == 'decimal':
         return DECIMAL_INSTRUCTIONS, DECIMAL_SCHEMA, DECIMAL_PROMPT_VERSION
     return INSTRUCTIONS, SCHEMA, PROMPT_VERSION
@@ -162,6 +187,59 @@ def _apply_decimal(data):
             'calculation': {**calc, 'formula': r.formula, 'result': shown, 'computed_by': 'decimal'}}, None
 
 
+def _figures(data, evidence):
+    """(figure, evidence item or None) for listed facts and calculation inputs."""
+    by_ref = {f'E{i}': e for i, e in enumerate(evidence, start=1)}
+    figures = list(data.get('facts') or []) + list((data.get('calculation') or {}).get('inputs') or [])
+    return [(f, by_ref.get(f.get('citation'))) for f in figures]
+
+
+def _scope_failure(question, data, evidence):
+    """G1 post-generation, for questions that do not ask for another scope: reject parent-only and
+    pro forma figures, and figures that conflict with a consolidated statement row for the same
+    label and year (consolidated statements take precedence)."""
+    if v.requested_scope(question) != 'consolidated' or data['state'] == 'insufficient_evidence':
+        return None
+    pool = v.same_company(question, evidence)
+    for figure, item in _figures(data, evidence):
+        if item is None:
+            continue
+        scope = v.scope_of(item)
+        if scope in ('parent_only', 'pro_forma'):
+            return scope.replace('_', ' ')
+        if scope != 'consolidated' and v.consolidated_conflict(figure, pool):
+            return 'non-consolidated'
+    return None
+
+
+def _verify(data, evidence):
+    """G2: each listed figure must be in its cited row and period column. A figure supported only by a
+    different retrieved excerpt has its citation repaired; one supported nowhere fails. Every number
+    in the answer text must be a verified figure or the computed result.
+    Returns (data with repaired citations, failure reasons, repaired count)."""
+    if data['state'] == 'insufficient_evidence':
+        return data, [], 0
+    refs = {f'E{i}': e for i, e in enumerate(evidence, start=1)}
+    failures, verified, repaired = [], [], 0
+    for figure, item in _figures(data, evidence):
+        if not v.as_decimals([figure]):
+            continue  # a listed placeholder such as "not provided" states no figure; answer-text numbers are still checked
+        ok, reason = (False, 'citation_not_in_evidence') if item is None else v.verify_figure(figure, item)
+        if not ok:
+            other = next((r for r, e in refs.items() if e is not item and v.verify_figure(figure, e)[0]), None)
+            if other:
+                figure['citation'], ok = other, True
+                repaired += 1
+        (verified if ok else failures).append(figure if ok else reason)
+    computed = (data.get('calculation') or {}).get('result')
+    unlisted = v.unverified_numbers(data['answer'], v.as_decimals(verified), computed)
+    failures += [f'unlisted_number:{token}' for token in unlisted]
+    if repaired:
+        cited = list(dict.fromkeys(list(data['citations']) + [f['citation'] for f in verified]))
+        data = {**data, 'citations': cited}
+    return data, failures, repaired
+
+
 def answer_question(pool, user_id, organization_id, question, embedder, llm, config=B0Config()):
     started, question_id = time.monotonic(), uuid4()
     question = question.strip()
@@ -172,13 +250,13 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
             'chunker': config.chunker, 'retrieval': config.retrieval, 'k': config.k, 'embedding_model': embedder.name,
             'llm_model': None, 'input_tokens': 0, 'output_tokens': 0}
 
-    def finish(state, answer, citations=(), calculation=None, invalid=()):
+    def finish(state, answer, citations=(), calculation=None, invalid=(), facts=None):
         meta['latency_ms'] = round((time.monotonic() - started) * 1000)
         log.info('question %s org %s user %s: %s, %d evidence, %d citations, %d invalid, tokens %s/%s, %sms',
                  question_id, organization_id, user_id, state, meta.get('evidence_count', 0), len(citations),
                  len(invalid), meta['input_tokens'], meta['output_tokens'], meta['latency_ms'])
         return {'state': state, 'answer': answer, 'citations': list(citations), 'calculation': calculation,
-                'invalid_citations': list(invalid), 'meta': meta}
+                'facts': facts, 'invalid_citations': list(invalid), 'meta': meta}
 
     query = vector_literal(embedder.embed_query(question))
     with request_connection(pool, user_id, organization_id) as conn:
@@ -192,7 +270,12 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
     if not evidence:
         return finish('insufficient_evidence', NO_EVIDENCE)
     try:
-        result = llm.generate(instructions, build_input(question, evidence), 'financial_answer', schema)
+        prompt_input = build_input(question, evidence)
+        if 'g1' in config.checks:
+            meta['g1_flags'] = v.period_flags(question, evidence)
+            if meta['g1_flags']:
+                prompt_input += '\n\nSystem checks:\n' + '\n'.join(f'- {f}' for f in meta['g1_flags'])
+        result = llm.generate(instructions, prompt_input, 'financial_answer', schema)
     except LLMError as exc:
         meta['error'] = str(exc)
         return finish('processing_error', FAILED)
@@ -206,6 +289,18 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
         if calc_error:
             meta['calculation_error'] = calc_error
             data = {**data, 'state': 'insufficient_evidence', 'answer': CALCULATION_FAILED.format(reason=calc_error.replace('_', ' '))}
+    # G2 runs first so that G1's scope check sees repaired citations.
+    if 'g2' in config.checks:
+        data, failures, repaired = _verify(data, evidence)
+        meta['g2_repaired_citations'] = repaired
+        if failures:
+            meta['g2_failures'] = failures
+            data = {**data, 'state': 'insufficient_evidence', 'answer': VERIFY_FAILED}
+    if 'g1' in config.checks:
+        scope = _scope_failure(question, data, evidence)
+        if scope:
+            meta['g1_scope_failure'] = scope
+            data = {**data, 'state': 'insufficient_evidence', 'answer': SCOPE_FAILED.format(scope=scope)}
     citations, invalid = _citations(data, evidence)
     # Final permission check: access may have been revoked while the LLM was running.
     with request_connection(pool, user_id, organization_id) as conn:
@@ -213,4 +308,4 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
     if still_visible != {e.chunk_id for e in evidence}:
         meta['withheld'] = True
         return finish('insufficient_evidence', WITHHELD)
-    return finish(data['state'], data['answer'], citations, data['calculation'], invalid)
+    return finish(data['state'], data['answer'], citations, data['calculation'], invalid, data.get('facts'))

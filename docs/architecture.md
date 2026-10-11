@@ -65,3 +65,12 @@ Migration 004 adds `ingestion_jobs.chunker`; the worker looks it up in `fdi/inge
 ## Deterministic Calculation (N2, 2026-10-11)
 
 `CONFIGS['N2']` keeps R3 retrieval but uses a prompt and schema in which the model returns an allowlisted operation, two inputs copied as printed (with unit, period, evidence ID), and the requested rounding, plus answer text containing `{{result}}`. `fdi/calculation.py` computes with Decimal and refuses unit, currency, or period mismatches, zero denominators, and negative growth baselines; a refusal becomes `insufficient_evidence` with a reason code. Model-written formulas are never evaluated. Input values are not yet checked against the cited excerpt; that belongs to G2.
+
+## Evidence Assessment and Claim Verification (G1/G2, 2026-10-11)
+
+Migration 005 adds `documents.fiscal_year_end`, set at registration (later: upload). `CONFIGS['G1']` and `CONFIGS['G2']` extend N2. The model additionally lists every stated figure (`facts`) with value as printed, label, unit, period, and evidence ID; responses return these facts for display.
+
+- G1 (`fdi/answering/verification.py`): period flags before generation (no year; bare year for a company whose fiscal year does not end in December, judged from the asked company's documents only), and a scope rule after generation (no parent-only or pro forma figures, and no figure that conflicts with a consolidated statement row for the same label and year, unless the question asks for that scope).
+- G2: each figure must be found in its cited excerpt's matching row and period column; a figure found only in another retrieved excerpt gets its citation repaired; every number in the answer must be a verified figure or the Decimal result. Failures return `insufficient_evidence` with reason codes in `meta`.
+
+G2 runs before G1's scope rule so scope is judged on repaired citations. The API default remains B0 until the configuration is frozen.

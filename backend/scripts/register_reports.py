@@ -58,6 +58,9 @@ def main(chunker=B0):
                              (doc_id, ORG_A, f"{report['company']} {report['document_id']}", key,
                               report['sha256'], report['version'], spec.get('visibility', 'organization'), 'queued'))
                 added += 1
+            if report.get('fiscal_year_end'):
+                conn.execute('UPDATE fdi.documents SET fiscal_year_end=%s WHERE id=%s AND fiscal_year_end IS NULL',
+                             (report['fiscal_year_end'], doc_id))
             if spec.get('grant'):
                 conn.execute('INSERT INTO fdi.document_grants VALUES (%s,%s,%s) ON CONFLICT DO NOTHING', (ORG_A, doc_id, member_a))
             queued += enqueue(conn, ORG_A, doc_id, report['sha256'], chunker) is not None

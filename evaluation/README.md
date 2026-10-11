@@ -26,6 +26,7 @@ Run a configuration with `.venv/bin/python -m evaluation.tools.run_eval --repeat
 | R1 | Development, 28 questions | 42.5% | 50–55% strict, 55–60% adjudicated | 57.1–60.7% | 5.1–6.8 s |
 | R3 | Development, 28 questions | 57.5% | 70–75% strict, 75–80% adjudicated | 67.9–71.4% | 1.6–3.1 s |
 | N2 (R3 + Decimal calculation) | Development, 28 questions | 57.5% | 85% strict in all 3 runs | 67.9–75.0% | see report |
+| G2 (N2 + evidence assessment + claim verification) | Development, 28 questions | 57.5% | 85% strict in all 3 runs; 0 wrong figures | 60.7–64.3% | see report |
 | F | Final test (Coca-Cola, JPMorgan, Nike) | Not measured | Not measured | Not measured | Not measured |
 
-Development results are not held-out results. See the [B0 report](../docs/experiments/b0-development-2026-10-11.md) , [R1–R3 report](../docs/experiments/r1-r3-development-2026-10-11.md), [28-question report](../docs/experiments/retrieval-28q-2026-10-11.md), and [N2 report](../docs/experiments/n2-decimal-calculation-2026-10-11.md). `tools/arithmetic_check.py` compares LLM and Decimal arithmetic on identical ground-truth inputs. `tools/evidence_ranks.py` measures evidence ranks without LLM calls.
+Development results are not held-out results. See the [B0 report](../docs/experiments/b0-development-2026-10-11.md) , [R1–R3 report](../docs/experiments/r1-r3-development-2026-10-11.md), [28-question report](../docs/experiments/retrieval-28q-2026-10-11.md), [N2 report](../docs/experiments/n2-decimal-calculation-2026-10-11.md), and [G1/G2 report](../docs/experiments/g1-g2-guards-2026-10-11.md). `tools/arithmetic_check.py` compares LLM and Decimal arithmetic on identical ground-truth inputs. `tools/evidence_ranks.py` measures evidence ranks without LLM calls.
