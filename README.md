@@ -1,69 +1,68 @@
-# FDI — Financial Document Intelligence
+# Financial Document Intelligence
 
-조직 구성원이 접근 가능한 금융 PDF에 질문하고 출처·숫자·계산 근거를 확인하는 RAG 프로젝트.
+금융 보고서 PDF에서 필요한 정보를 찾고, 답변의 출처와 숫자 계산 근거를 확인할 수 있는 문서 질의응답 서비스를 만드는 프로젝트입니다.
 
-현재 상태: **S1 데이터·권한 DB·최소 API 구현 및 로컬 테스트 40개 통과. 질문의 독립 사람 검수와 S2 실제 인증·UI는 아직 없음.**
-원본 계획서: [Financial_Document_Intelligence_Project_Plan_EN.md](Financial_Document_Intelligence_Project_Plan_EN.md)
+RAG(Retrieval-Augmented Generation)는 질문과 관련된 문서 내용을 먼저 찾고, 그 근거를 바탕으로 AI가 답변하도록 하는 방식입니다. 이 프로젝트는 금융 문서에 맞춰 **표의 문맥, 숫자의 정확성, 문서 접근 권한**을 함께 다룹니다.
 
-## 문서 읽는 순서
+## 해결하려는 문제
 
-1. [초기 구조·구현 범위](docs/IMPLEMENTATION_PLAN.md)
-2. [아키텍처·권한 정책](docs/ARCHITECTURE.md)
-3. [설계 선택·인터뷰 설명](docs/DECISIONS_AND_INTERVIEW.md)
-4. [완료·다음 작업](docs/PROGRESS.md)
-5. [평가 데이터 작성 규칙](eval/README.md)
+- **표의 문맥 손실:** 숫자만 추출하면 어떤 연도·항목·단위에 해당하는지 놓칠 수 있습니다.
+- **검증하기 어려운 답변:** 자연스러운 설명이라도 원본 문서가 실제로 뒷받침하는지 확인해야 합니다.
+- **계산 오류:** 입력 숫자가 맞아도 기간이나 단위를 혼동하면 증가율과 비율이 잘못될 수 있습니다.
+- **접근 권한:** 같은 서비스 안에서도 조직과 사용자별로 읽을 수 있는 문서가 달라야 합니다.
 
-## 범위
+## 서비스 설계 목표
 
-영문 텍스트 annual-report PDF, 영문 질문, 한국어 UI 가능. 숫자 조회·두 기간 비교·성장률·비율과 출처 표시를 목표로 한다. 공개 보고서를 가상 조직에 배정한다. OCR, 주가 예측, 투자 추천, 실시간 수집, 모델 학습은 제외한다.
+1. 사용자가 접근 권한을 가진 금융 PDF를 선택하고 질문합니다.
+2. 문서의 본문과 표에서 관련 근거를 검색합니다.
+3. 답변에 원본 문서·페이지·수치·계산식을 함께 제시합니다.
+4. 근거가 부족하면 답변을 보류하고, 질문이 모호하면 필요한 조건을 되묻습니다.
 
-## 실행
+예를 들어 “이 보고서에서 전년 대비 매출 증가율은 얼마인가?”라는 질문에 두 해의 매출, 단위, 계산식과 원본 위치를 함께 보여주는 경험을 목표로 합니다.
 
-PDF 실험 및 DB/API 실행 명령은 아래에 있다. 문서 HTTP API는 인증 미구현으로 기본 401이며, 테스트에서만 신원을 주입한다. 웹 UI·OIDC·RAG는 아직 없다.
+## 설계 원칙
 
-## S1-1 PDF 추출 실험 (2026-10-10)
+- **권한을 먼저 확인:** 검색과 답변에 사용할 문서를 조직 멤버십과 문서별 권한으로 제한합니다.
+- **원본에 연결된 근거:** 표의 행·연도·단위와 페이지 위치를 보존하는 방식을 검증합니다.
+- **재현 가능한 계산:** 금액과 비율 계산은 Decimal 기반 코드로 처리하도록 설계합니다.
+- **비교 가능한 평가:** 기본 RAG를 기준으로 검색·근거 검증·계산 개선 효과를 각각 비교합니다.
+- **정확도와 응답률을 함께 평가:** 답변을 많이 보류해서 정확해 보이는 결과를 피하도록 평가 기준을 구성합니다.
 
-공개 보고서 2개와 대표 표 4개를 검증했다. [실측 및 실패 기록](docs/PDF_EXTRACTION_S1.md)을 참고한다. 이어서 개발 질문 12개와 DB/RLS/최소 API를 구현했다(아래).
+## 구조와 기술
 
-검증 환경: Python 3.12.14, macOS arm64. Python 3.12가 설치된 환경에서 루트에서 실행한다. lock은 macOS arm64 전용이며 다른 OS는 별도 검증이 필요하다.
+아래는 서비스의 목표 구조입니다.
 
-```sh
-python3.12 -m venv .venv
-.venv/bin/python -m pip install --cache-dir work/pip-cache --require-hashes -r requirements-pdf-macos-arm64.lock
-mkdir -p storage/reports
-curl --fail --location --silent --show-error 'https://www.berkshirehathaway.com/2023ar/2023ar.pdf' -o storage/reports/berkshire-2023.pdf
-curl --fail --location --silent --show-error 'https://www.berkshirehathaway.com/2024ar/2024ar.pdf' -o storage/reports/berkshire-2024.pdf
-.venv/bin/python scripts/probe_pdf.py
-.venv/bin/python -m unittest discover -s tests/ingestion -p 'test_*.py' -v
+```text
+웹 화면 → API → 권한 확인 → 문서 검색 → 답변 생성·검증 → 출처와 계산 근거
+                 ↕
+             PostgreSQL
+                 ↑
+            PDF 처리 worker
 ```
 
-이 작업에서는 Codex 번들 Python 3.12.14로 `.venv`를 생성했다. 원본 다운로드가 바뀌면 해시 오류를 조사하고 manifest를 무조건 덮어쓰지 않는다. 원본·페이지 이미지·추출 전문은 Git 제외 `storage/`, `work/`에만 보관한다. 테스트 1건은 8개 표/전략 조합의 결과(알려진 실패 포함) 회귀 확인이며, 전체 표 정확도나 보안 검증 결과가 아니다.
+| 구성 | 기술 | 역할 |
+|---|---|---|
+| 웹 화면 | Next.js · TypeScript | 로그인, 문서 관리, 질문과 근거 표시 |
+| API | Python · FastAPI | 요청 처리와 문서 접근 권한 확인 |
+| 문서 처리 | Python · PyMuPDF | PDF 텍스트·표·좌표 추출 |
+| 데이터와 검색 | PostgreSQL · pgvector | 권한·문서 정보 및 검색 데이터 관리 |
+| 숫자 검증 | Python · Decimal | 단위·기간 확인과 계산 |
+| 개발·검증 환경 | Docker Compose · pytest · GitHub Actions | 환경 구성과 회귀 검사 |
 
-## S1-2 / S1-3: 개발 질문·DB·API
+## 데이터와 범위
 
-[개발 질문과 검토 한계](docs/S1_QUESTIONS.md), [권한 구현·실제 검증](docs/S1_SECURITY_AND_API.md).
+공개된 영문 연차보고서를 가상 조직에 배정해 개발·평가합니다. 실제 기업의 내부 문서를 운영한 사례를 뜻하지 않습니다. 문서 출처와 버전은 [데이터 manifest](eval/manifests/s1_reports.json)에 기록합니다.
 
-준비: Python 3.12 및 실행 중인 Docker Desktop. 루트에서 실행한다. API lock은 직접/간접 버전을 고정하며, PDF 해시 lock과 달리 wheel 해시 lock은 아니다. Linux CI는 아직 원격 실행 전이다.
+질문 범위는 숫자 조회, 두 기간의 비교, 증가율·비율 계산과 문서 근거 확인입니다. 스캔 문서 OCR, 주가 예측, 투자 추천, 실시간 시장 데이터 수집, 모델 학습은 범위에서 제외합니다.
 
-```sh
-# .venv가 없으면 먼저 Python 3.12로 생성
-.venv/bin/python -m pip install --cache-dir work/pip-cache -r requirements-api.lock
-.venv/bin/python scripts/init_local_env.py
-# .env.example을 .env로 복사하지 않는다. 위 명령이 랜덤 자격 증명을 생성한다.
-docker compose up -d --wait db
-.venv/bin/python -m scripts.migrate
-.venv/bin/python -m scripts.prepare_test_db
-.venv/bin/python -m scripts.check_clean_migrations
-# 원본 PDF 없이 실행 가능한 DB/API + 질문 계약 검사
-.venv/bin/python -m pytest tests/authorization tests/test_questions.py -k 'not source_values' -q
-# 위 PDF 설치/다운로드까지 완료했을 때 전체 40개 검사
-.venv/bin/python -m pytest -q
-# 로컬 API 실행
-.venv/bin/python -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000
-```
+원본 PDF·추출 전문·로컬 DB·비밀 값은 Git에 포함하지 않습니다. 보고서는 발행처에서 내려받으며 공개 열람 가능 여부와 재배포 허가는 구분합니다.
 
-`/health`, `/ready`는 200, 문서 API는 기본 401이다. X-User-ID 같은 테스트 헤더는 지원하지 않는다. 개발 DB `fdi`는 자동 샘플 데이터 없이 생성된다. 테스트는 `fdi_test`의 테스트 데이터만 초기화하며 실제 보고서를 업로드한 것이 아니다. `check_clean_migrations`는 새 임시 DB 생성·마이그레이션·재실행 검증 후 자신이 생성한 DB만 삭제한다.
+## 문서와 실행 안내
 
-현재 DB: `127.0.0.1:55432`, 데이터: Git 제외 `storage/postgres`. API를 끝내려면 Ctrl-C, DB를 멈추려면 `docker compose stop db`. DB 볼륨 파일을 직접 삭제하지 않는다. 비밀 값은 로컬 `.env`(0600)에만 보관하고 출력/커밋하지 않는다. 기본값 변경이 필요하면 `FDI_DB_PORT`, `FDI_DB_NAME`을 사용하되 compose 포트와 일치시킨다.
+- [로컬 환경 구성·실행·테스트](docs/DEVELOPMENT.md)
+- [아키텍처와 권한 정책](docs/ARCHITECTURE.md)
+- [설계 선택과 트레이드오프](docs/DECISIONS_AND_INTERVIEW.md)
+- [평가 데이터와 실험 원칙](eval/README.md)
+- [개발 계획](docs/IMPLEMENTATION_PLAN.md) · [검증 결과와 작업 기록](docs/PROGRESS.md)
 
-`.github/workflows/s1.yml`은 원본 PDF 다운로드 없이 보안/API/질문 계약을 검사한다. workflow 작성 완료와 원격 CI 통과는 구분한다. 공개 데모·실제 인증·검색·인용·다운로드 검증은 S2 이후다.
+구현 범위와 실제 측정 결과는 위 문서에서 별도로 관리합니다.
