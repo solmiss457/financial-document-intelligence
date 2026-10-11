@@ -1,6 +1,6 @@
 {
   "configuration": "B0",
-  "prompt_version": "b0-v1-c87edbcd282f",
+  "prompt_version": "b0-v2-4a58d1dde6ff",
   "retrieval": {
     "method": "exact cosine vector search over authorized chunks (RLS), no keyword search, no reranking",
     "chunker": "fixed_words_v1:150/30",
@@ -21,5 +21,6 @@
     "all retrieved chunks rechecked for visibility before responding",
     "citation IDs must refer to provided evidence; others reported as invalid"
   ],
-  "source_of_truth": "backend/src/fdi/answering/b0.py (instructions and schema are hashed into prompt_version)"
+  "source_of_truth": "backend/src/fdi/answering/b0.py (instructions and schema are hashed into prompt_version)",
+  "clarification_policy": "Ask when company, period, or metric is ambiguous; also give the answer under the most likely interpretation when evidence supports it."
 }

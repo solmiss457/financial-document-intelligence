@@ -71,7 +71,7 @@ def test_answer_maps_citations_to_documents_and_pages(corpus):
     assert c['spans'] == [{'page': 3, 'bbox': [1, 2, 3, 4]}] and 'CANARY_EVIDENCE_101' in c['excerpt']
     meta = result['meta']
     assert (meta['configuration'], meta['chunker'], meta['k'], meta['llm_model']) == ('B0', CHUNKER, 5, 'fake-model')
-    assert (meta['input_tokens'], meta['output_tokens']) == (100, 20) and meta['prompt_version'].startswith('b0-v1-')
+    assert (meta['input_tokens'], meta['output_tokens']) == (100, 20) and meta['prompt_version'].startswith('b0-v2-')
 
 
 def test_invalid_citations_are_reported_not_resolved(corpus):

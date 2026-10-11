@@ -11,7 +11,17 @@
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -57,9 +67,12 @@
     "formula": null,
     "tolerance": "0",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-02",
@@ -68,12 +81,22 @@
     "evidence_group_ids": [
       "berkshire-2023-earnings"
     ],
-    "question": "According to the 2023 annual report, what was consolidated net earnings (loss), before attribution to noncontrolling interests, in 2022, in USD millions?",
+    "question": "According to Berkshire Hathaway's 2023 annual report, what was consolidated net earnings (loss), before attribution to noncontrolling interests, in 2022, in USD millions?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -119,9 +142,12 @@
     "formula": null,
     "tolerance": "0",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-03",
@@ -130,12 +156,22 @@
     "evidence_group_ids": [
       "berkshire-2023-cashflows"
     ],
-    "question": "According to the 2023 annual report, what were net cash flows from operating activities in 2023, in USD millions?",
+    "question": "According to Berkshire Hathaway's 2023 annual report, what were net cash flows from operating activities in 2023, in USD millions?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -181,9 +217,12 @@
     "formula": null,
     "tolerance": "0",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-04",
@@ -192,12 +231,22 @@
     "evidence_group_ids": [
       "berkshire-2024-cashflows"
     ],
-    "question": "In the 2024 annual report cash flow statement, what signed amount is shown for purchases of equity securities in 2024, in USD millions?",
+    "question": "In Berkshire Hathaway's 2024 annual report cash flow statement, what signed amount is shown for purchases of equity securities in 2024, in USD millions?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -243,9 +292,12 @@
     "formula": null,
     "tolerance": "0",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-05",
@@ -254,12 +306,22 @@
     "evidence_group_ids": [
       "berkshire-2024-earnings"
     ],
-    "question": "Using the 2024 annual report, how much did total revenues change from 2023 to 2024, in USD millions?",
+    "question": "Using Berkshire Hathaway's 2024 annual report, how much did total revenues change from 2023 to 2024, in USD millions?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -335,9 +397,12 @@
     "formula": "difference",
     "tolerance": "0",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-06",
@@ -346,12 +411,22 @@
     "evidence_group_ids": [
       "berkshire-2024-earnings"
     ],
-    "question": "Using the 2024 annual report, what was total revenue growth from 2023 to 2024, rounded to two decimal places?",
+    "question": "Using Berkshire Hathaway's 2024 annual report, what was total revenue growth from 2023 to 2024, rounded to two decimal places?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -427,9 +502,12 @@
     "formula": "growth_percent",
     "tolerance": "0.005",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-07",
@@ -438,12 +516,22 @@
     "evidence_group_ids": [
       "berkshire-2024-cashflows"
     ],
-    "question": "Using the 2024 annual report, how much did operating cash flow change from 2023 to 2024, in USD millions?",
+    "question": "Using Berkshire Hathaway's 2024 annual report, how much did operating cash flow change from 2023 to 2024, in USD millions?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -519,9 +607,12 @@
     "formula": "difference",
     "tolerance": "0",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-08",
@@ -531,12 +622,22 @@
       "berkshire-2024-cashflows",
       "berkshire-2024-earnings"
     ],
-    "question": "Using the 2024 annual report, what was 2024 operating cash flow as a percentage of 2024 total revenues, rounded to two decimal places?",
+    "question": "Using Berkshire Hathaway's 2024 annual report, what was 2024 operating cash flow as a percentage of 2024 total revenues, rounded to two decimal places?",
     "organization_id": "00000000-0000-0000-0000-000000000001",
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "answered",
     "expected_answer": {
@@ -612,9 +713,12 @@
     "formula": "ratio_percent",
     "tolerance": "0.005",
     "reason": null,
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Values, rows, columns, signs, and USD-million units checked against the PDF pages."
   },
   {
     "question_id": "dev-09",
@@ -626,7 +730,17 @@
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "insufficient_evidence",
     "expected_answer": null,
@@ -634,10 +748,13 @@
     "inputs": [],
     "formula": null,
     "tolerance": null,
-    "reason": "Authorized corpus contains only 2023 and 2024 annual reports; no 2025 full-year results. No external retrieval allowed.",
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reason": "The corpus contains Berkshire Hathaway annual reports for 2023 and 2024 only; other companies' reports do not contain Berkshire 2025 full-year results. No external retrieval allowed.",
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Agreed: no Berkshire 2025 report in the corpus, so abstain."
   },
   {
     "question_id": "dev-10",
@@ -649,7 +766,17 @@
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "insufficient_evidence",
     "expected_answer": null,
@@ -658,9 +785,12 @@
     "formula": null,
     "tolerance": null,
     "reason": "Future price prediction is outside supported scope; these historical reports cannot establish that future fact.",
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Agreed: future price prediction is out of scope."
   },
   {
     "question_id": "dev-11",
@@ -674,7 +804,17 @@
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "needs_clarification",
     "expected_answer": null,
@@ -746,10 +886,21 @@
     ],
     "formula": null,
     "tolerance": null,
-    "reason": "Ask for fiscal year and preferred report version; multiple annual columns exist.",
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reason": "Ask which fiscal year is meant; multiple annual columns exist. Also state the most recent year (2024) value as a provisional answer.",
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "expected_clarification": {
+      "asks_for": "fiscal_year",
+      "provisional_answer": {
+        "value": "371433",
+        "unit": "USD million",
+        "interpretation": "most recent fiscal year in the corpus (2024)"
+      }
+    },
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Clarify the year, and include the most recent year value as a provisional answer."
   },
   {
     "question_id": "dev-12",
@@ -763,7 +914,17 @@
     "user_id": "00000000-0000-0000-0000-00000000000b",
     "authorized_document_ids": [
       "berkshire-2023",
-      "berkshire-2024"
+      "berkshire-2024",
+      "apple-fy2024",
+      "apple-fy2025",
+      "cocacola-fy2024",
+      "cocacola-fy2025",
+      "jpmorgan-2024",
+      "jpmorgan-2025",
+      "nike-fy2025",
+      "nike-fy2026",
+      "walmart-fy2025",
+      "walmart-fy2026"
     ],
     "expected_state": "needs_clarification",
     "expected_answer": null,
@@ -835,9 +996,20 @@
     ],
     "formula": null,
     "tolerance": null,
-    "reason": "Ask whether consolidated net earnings or earnings attributable to Berkshire shareholders is intended. Do not silently select a metric.",
-    "reviewed_by": "Codex: source image comparison; not independent human review",
-    "reviewed_at": "2026-10-10",
-    "human_review_status": "pending"
+    "reason": "Ask whether consolidated net earnings (89,561) or earnings attributable to Berkshire shareholders is meant. Also state that, if attributable earnings are meant, the 2024 value was 88,995. Do not silently select a metric.",
+    "reviewed_by": "Codex: source image comparison (2026-10-10); Claude Code: company name added and authorized documents updated for the 12-report corpus, evidence and answers unchanged (2026-10-11); not independent human review",
+    "reviewed_at": "2026-10-11",
+    "human_review_status": "confirmed",
+    "expected_clarification": {
+      "asks_for": "metric",
+      "provisional_answer": {
+        "value": "88995",
+        "unit": "USD million",
+        "interpretation": "net earnings attributable to Berkshire shareholders"
+      }
+    },
+    "human_reviewer": "project owner (single reviewer)",
+    "human_reviewed_at": "2026-10-11",
+    "human_review_note": "Clarify the metric, and include the attributable-earnings value as a provisional answer."
   }
 ]

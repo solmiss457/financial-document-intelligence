@@ -113,3 +113,11 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Exact search.** No ANN index: about 9.4k chunks make exact search fast enough and avoid approximate-recall effects under RLS filtering.
 
 **Smoke observation (not a metric).** Four development questions through the real stack: one retrieval miss (the income-statement chunk was not in the top 5, so the model abstained), one correct abstention, one ambiguous question answered instead of clarified, and one calculation answered from JPMorgan. That last case exposed a data issue: S1 questions say "the 2024 annual report" without naming Berkshire because the corpus then had one company. With 12 reports in the same organization those questions are ambiguous. They need revision, with human review, before B0 is measured.
+
+## 2026-10-11 — Clarify, but Answer the Most Likely Interpretation
+
+**Decision (project owner).** The rule stays "ask when period or metric is ambiguous", but the response also states the answer under the most likely interpretation, named explicitly, with its source. A bare question back is less useful when one reading is far more common; silently picking a reading hides the ambiguity.
+
+**Applied to.** The dev-11/dev-12 expectations (`expected_clarification`) and the B0 instructions (prompt `b0-v2-4a58d1dde6ff`), changed before any B0 measurement so all configurations share the same behavior spec. The prompt states the rule generically and does not name the dev-12 metric, to avoid fitting the prompt to development answers.
+
+**Evaluation consequence.** A clarification response counts as correct only with the right state and the provisional value and interpretation. Values offered as provisional must still be supported by evidence, so this does not relax unsupported-answer metrics.

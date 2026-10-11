@@ -21,3 +21,13 @@ The access fixture represents an active member of fictional organization A with 
 All questions are development-only. Questions sharing tables/facts are linked through evidence_group_ids and must remain separate from final evaluation questions. There are zero final evaluation questions and zero B0/improvement evaluation runs. Broader data selection must address the bias toward simple representative tables from one company.
 
 Validation: two tests in `backend/tests/test_questions.py` passed, covering the 12 question contracts, calculations, source locations, and value presence in hash-pinned PDFs. CI without original PDFs runs only the contract check.
+
+## Revision for the Multi-Company Corpus (2026-10-11)
+
+After ten reports from five more companies were added to organization A, seven questions (dev-02 to dev-08) no longer identified their company ("the 2024 annual report"). A B0 smoke run answered dev-06 with JPMorgan figures. The company name was added to those seven questions; `authorized_document_ids` now lists all 12 manifest reports, matching the local access setup; the dev-09 reason now names the multi-company corpus. Evidence locations, values, expected answers, formulas, tolerances, and expected states are byte-for-byte unchanged (checked by script).
+
+`test_questions_name_their_company_in_multi_company_corpus` fails if any question omits the company of its evidence; with the original wording it failed on dev-02. Human review remains pending; `evaluation/questions/s1_review_checklist.md` lists each question's PDF page, row, column, and value for that review.
+
+## Human Review (2026-10-11)
+
+The project owner checked all 12 questions against the PDFs: values, rows, columns, signs (parentheses as negatives), and USD-million units for dev-01 to dev-08, and the expected behavior for dev-09 to dev-12. One reviewer, who is also the project owner; no second independent review. Decision for ambiguous questions: keep asking for clarification, but also give the answer under the most likely interpretation (dev-11: most recent year, 371,433; dev-12: attributable earnings, 88,995). Recorded as `expected_clarification` and enforced by the contract test.

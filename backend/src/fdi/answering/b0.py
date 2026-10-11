@@ -27,7 +27,7 @@ Rules:
 - Use only facts stated in the evidence. Do not use outside knowledge, even if you believe you know the answer.
 - Cite the IDs of the evidence excerpts (for example "E2") that support your answer.
 - If the evidence does not contain the information needed, set state to "insufficient_evidence" and briefly say what is missing.
-- If the question is ambiguous (for example the company, fiscal period, or metric is unclear), set state to "needs_clarification" and ask one short clarifying question in answer.
+- If the question is ambiguous (for example the company, fiscal period, or metric is unclear), set state to "needs_clarification". In answer, ask one short clarifying question. If the evidence supports it, also give the answer under the most likely interpretation, naming that interpretation explicitly (for example, the most recent fiscal period shown), and cite its evidence.
 - For a calculation, list each input with its value, unit, period, and evidence ID, then give the formula and the result.
 - Always state units, currency, and fiscal periods explicitly.
 - If no calculation is involved, set calculation to null.'''
@@ -51,7 +51,7 @@ SCHEMA = {
                     'properties': {k: {'type': 'string'} for k in ('label', 'value', 'unit', 'period', 'citation')}}}}}]},
     },
 }
-PROMPT_VERSION = 'b0-v1-' + hashlib.sha256((INSTRUCTIONS + repr(SCHEMA)).encode()).hexdigest()[:12]
+PROMPT_VERSION = 'b0-v2-' + hashlib.sha256((INSTRUCTIONS + repr(SCHEMA)).encode()).hexdigest()[:12]
 
 
 @dataclass(frozen=True)

@@ -12,11 +12,20 @@ def test_question_contract_and_ground_truth():
     manifest = {d['document_id']: d for d in json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())}
     for q in QUESTIONS:
         assert q['split'] == 'development'
-        assert q['human_review_status'] == 'pending'
+        assert q['human_review_status'] in ('pending', 'confirmed')
+        if q['human_review_status'] == 'confirmed':
+            assert q['human_reviewer'] and q['human_reviewed_at']
         assert q['expected_state'] in ('answered','insufficient_evidence','needs_clarification')
         assert q['reviewed_by'] and q['reviewed_at']
         if q['expected_state'] == 'answered':
             assert q['inputs'] and q['expected_answer'] and q['alternative_evidence_sets']
+        if q['expected_state'] == 'needs_clarification':
+            # Policy: ask, and also give the answer under the stated most likely interpretation.
+            clarification = q['expected_clarification']
+            assert clarification['asks_for'] in ('fiscal_year', 'metric', 'company')
+            provisional = clarification['provisional_answer']
+            assert provisional['interpretation'] and provisional['unit']
+            assert provisional['value'] in {i['value'] for i in q['inputs']}
         for item in q['inputs']:
             doc = manifest[item['document_id']]
             assert item['document_id'] in q['authorized_document_ids']
@@ -34,6 +43,23 @@ def test_question_contract_and_ground_truth():
             if op in ('growth_percent','ratio_percent'):
                 value = value.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
             assert value == Decimal(q['expected_answer']['value'])
+
+
+def short_company(name):
+    return name.removesuffix(', Inc.').removesuffix(' Inc.').removesuffix(' & Co.').removeprefix('The ').removesuffix(' Company')
+
+
+def test_questions_name_their_company_in_multi_company_corpus():
+    """Every report sits in one organization, so a question without a company is ambiguous."""
+    manifest = {d['document_id']: d for d in json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())}
+    companies = {short_company(d['company']) for d in manifest.values()}
+    assert len(companies) > 1
+    for q in QUESTIONS:
+        assert set(q['authorized_document_ids']) == set(manifest)
+        named = {c for c in companies if c in q['question']}
+        assert named, q['question_id']
+        for item in q['inputs']:
+            assert short_company(manifest[item['document_id']]['company']) in named, q['question_id']
 
 
 def test_source_values_present_on_hash_pinned_pages():

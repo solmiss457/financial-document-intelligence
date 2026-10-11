@@ -252,3 +252,15 @@ Step 3: retrieval over authorized chunks and B0 answer generation behind an LLM 
 ### Next
 
 Step 4: revise development questions for the multi-company corpus (human review), build the evaluation runner and metrics, and measure B0.
+
+## 2026-10-11 — Step 4 Preparation: Development Question Revision
+
+- Added "Berkshire Hathaway" to dev-02 to dev-08, set `authorized_document_ids` to all 12 manifest reports, and updated the dev-09 reason and review metadata. A script confirmed evidence, values, answers, formulas, tolerances, and expected states are unchanged.
+- New contract test requires each question to name the company of its evidence; it failed on the original wording (dev-02) and passes now. Full suite: 129 passed.
+- Added `evaluation/questions/s1_review_checklist.md` for human review. Human review is still pending; B0 is still Not measured.
+
+## 2026-10-11 — Development Question Human Review
+
+- The project owner confirmed all 12 questions against the PDFs (single reviewer). Recorded `human_review_status=confirmed` with reviewer, date, and note per question; the contract test now accepts `confirmed` only with reviewer fields.
+- Clarification policy decided: ask, and also give the most likely interpretation's answer. Added `expected_clarification` to dev-11/dev-12 (provisional 371,433 and 88,995 USD million) with a contract check, and updated the B0 instructions (prompt `b0-v2-4a58d1dde6ff`, `b0_answer.json`). Full suite: 129 passed.
+- Next: evaluation runner and metrics, then the first B0 measurement on these 12 development questions.
