@@ -153,3 +153,13 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Why.** Chunking was just tuned on statement layouts (row reconstruction, character caps). A table-level split inside the same companies would let layout-specific tuning leak into the final score. A company-level split makes the final test a new layout as well as new questions. Cost: only three companies inform development choices such as R1 vs R3.
 
 **New development questions.** 16 questions on Apple and Walmart (lookups, a negative value shown in parentheses, growth, difference, ratio, missing future periods, and fiscal-vs-calendar ambiguity), plus a second evidence set for dev-02 (the same 2022 figure in the 2023 cash flow statement). Values were read from rebuilt rows and compared with rendered page images; every evidence item has a covering chunk in both the B0 and R1 indexes. Human review is pending, so these are not yet used for decisions.
+
+## 2026-10-11 — R3 Chosen After Expanding to 28 Questions
+
+**Decision.** R3 (table chunks + hybrid retrieval) becomes the retrieval configuration for G and N experiments. On 28 reviewed development questions: Recall@5 B0 5.0%, R1 42.5%, R3 57.5%; strict answerable accuracy 20–25%, 50–55%, 70–75%; evidence within B0's token budget 1, 9, 11 of 35.
+
+**Why not decide earlier.** On the first 12 Berkshire questions R1 beat R3 under the equal token budget. With Apple and Walmart added, R3 leads on every retrieval and answer measure, including the equal budget. Holding the decision until more questions existed avoided choosing on one company's layout.
+
+**What the larger set revealed.** R3 found the right inputs for Apple and Walmart growth questions but computed 6.42% and 4.72% instead of 6.43% and 4.73%. These are arithmetic errors on correct inputs, which the plan's N2 (deterministic calculation) addresses. Wrong-table answers (dev-03) and missed clarifications remain for G1/G2.
+
+**Limits.** 20 answerable questions, three companies, three runs, one reviewer. These are development results used for choices, not performance claims.

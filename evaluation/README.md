@@ -22,6 +22,9 @@ Run a configuration with `.venv/bin/python -m evaluation.tools.run_eval --repeat
 | R1 table chunks | Development, same | 56.2% | 50.0% strict, 62.5% adjudicated | 58.3–66.7% | 2.1–7.9 s |
 | R2 hybrid on B0 chunks | Development, same | 0.0% | 0.0% | 8.3–16.7% | 2.2–2.6 s |
 | R3 table chunks + hybrid | Development, same | 81.2% | 62.5% strict, 75.0% adjudicated | 58.3–66.7% | 1.6–2.0 s |
-| F | Final test | Not measured | Not measured | Not measured | Not measured |
+| B0 | Development, 28 questions (3 companies), 3 runs | 5.0% | 20–25% | 25.0–32.1% | 2.1–2.6 s (28 samples) |
+| R1 | Development, 28 questions | 42.5% | 50–55% strict, 55–60% adjudicated | 57.1–60.7% | 5.1–6.8 s |
+| R3 | Development, 28 questions | 57.5% | 70–75% strict, 75–80% adjudicated | 67.9–71.4% | 1.6–3.1 s |
+| F | Final test (Coca-Cola, JPMorgan, Nike) | Not measured | Not measured | Not measured | Not measured |
 
-Development results are not held-out results. See the [B0 report](../docs/experiments/b0-development-2026-10-11.md) and [R1–R3 report](../docs/experiments/r1-r3-development-2026-10-11.md), including the equal-token-budget comparison. `tools/evidence_ranks.py` measures evidence ranks without LLM calls.
+Development results are not held-out results. See the [B0 report](../docs/experiments/b0-development-2026-10-11.md) , [R1–R3 report](../docs/experiments/r1-r3-development-2026-10-11.md), and [28-question report](../docs/experiments/retrieval-28q-2026-10-11.md), including equal-token-budget comparisons. `tools/evidence_ranks.py` measures evidence ranks without LLM calls.

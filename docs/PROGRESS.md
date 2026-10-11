@@ -312,3 +312,10 @@ Step 4: revise development questions for the multi-company corpus (human review)
 - Added dev-13 to dev-28 (8 Apple, 8 Walmart: 8 lookups including one parenthesized negative, 4 calculations, 2 missing-period, 2 fiscal-vs-calendar clarifications) and a cash-flow alternative evidence set for dev-02. Values checked against rendered pages; Decimal-computed answers; every evidence item coverable in both indexes.
 - Contract tests now cover 28 questions and check alternative evidence values on hash-pinned pages. Human review pending for 17 items (16 new questions + dev-02's added evidence). R1/R3 comparison waits for that review.
 - Review completed (2026-10-11): all 28 development questions confirmed by the project owner, including dev-02's cash-flow alternative evidence (all three columns match the pre-attribution row). dev-28 now expects both fiscal readings of "2025" (680,985 and 713,163); clarification expectations use a `provisional_answers` list and the scorer requires every listed value. Full suite: 168 passed.
+
+## 2026-10-11 — B0/R1/R3 on 28 Development Questions
+
+- Runs on clean commit `29e704c`, 3 repeats each, about $0.56: Recall@5 B0 5.0%, R1 42.5%, R3 57.5%; strict answerable accuracy B0 20–25%, R1 50–55%, R3 70–75% (R1 55–60%, R3 75–80% after adjudicating dev-07); false deferral 70–75%, 25%, 10%. No invalid citations or processing errors.
+- Retrieval diagnostic (35 evidence items): top 5 B0 1, R1 11, R2 2, R3 20; within B0's token budget 1, 9, 2, 11.
+- Decision: R3 for subsequent experiments. Newly observed: LLM arithmetic errors on correct inputs (dev-17 6.42% vs 6.43%, dev-25 4.72% vs 4.73%).
+- Report: `docs/experiments/retrieval-28q-2026-10-11.md`. Next: G1/G2 and N1/N2 against R3 on these 28 questions.
