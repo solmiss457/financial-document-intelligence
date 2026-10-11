@@ -1,9 +1,16 @@
 import os
+from pathlib import Path
 from uuid import UUID
 import psycopg
 import pytest
 from fdi.db.config import dsn
 from fdi.db.session import create_pool
+
+
+def pytest_configure(config):
+    # --basetemp points into ignored work/, which fresh checkouts (CI) do not have.
+    if config.option.basetemp:
+        Path(config.option.basetemp).parent.mkdir(parents=True, exist_ok=True)
 
 
 def uid(n): return UUID(int=n)
