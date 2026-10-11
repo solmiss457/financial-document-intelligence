@@ -51,3 +51,9 @@ Flow: a document row (status `queued`) and an ingestion job are created → the 
 Safety properties: the final write re-locks the job and confirms this worker still owns the lease and the document is not `deleting`; otherwise nothing is written. Input errors (hash mismatch, missing file, non-PDF, encryption, page/size/time limits) fail without retry; other errors are retried up to `max_attempts`, after which the document becomes `failed`. Jobs whose final lease expires are reaped as failed. Chunk rows record their chunker and embedding model so B0 and later chunkers can coexist on the same documents.
 
 API-side, pages and chunks are readable only when the parent document is `ready` and readable under the documents policy, so keyword and vector queries over `chunks` inherit organization, ACL, revocation, and deletion rules. See [security](security.md).
+
+## B0 Answer Path (2026-10-11)
+
+`POST /organizations/{organization_id}/questions` (authentication still denied outside tests) → membership check → query embedding (bge with its query instruction) → exact cosine top-5 over `chunks` inside the request transaction, so RLS removes unauthorized, non-ready, and deleting content before ranking → if nothing is retrievable, `insufficient_evidence` without an LLM call → OpenAI Responses API with a strict JSON schema (`state`, `answer`, `citations`, `calculation`), `store=false` → evidence IDs mapped back to chunk, document, pages, and coordinates; unknown IDs reported as `invalid_citations` → a second transaction re-checks that every retrieved chunk is still visible; if not, the answer is withheld → response with `meta` (configuration, prompt version, chunker, k, models, tokens, latency, retrieved chunk IDs and scores).
+
+B0 intentionally trusts the model's state, citations, and arithmetic. The response distinguishes `answered`, `needs_clarification`, `insufficient_evidence`, and `processing_error`. No streaming, caching, or conversation history.

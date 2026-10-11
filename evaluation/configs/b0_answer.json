@@ -1,0 +1,25 @@
+{
+  "configuration": "B0",
+  "prompt_version": "b0-v1-c87edbcd282f",
+  "retrieval": {
+    "method": "exact cosine vector search over authorized chunks (RLS), no keyword search, no reranking",
+    "chunker": "fixed_words_v1:150/30",
+    "k": 5,
+    "ingestion_config": "b0_ingestion.json"
+  },
+  "generation": {
+    "provider": "OpenAI Responses API",
+    "model": "gpt-5.4-mini-2026-03-17",
+    "reasoning_effort": "low",
+    "structured_output": "json_schema strict",
+    "store": false
+  },
+  "grounding": "Prompt instructions only. No evidence-sufficiency check, claim/citation verification, or deterministic calculation (those are G1/G2/N1/N2).",
+  "always_on_security": [
+    "retrieval under request-scoped RLS",
+    "no LLM call without authorized evidence",
+    "all retrieved chunks rechecked for visibility before responding",
+    "citation IDs must refer to provided evidence; others reported as invalid"
+  ],
+  "source_of_truth": "backend/src/fdi/answering/b0.py (instructions and schema are hashed into prompt_version)"
+}

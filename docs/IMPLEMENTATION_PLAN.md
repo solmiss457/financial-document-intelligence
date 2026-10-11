@@ -14,6 +14,8 @@ FDI/
     src/fdi/ingestion/      PDF extraction, B0 chunking, embeddings
     src/fdi/worker/         Database-backed ingestion jobs (python -m fdi.worker)
     src/fdi/storage.py      Private original-file storage
+    src/fdi/retrieval.py    Authorized vector retrieval
+    src/fdi/answering/      B0 prompt, schema, OpenAI client
     migrations/            Immutable SQL migrations
     scripts/               Local environment and DB management tools
     tests/                 Authorization, API, PDF and question regressions
@@ -85,3 +87,7 @@ PROGRESS.md, IMPLEMENTATION_PLAN.md, and DECISIONS_AND_INTERVIEW.md retain their
 ## Progress as of 2026-10-11 (plan steps 0–2)
 
 The S2 order was adjusted to reach a measurable B0 before authentication: (0) packaging cleanup, (1) ingestion schema, (2) worker and B0 chunking, (3) B0 retrieval and answers, (4) evaluation tooling and B0 measurement, (5) OIDC, upload, and UI. Steps 0–2 are implemented: editable package install, pgvector, `ingestion_jobs`/`document_pages`/`chunks` with RLS and a separate worker role, and a worker that ingested all 12 manifest reports. Retrieval APIs, LLM answers, uploads, deletion cleanup, and authentication remain. No retrieval or answer quality has been measured.
+
+## Progress as of 2026-10-11 (plan step 3)
+
+B0 answering is implemented: RLS-scoped vector top-5, OpenAI structured output, citation mapping, final visibility re-check, and an authenticated question route (still unreachable without OIDC). Before step 4, the S1 development questions must name their company, because the corpus now holds six companies in one organization. B0 metrics remain Not measured.

@@ -66,3 +66,12 @@ Migration 003 adds `ingestion_jobs`, `document_pages`, and `chunks` with ENABLE/
 Verified by `backend/tests/authorization/test_ingestion_rls.py` (35 tests) and `backend/tests/ingestion/test_worker.py` (18 tests) against real PostgreSQL: the A/B/restricted/inactive matrix for chunks and pages, keyword (`tsvector`) and vector (`<=>`) queries under the same policy, revocation in the next transaction, admin exclusion of `deleting` content, worker cross-organization write rejection, least privilege, concurrent claims, lease loss, and deletion during processing. Temporarily removing the `ready` condition from the chunk policy made five tests fail, and removing the final lease-owner check made one test fail; both were restored and re-verified.
 
 Limits: the worker trusts its own organization context; a compromised worker credential can read every job row and set any organization context. Deletion cleanup (physical removal of files, pages, chunks) and in-flight permission rechecks for answers are not implemented. Extraction isolation uses a spawned process with a wall-clock timeout and CPU rlimit; memory limits are not enforced on macOS.
+
+## Answer Path (2026-10-11)
+
+- Retrieval runs in the caller's request transaction, so only chunks of readable, `ready` documents are ranked. The LLM receives only those excerpts; with no authorized evidence it is not called.
+- After generation, all retrieved chunks are re-checked in a new transaction. If any became invisible (grant removed, membership deactivated, document deleting), the answer and citations are withheld. Verified for all three cases; removing the re-check made those three tests fail.
+- Document text is placed in the user input, never in the system instructions, and the instructions say to treat excerpts as data. This reduces but does not eliminate prompt-injection risk; the model has no tools, so injected text cannot trigger actions.
+- Logs contain question ID, organization, user, state, counts, tokens, and latency; tests assert that question text and evidence text are absent. LLM errors are reduced to the exception type.
+- Requests use `store=false`. Only authorized excerpts of public reports are sent to OpenAI; provider retention terms were not reviewed for real internal documents, which remain out of scope.
+- Limits: no OIDC yet, so the route is unreachable outside tests; no rate limiting or per-user cost limits.

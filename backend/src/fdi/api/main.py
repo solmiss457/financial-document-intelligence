@@ -5,9 +5,12 @@ from uuid import UUID
 import psycopg
 from psycopg_pool import PoolTimeout
 from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from fastapi.responses import JSONResponse
 from fdi.db.session import create_pool, request_connection
 from fdi.auth.policy import Membership, can_read
+from fdi.answering.b0 import B0Config, NotMember, answer_question
+from fdi.answering.llm import LLMError
 
 
 @dataclass(frozen=True)
@@ -20,7 +23,11 @@ def authenticated_principal() -> Principal:
     raise HTTPException(401, 'Authentication required')
 
 
-def create_app(pool=None):
+class QuestionRequest(BaseModel):
+    question: str = Field(min_length=1, max_length=1000)
+
+
+def create_app(pool=None, embedder=None, llm=None, answer_config=B0Config()):
     @asynccontextmanager
     async def lifespan(app):
         owned = pool is None
@@ -35,7 +42,8 @@ def create_app(pool=None):
             if owned:
                 app.state.pool.close()
 
-    app = FastAPI(title='FDI S1', lifespan=lifespan)
+    app = FastAPI(title='FDI', lifespan=lifespan)
+    app.state.embedder, app.state.llm = embedder, llm
 
     @app.exception_handler(psycopg.Error)
     @app.exception_handler(PoolTimeout)
@@ -77,6 +85,30 @@ def create_app(pool=None):
         if not rows:
             raise HTTPException(404, 'Not found')
         return rows[0]
+
+    def answer_dependencies():
+        # Loaded on first use so the API starts without the model or an LLM key.
+        if app.state.embedder is None:
+            from fdi.ingestion.embedding import SentenceTransformerEmbedder
+            app.state.embedder = SentenceTransformerEmbedder()
+        if app.state.llm is None:
+            from fdi.answering.llm import OpenAIResponsesLLM
+            app.state.llm = OpenAIResponsesLLM(answer_config.llm_model, answer_config.reasoning_effort)
+        return app.state.embedder, app.state.llm
+
+    @app.post('/organizations/{organization_id}/questions')
+    def ask(organization_id: UUID, body: QuestionRequest, principal: Principal = Depends(authenticated_principal)):
+        try:
+            embedder, llm = answer_dependencies()
+        except LLMError:
+            raise HTTPException(503, 'Service unavailable')
+        try:
+            return answer_question(app.state.pool, principal.user_id, organization_id, body.question,
+                                   embedder, llm, answer_config)
+        except NotMember:
+            raise HTTPException(404, 'Not found')
+        except ValueError:
+            raise HTTPException(422, 'Invalid question')
 
     return app
 

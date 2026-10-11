@@ -99,3 +99,17 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **B0 chunk size from measurement.** Candidates 100–250 words were tokenized on all 12 reports. 150 words / 30 overlap keeps all but 2 of 9,435 chunks within the model's 512-token limit (p99 353 tokens); 250 words would truncate 2.5%. This selects a baseline that does not lose text to truncation; it says nothing about retrieval quality, which is unmeasured.
 
 **Validation.** 100 local tests pass; deliberate policy and lease-check removals were caught by tests. All 12 reports were ingested by the real worker. A single manual query returned only Apple chunks for an Apple question, and organization B users saw zero chunks; this is a smoke check, not an evaluation.
+
+## 2026-10-11 — B0 Answering (Plan Step 3)
+
+**LLM provider and model.** OpenAI Responses API (the user's available credit), dated snapshot `gpt-5.4-mini-2026-03-17` so results stay reproducible; a mini tier keeps repeated experiments cheap. Strict JSON-schema output so evaluation can parse state, citations, and calculation without heuristics. SDK `openai==3.19.2` (released more than two weeks before adoption). `store=false`.
+
+**What B0 includes and excludes.** Vector-only top-5, prompt-only grounding, and model-performed arithmetic, matching the plan's B0. Evidence sufficiency, claim verification, and Decimal calculation are left out so later experiments have something to improve. Invalid citation IDs are reported rather than silently dropped, so evaluation can count them.
+
+**Security is not part of the baseline trade-off.** RLS-filtered retrieval, skipping the LLM without authorized evidence, and the final visibility re-check apply to B0 and every later configuration, so security never explains a quality difference.
+
+**Withhold on revocation.** If any retrieved chunk is no longer visible after generation, the whole answer is withheld, not just the affected citations, because uncited text could still derive from revoked evidence. Cost: an occasional answer lost to a concurrent unrelated permission change.
+
+**Exact search.** No ANN index: about 9.4k chunks make exact search fast enough and avoid approximate-recall effects under RLS filtering.
+
+**Smoke observation (not a metric).** Four development questions through the real stack: one retrieval miss (the income-statement chunk was not in the top 5, so the model abstained), one correct abstention, one ambiguous question answered instead of clarified, and one calculation answered from JPMorgan. That last case exposed a data issue: S1 questions say "the 2024 annual report" without naming Berkshire because the corpus then had one company. With 12 reports in the same organization those questions are ambiguous. They need revision, with human review, before B0 is measured.

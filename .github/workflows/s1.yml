@@ -12,7 +12,7 @@ jobs:
           python-version: '3.12.14'
       - run: |
           python -m venv .venv
-          .venv/bin/python -m pip install -r backend/requirements-api.lock
+          .venv/bin/python -m pip install -r backend/requirements-api.lock -r backend/requirements-answer.lock
           # Linux has no hash-pinned PDF lock yet; same version as the macOS lock.
           .venv/bin/python -m pip install PyMuPDF==1.26.7
           .venv/bin/python -m pip install --no-deps -e backend

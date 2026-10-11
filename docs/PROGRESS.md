@@ -228,3 +228,27 @@ Step 3: retrieval over authorized chunks and B0 answer generation behind an LLM 
 - Remote run 38101460539 (29acaac) failed during collection: `PermissionError` on `storage/postgres-pgvector`. Without explicit paths, pytest ignores `testpaths` when not run from `backend/`, so it walked the repository root and hit the Postgres data directory (owned by the container user, mode 0700 on Linux). macOS Docker Desktop makes that directory readable, so local runs passed while scanning the whole repository.
 - Fix: commands pass `backend/tests` explicitly, and `pytest.ini` sets `norecursedirs` to skip `storage`, `work`, `.venv`. Reproduced locally with an unreadable directory: the old command failed with the same collection error; either fix alone passes (98 passed, 1 deselected). Full local suite: 100 passed.
 - Remote run 38102027064 (7928778) then failed differently: 80 passed, 18 errors. Worker tests use `tmp_path`, and `--basetemp=work/pytest-tmp` cannot be created when ignored `work/` is absent in a fresh checkout. Reproduced locally by moving `work/` aside (18 errors). Fix: `backend/tests/conftest.py` creates the basetemp parent in `pytest_configure`. Without `work/`: 98 passed, 1 deselected; full suite: 100 passed. Remote rerun pending.
+
+## 2026-10-11 — Plan Step 3: B0 Retrieval and Answers
+
+### Completed / Changed Files
+
+- `fdi/retrieval.py` (exact vector search under RLS), `fdi/answering/{llm,b0}.py` (OpenAI Responses client with strict schema; B0 prompt, citation mapping, final re-check), `POST /organizations/{id}/questions` in `fdi/api/main.py`.
+- `backend/requirements-answer.lock` (`openai==3.19.2` and dependencies), `evaluation/configs/b0_answer.json` (prompt version `b0-v1-c87edbcd282f`), `.env.example` key placeholder, CI installs the answer lock.
+- Tests: `backend/tests/answering/test_b0.py` (28) with a fake LLM and fake OpenAI client; no network calls.
+
+### Validation
+
+- Full suite: **128 passed**; CI-equivalent subset: 126 passed, 1 deselected.
+- Removing the final visibility re-check failed 3 revocation tests; restored.
+- Live Uvicorn: health 200, ready 200, question route 401 without authentication (a forged X-User-ID header did not help).
+- Real OpenAI smoke run on four development questions (member of organization A, 12 ingested reports): about 1.8–2.0k input and 100–280 output tokens, 0.9–2.8 s per question. dev-01 retrieval miss → abstained; dev-06 answered with JPMorgan figures; dev-09 correctly abstained; dev-11 answered instead of asking for clarification. Four questions are not an evaluation.
+
+### Failures / Limitations
+
+- The S1 development questions omit the company name in several items ("the 2024 annual report"); with six companies they are ambiguous. Revision and human review are required before measuring B0.
+- No OIDC, rate limiting, or cost limits; the route is reachable only in tests. Answer and answering locks are not hash-pinned.
+
+### Next
+
+Step 4: revise development questions for the multi-company corpus (human review), build the evaluation runner and metrics, and measure B0.

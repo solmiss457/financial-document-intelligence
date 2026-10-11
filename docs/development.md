@@ -35,6 +35,7 @@ Prerequisites: Python 3.12 and running Docker Desktop. Execute from the reposito
 .venv/bin/python -m pip install --cache-dir work/pip-cache -r backend/requirements-api.lock
 .venv/bin/python -m pip install --cache-dir work/pip-cache --require-hashes -r backend/requirements-pdf-macos-arm64.lock
 .venv/bin/python -m pip install --cache-dir work/pip-cache -r backend/requirements-worker.lock
+.venv/bin/python -m pip install --cache-dir work/pip-cache -r backend/requirements-answer.lock
 .venv/bin/python -m pip install --cache-dir work/pip-cache --no-deps -e backend
 # Generates random credentials for postgres, fdi_app, and fdi_worker; adds missing keys only.
 .venv/bin/python backend/scripts/init_local_env.py
@@ -54,7 +55,7 @@ docker compose up -d --wait db
 .venv/bin/python -m uvicorn fdi.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-`/health` and `/ready` return 200; document routes return 401 by default because authentication is not implemented. Test identity headers such as X-User-ID are not supported. Tests reset only fixtures in `fdi_test`. `check_clean_migrations` creates a temporary database, applies and repeats migrations, then deletes only the database it created.
+`/health` and `/ready` return 200; document and question routes return 401 by default because authentication is not implemented. `POST /organizations/{id}/questions` with `{"question": ...}` runs B0 (see `evaluation/configs/b0_answer.json`) and needs `OPENAI_API_KEY` in the local `.env`; add it by editing the file yourself and do not print or commit it. Without a key the route returns 503. Tests use a fake LLM and never call the network. Test identity headers such as X-User-ID are not supported. Tests reset only fixtures in `fdi_test`. `check_clean_migrations` creates a temporary database, applies and repeats migrations, then deletes only the database it created.
 
 The worker downloads the pinned embedding model into ignored `work/models` on first use and copies registered PDFs into ignored `storage/documents` under random keys. It logs IDs, counts, and outcomes, not document text. B0 ingestion settings are recorded in `evaluation/configs/b0_ingestion.json`.
 
