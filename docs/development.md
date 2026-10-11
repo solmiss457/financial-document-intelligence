@@ -56,6 +56,8 @@ docker compose up -d --wait db
 # R1/R3 need table chunks: register with the R1 chunker name, then run the worker again.
 .venv/bin/python -m backend.scripts.register_reports "table_rows_v1:12r1200c+150/30"
 .venv/bin/python -m evaluation.tools.evidence_ranks
+# LLM vs Decimal arithmetic on identical ground-truth inputs (calls OpenAI).
+.venv/bin/python -m evaluation.tools.arithmetic_check --repeats 5
 # Start the local API.
 .venv/bin/python -m uvicorn fdi.api.main:app --host 127.0.0.1 --port 8000
 ```

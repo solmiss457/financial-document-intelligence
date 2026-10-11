@@ -18,7 +18,7 @@ from statistics import mean
 from uuid import UUID
 from backend.scripts.register_reports import document_ids
 from evaluation.tools.scoring import evidence_recall, score_answer, summarize
-from fdi.answering.b0 import CONFIGS, PROMPT_VERSION, answer_question
+from fdi.answering.b0 import CONFIGS, answer_question, prompt_for
 from fdi.db.config import ROOT, dsn
 from fdi.db.session import create_pool, request_connection
 
@@ -92,7 +92,7 @@ def main():
     out.mkdir(parents=True)
     commit, dirty = git_state()
     run = {'label': config.name, 'started_at': started.isoformat(), 'git_commit': commit, 'git_worktree': dirty,
-           'repeats': args.repeats, 'config': asdict(config), 'prompt_version': PROMPT_VERSION,
+           'repeats': args.repeats, 'config': asdict(config), 'prompt_version': prompt_for(config)[2],
            'embedding_model': embedder.name, 'questions_file': args.questions, 'questions_sha256': sha256(questions_path),
            'manifest_sha256': sha256(manifest_path), 'document_sha256': {k: v['sha256'] for k, v in manifest.items()},
            'python': sys.version.split()[0], 'platform': platform.platform(),

@@ -61,3 +61,7 @@ B0 intentionally trusts the model's state, citations, and arithmetic. The respon
 ## Retrieval Configurations (2026-10-11)
 
 Migration 004 adds `ingestion_jobs.chunker`; the worker looks it up in `fdi/ingestion/chunkers.py` (unknown names fail permanently), so B0 and R1 chunks coexist per document version. `fdi/answering/b0.py` `CONFIGS` defines B0 (fixed chunks, vector), R1 (table chunks, vector), R2 (fixed chunks, hybrid), and R3 (table chunks, hybrid). Hybrid retrieval fuses vector and PostgreSQL full-text candidates (50 each) with reciprocal rank fusion; both run inside the request transaction, so RLS applies to each. The API currently serves B0; the default will change only after a configuration is chosen on evidence.
+
+## Deterministic Calculation (N2, 2026-10-11)
+
+`CONFIGS['N2']` keeps R3 retrieval but uses a prompt and schema in which the model returns an allowlisted operation, two inputs copied as printed (with unit, period, evidence ID), and the requested rounding, plus answer text containing `{{result}}`. `fdi/calculation.py` computes with Decimal and refuses unit, currency, or period mismatches, zero denominators, and negative growth baselines; a refusal becomes `insufficient_evidence` with a reason code. Model-written formulas are never evaluated. Input values are not yet checked against the cited excerpt; that belongs to G2.

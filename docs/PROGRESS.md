@@ -319,3 +319,17 @@ Step 4: revise development questions for the multi-company corpus (human review)
 - Retrieval diagnostic (35 evidence items): top 5 B0 1, R1 11, R2 2, R3 20; within B0's token budget 1, 9, 2, 11.
 - Decision: R3 for subsequent experiments. Newly observed: LLM arithmetic errors on correct inputs (dev-17 6.42% vs 6.43%, dev-25 4.72% vs 4.73%).
 - Report: `docs/experiments/retrieval-28q-2026-10-11.md`. Next: G1/G2 and N1/N2 against R3 on these 28 questions.
+
+## 2026-10-11 — N2 Deterministic Calculation
+
+### Completed / Changed Files
+
+- `fdi/calculation.py` (parsing, allowlisted operations, unit/currency/period checks, zero and negative-baseline refusals, final half-up rounding); `CONFIGS['N2']` with its own prompt and schema (`n2-v1-74d64c6b66b9`) in `fdi/answering/b0.py`; B0/R3 prompt unchanged.
+- `evaluation/tools/arithmetic_check.py`; `run_eval` records the configuration's own prompt version (bug fixed; the first N2 run header was corrected and annotated).
+- Tests: `test_calculation.py` (24, including reproducing every expected calculation from ground-truth inputs) and 7 N2 pipeline tests. Full suite: 199 passed.
+
+### Results (development)
+
+- Identical inputs: LLM 37/40, Decimal 40/40.
+- End to end, same session: strict answerable accuracy R3 80/80/75%, N2 85/85/85%; wrong calculation results R3 1 (5 across six R3 runs), N2 0; recall unchanged at 57.5%. About $0.40 including the arithmetic check.
+- Report: `docs/experiments/n2-decimal-calculation-2026-10-11.md`. Next: G1/G2 on N2.

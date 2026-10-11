@@ -163,3 +163,17 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **What the larger set revealed.** R3 found the right inputs for Apple and Walmart growth questions but computed 6.42% and 4.72% instead of 6.43% and 4.73%. These are arithmetic errors on correct inputs, which the plan's N2 (deterministic calculation) addresses. Wrong-table answers (dev-03) and missed clarifications remain for G1/G2.
 
 **Limits.** 20 answerable questions, three companies, three runs, one reviewer. These are development results used for choices, not performance claims.
+
+## 2026-10-11 — N2: Deterministic Calculation
+
+**Decision.** The model selects an allowlisted operation and copies inputs; Decimal code computes, checks units and periods, and rounds half-up once. Adopted for subsequent experiments.
+
+**Evidence.** On identical reviewed inputs the model was right 37/40 times; all misses were half-up rounding at a boundary (6.4255 → 6.42, 4.7252 → 4.72). Decimal was 40/40. End to end, R3 produced 5 wrong calculation results on correctly retrieved inputs across six runs; N2 produced none in three, and strict answerable accuracy was 85% in every N2 run versus 75–80% for R3 in the same session.
+
+**Why the identical-input test matters.** The end-to-end gain is one question out of 20 per run, within run-to-run noise. Holding inputs fixed isolates arithmetic from retrieval and shows the error class directly, as the plan requires.
+
+**Trade-offs.** A longer instruction (+5% input tokens) and slightly higher latency. The model must still order inputs correctly (current before previous); ordering mistakes would be extraction errors, not arithmetic. Inputs are not yet verified against the cited text.
+
+**Unplanned benefit.** When an input was missing, the model wrote "[missing]" into the value; the parser refused it and the system abstained instead of reporting a guessed ratio.
+
+**Interview framing.** "Once retrieval found the right numbers, some answers were still wrong in the second decimal. Giving the model the exact reviewed inputs showed it misrounded 3 of 40 times, always at a rounding boundary, and the same question could come out 6.43% in one run and 6.42% in the next. I moved arithmetic into Decimal code with unit and period checks, so those errors went to zero and missing inputs became abstentions."

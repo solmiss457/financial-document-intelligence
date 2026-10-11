@@ -198,3 +198,50 @@ def test_openai_client_errors_are_sanitized(monkeypatch, case):
     with pytest.raises(LLMError) as exc:
         openai_llm(monkeypatch, responses).generate('i', 'x', 'n', {})
     assert 'CANARY' not in str(exc.value)
+
+
+N2 = B0Config(name='N2', calculation='decimal')  # B0 chunks/retrieval so the fixture corpus applies
+
+
+def calc_answer(answer, operation='growth_percent', values=('416,161', '391,035'), places=2, units=('USD millions',) * 2,
+                periods=('fiscal 2025', 'fiscal 2024'), citations=('E1', 'E1')):
+    inputs = [{'label': 'Total net sales', 'value': v, 'unit': u, 'period': p, 'citation': c}
+              for v, u, p, c in zip(values, units, periods, citations)]
+    return {'state': 'answered', 'answer': answer, 'citations': ['E1'],
+            'calculation': {'operation': operation, 'inputs': inputs, 'decimal_places': places}}
+
+
+def test_n2_uses_decimal_result_and_decimal_prompt(corpus):
+    fake = FakeLLM(calc_answer('Total net sales grew {{result}} from fiscal 2024 to fiscal 2025.'))
+    result = ask(corpus, 12, 1, fake, N2)
+    assert result['answer'] == 'Total net sales grew 6.43% from fiscal 2024 to fiscal 2025.'
+    assert result['calculation']['result'] == '6.43%' and result['calculation']['computed_by'] == 'decimal'
+    instructions, _, schema = fake.calls[0]
+    assert 'do not compute the result yourself' in instructions
+    assert 'result' not in schema['properties']['calculation']['anyOf'][1]['properties']
+    assert result['meta']['prompt_version'].startswith('n2-v1-')
+
+
+def test_n2_appends_result_when_placeholder_missing_and_keeps_difference_unit(corpus):
+    data = calc_answer('Operating cash flow changed from 2023 to 2024.', 'difference', ('30,592', '49,196'), None,
+                       periods=('2024', '2023'))
+    result = ask(corpus, 12, 1, FakeLLM(data), N2)
+    assert result['answer'].endswith('Result: -18,604 USD millions.')
+
+
+@pytest.mark.parametrize('values,units,code', [(('10', '0'), ('USD millions',) * 2, 'zero_denominator'),
+                                               (('10', '(5)'), ('USD millions',) * 2, 'negative_baseline'),
+                                               (('10', '5'), ('USD millions', 'USD thousands'), 'unit_mismatch'),
+                                               (('ten', '5'), ('USD millions',) * 2, 'unparseable_value')])
+def test_n2_abstains_when_calculation_is_not_valid(corpus, values, units, code):
+    result = ask(corpus, 12, 1, FakeLLM(calc_answer('Growth was {{result}}.', values=values, units=units)), N2)
+    assert result['state'] == 'insufficient_evidence' and result['meta']['calculation_error'] == code
+    assert '{{result}}' not in result['answer']
+
+
+def test_n2_without_calculation_passes_through_and_b0_unchanged(corpus):
+    plain = ask(corpus, 12, 1, FakeLLM(answer()), N2)
+    assert plain['state'] == 'answered' and plain['answer'] == answer()['answer']
+    llm_calc = {'formula': 'a-b', 'result': '6.42%', 'inputs': []}
+    b0 = ask(corpus, 12, 1, FakeLLM(answer(calculation=llm_calc)))
+    assert b0['calculation'] == llm_calc and b0['meta']['prompt_version'].startswith('b0-v2-')

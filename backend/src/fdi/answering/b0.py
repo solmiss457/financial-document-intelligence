@@ -1,16 +1,18 @@
 """Answer pipeline. B0: vector top-k over authorized chunks + prompt-only grounding + LLM calculation.
-R1-R3 change only chunking and retrieval (see CONFIGS); prompt and generation stay the same.
+R1-R3 change only chunking and retrieval; N2 changes only who computes calculation results (see CONFIGS).
 
-Deliberately no evidence-sufficiency check, claim verification, or deterministic arithmetic;
+B0 deliberately has no evidence-sufficiency check, claim verification, or deterministic arithmetic;
 those are the G1/G2/N1/N2 experiments. Security checks are not part of the baseline trade-off:
 retrieval runs under RLS and every evidence chunk is re-checked before responding.
 """
+import copy
 import hashlib
 import logging
 import time
 from dataclasses import dataclass
 from uuid import uuid4
 from fdi.answering.llm import LLMError
+from fdi.calculation import CalculationError, calculate
 from fdi.db.session import request_connection
 from fdi.ingestion.embedding import vector_literal
 from fdi.ingestion.chunkers import B0 as B0_CHUNKER, R1 as R1_CHUNKER
@@ -55,6 +57,26 @@ SCHEMA = {
 }
 PROMPT_VERSION = 'b0-v2-' + hashlib.sha256((INSTRUCTIONS + repr(SCHEMA)).encode()).hexdigest()[:12]
 
+# N2: identical except that the model no longer computes; it names an allowlisted operation and
+# copies inputs, and fdi.calculation produces the result.
+LLM_CALCULATION_RULE = '- For a calculation, list each input with its value, unit, period, and evidence ID, then give the formula and the result.\n'
+DECIMAL_CALCULATION_RULE = (
+    '- For a calculation, do not compute the result yourself; the system computes it. Set operation to difference '
+    '(first input minus second), growth_percent (growth from the second input to the first), or ratio_percent '
+    '(first input as a percentage of the second). List exactly two inputs in that order, copying each value exactly as '
+    'printed in the evidence, with its unit, period, and evidence ID. Set decimal_places to the rounding the question asks '
+    'for, or null. In answer, write {{result}} where the computed result belongs and do not write the result as a number.\n')
+assert LLM_CALCULATION_RULE in INSTRUCTIONS
+DECIMAL_INSTRUCTIONS = INSTRUCTIONS.replace(LLM_CALCULATION_RULE, DECIMAL_CALCULATION_RULE)
+DECIMAL_SCHEMA = copy.deepcopy(SCHEMA)
+_calc = DECIMAL_SCHEMA['properties']['calculation']['anyOf'][1]
+_calc['required'] = ['operation', 'inputs', 'decimal_places']
+_calc['properties'] = {'operation': {'type': 'string', 'enum': ['difference', 'growth_percent', 'ratio_percent']},
+                       'decimal_places': {'anyOf': [{'type': 'null'}, {'type': 'integer'}]},
+                       'inputs': _calc['properties']['inputs']}
+DECIMAL_PROMPT_VERSION = 'n2-v1-' + hashlib.sha256((DECIMAL_INSTRUCTIONS + repr(DECIMAL_SCHEMA)).encode()).hexdigest()[:12]
+CALCULATION_FAILED = 'The requested calculation could not be completed reliably from the evidence ({reason}).'
+
 
 @dataclass(frozen=True)
 class B0Config:
@@ -67,6 +89,7 @@ class B0Config:
     llm_model: str = 'gpt-5.4-mini-2026-03-17'
     reasoning_effort: str = 'low'
     max_question_chars: int = 1000
+    calculation: str = 'llm'  # 'llm' or 'decimal'
 
 
 CONFIGS = {
@@ -74,7 +97,14 @@ CONFIGS = {
     'R1': B0Config(name='R1', chunker=R1_CHUNKER),
     'R2': B0Config(name='R2', retrieval='hybrid'),
     'R3': B0Config(name='R3', chunker=R1_CHUNKER, retrieval='hybrid'),
+    'N2': B0Config(name='N2', chunker=R1_CHUNKER, retrieval='hybrid', calculation='decimal'),
 }
+
+
+def prompt_for(config):
+    if config.calculation == 'decimal':
+        return DECIMAL_INSTRUCTIONS, DECIMAL_SCHEMA, DECIMAL_PROMPT_VERSION
+    return INSTRUCTIONS, SCHEMA, PROMPT_VERSION
 
 
 class NotMember(Exception):
@@ -116,12 +146,29 @@ def _valid_output(data):
             and (data.get('calculation') is None or isinstance(data['calculation'], dict)))
 
 
+def _apply_decimal(data):
+    """Replace model arithmetic with fdi.calculation. Returns (data, error code or None)."""
+    calc = data['calculation']
+    if not calc:
+        return {**data, 'answer': data['answer'].replace('{{result}}', '[not computed]')}, None
+    try:
+        r = calculate(calc['operation'], calc['inputs'], calc['decimal_places'])
+    except (CalculationError, KeyError, TypeError) as exc:
+        return data, getattr(exc, 'code', 'malformed_calculation')
+    shown = r.display if r.operation != 'difference' else f"{r.display} {calc['inputs'][0]['unit']}".strip()
+    answer = (data['answer'].replace('{{result}}', shown) if '{{result}}' in data['answer']
+              else f"{data['answer'].rstrip()} Result: {shown}.")
+    return {**data, 'answer': answer,
+            'calculation': {**calc, 'formula': r.formula, 'result': shown, 'computed_by': 'decimal'}}, None
+
+
 def answer_question(pool, user_id, organization_id, question, embedder, llm, config=B0Config()):
     started, question_id = time.monotonic(), uuid4()
     question = question.strip()
     if not 0 < len(question) <= config.max_question_chars:
         raise ValueError('Question length out of range')
-    meta = {'question_id': str(question_id), 'configuration': config.name, 'prompt_version': PROMPT_VERSION,
+    instructions, schema, version = prompt_for(config)
+    meta = {'question_id': str(question_id), 'configuration': config.name, 'prompt_version': version,
             'chunker': config.chunker, 'retrieval': config.retrieval, 'k': config.k, 'embedding_model': embedder.name,
             'llm_model': None, 'input_tokens': 0, 'output_tokens': 0}
 
@@ -145,7 +192,7 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
     if not evidence:
         return finish('insufficient_evidence', NO_EVIDENCE)
     try:
-        result = llm.generate(INSTRUCTIONS, build_input(question, evidence), 'financial_answer', SCHEMA)
+        result = llm.generate(instructions, build_input(question, evidence), 'financial_answer', schema)
     except LLMError as exc:
         meta['error'] = str(exc)
         return finish('processing_error', FAILED)
@@ -153,11 +200,17 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
     if not _valid_output(result.data):
         meta['error'] = 'Output did not match schema'
         return finish('processing_error', FAILED)
-    citations, invalid = _citations(result.data, evidence)
+    data = result.data
+    if config.calculation == 'decimal':
+        data, calc_error = _apply_decimal(data)
+        if calc_error:
+            meta['calculation_error'] = calc_error
+            data = {**data, 'state': 'insufficient_evidence', 'answer': CALCULATION_FAILED.format(reason=calc_error.replace('_', ' '))}
+    citations, invalid = _citations(data, evidence)
     # Final permission check: access may have been revoked while the LLM was running.
     with request_connection(pool, user_id, organization_id) as conn:
         still_visible = visible_chunk_ids(conn, [e.chunk_id for e in evidence])
     if still_visible != {e.chunk_id for e in evidence}:
         meta['withheld'] = True
         return finish('insufficient_evidence', WITHHELD)
-    return finish(result.data['state'], result.data['answer'], citations, result.data['calculation'], invalid)
+    return finish(data['state'], data['answer'], citations, data['calculation'], invalid)
