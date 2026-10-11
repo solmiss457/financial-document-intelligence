@@ -1,4 +1,5 @@
-"""B0 answering: vector top-k over authorized chunks + prompt-only grounding + LLM calculation.
+"""Answer pipeline. B0: vector top-k over authorized chunks + prompt-only grounding + LLM calculation.
+R1-R3 change only chunking and retrieval (see CONFIGS); prompt and generation stay the same.
 
 Deliberately no evidence-sufficiency check, claim verification, or deterministic arithmetic;
 those are the G1/G2/N1/N2 experiments. Security checks are not part of the baseline trade-off:
@@ -12,7 +13,8 @@ from uuid import uuid4
 from fdi.answering.llm import LLMError
 from fdi.db.session import request_connection
 from fdi.ingestion.embedding import vector_literal
-from fdi.retrieval import retrieve_vector, visible_chunk_ids
+from fdi.ingestion.chunkers import B0 as B0_CHUNKER, R1 as R1_CHUNKER
+from fdi.retrieval import retrieve, visible_chunk_ids
 
 log = logging.getLogger('fdi.answering')
 
@@ -56,11 +58,23 @@ PROMPT_VERSION = 'b0-v2-' + hashlib.sha256((INSTRUCTIONS + repr(SCHEMA)).encode(
 
 @dataclass(frozen=True)
 class B0Config:
-    chunker: str = 'fixed_words_v1:150/30'
+    name: str = 'B0'
+    chunker: str = B0_CHUNKER
+    retrieval: str = 'vector'
     k: int = 5
+    candidates: int = 50
+    rrf_k: int = 60
     llm_model: str = 'gpt-5.4-mini-2026-03-17'
     reasoning_effort: str = 'low'
     max_question_chars: int = 1000
+
+
+CONFIGS = {
+    'B0': B0Config(),
+    'R1': B0Config(name='R1', chunker=R1_CHUNKER),
+    'R2': B0Config(name='R2', retrieval='hybrid'),
+    'R3': B0Config(name='R3', chunker=R1_CHUNKER, retrieval='hybrid'),
+}
 
 
 class NotMember(Exception):
@@ -107,8 +121,8 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
     question = question.strip()
     if not 0 < len(question) <= config.max_question_chars:
         raise ValueError('Question length out of range')
-    meta = {'question_id': str(question_id), 'configuration': 'B0', 'prompt_version': PROMPT_VERSION,
-            'chunker': config.chunker, 'k': config.k, 'embedding_model': embedder.name,
+    meta = {'question_id': str(question_id), 'configuration': config.name, 'prompt_version': PROMPT_VERSION,
+            'chunker': config.chunker, 'retrieval': config.retrieval, 'k': config.k, 'embedding_model': embedder.name,
             'llm_model': None, 'input_tokens': 0, 'output_tokens': 0}
 
     def finish(state, answer, citations=(), calculation=None, invalid=()):
@@ -124,7 +138,7 @@ def answer_question(pool, user_id, organization_id, question, embedder, llm, con
         if not conn.execute('SELECT 1 FROM fdi.memberships WHERE organization_id=%s AND user_id=%s',
                             (organization_id, user_id)).fetchone():
             raise NotMember()
-        evidence = retrieve_vector(conn, query, config.chunker, config.k)
+        evidence = retrieve(conn, config, question, query)
     meta['evidence_count'] = len(evidence)
     meta['retrieved'] = [{'chunk_id': str(e.chunk_id), 'document_id': str(e.document_id), 'score': round(e.score, 4)}
                          for e in evidence]

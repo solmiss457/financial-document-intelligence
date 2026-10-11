@@ -283,3 +283,25 @@ Step 4: revise development questions for the multi-company corpus (human review)
 
 - 12 development questions, one company; the run used uncommitted evaluation code identified by worktree hash. Unsupported Answer Rate and citation support were not measured.
 - Next: R1 table-aware chunking and R2 hybrid retrieval, compared with B0 on the same questions, permissions, models, and top-5 budget; then more development questions on the other companies.
+
+## 2026-10-11 — R1/R2/R3 Retrieval Experiments
+
+### Completed / Changed Files
+
+- `fdi/ingestion/table_chunking.py` (R1), `fdi/ingestion/chunkers.py` (registry), migration `004_job_chunker.sql`, worker runs the job's chunker, `register_reports.py <chunker>`.
+- `fdi/retrieval.py`: PostgreSQL full-text retrieval and reciprocal rank fusion; `CONFIGS` B0/R1/R2/R3 in `fdi/answering/b0.py`; `run_eval --config`.
+- `evaluation/tools/evidence_ranks.py`: evidence ranks and equal-token-budget coverage without LLM calls.
+- Tests: `test_table_chunking.py` (6), `test_retrieval.py` (9: RLS for keyword and hybrid, RRF), worker chunker tests (2). Report: `docs/experiments/r1-r3-development-2026-10-11.md`.
+
+### Validation and Results
+
+- Full suite 168 passed; empty-database migrations: 4 applied, 8/8 FORCE RLS.
+- R1 ingestion of 12 reports: 10,311 chunks (1,931 table chunks), 231 s.
+- Development results (3 runs each): Recall@5 B0 0%, R1 56.2%, R2 0%, R3 81.2%; strict answerable accuracy 0%, 50%, 0%, 62.5% (62.5% and 75.0% for R1/R3 after adjudicating dev-07's "decreased by 18,604"). Equal token budget: R1 7/16 evidence items vs R3 5/16.
+- About $0.25 for the nine runs.
+
+### Limitations / Next
+
+- 12 questions, one company; R1/R2/R3 runs used uncommitted code identified by worktree hash `b2318b88`. dev-02 lacks an alternative evidence set (cash flow statement), so its Recall@5 understates retrieval.
+- R1 and R3 produced wrong answers from neighboring tables (segment totals, pro forma figures).
+- Next: development questions for the other five companies (human review), then choose R1 or R3 and run G1/G2.

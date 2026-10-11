@@ -8,7 +8,7 @@ import logging
 import time
 from dataclasses import dataclass
 from fdi.db.session import organization_connection
-from fdi.ingestion.chunking import chunker_name, fixed_word_chunks
+from fdi.ingestion.chunkers import CHUNKERS
 from fdi.ingestion.embedding import vector_literal
 from fdi.ingestion.extract import PermanentIngestionError, extract_pdf_isolated
 
@@ -17,8 +17,6 @@ log = logging.getLogger('fdi.worker')
 
 @dataclass(frozen=True)
 class Settings:
-    chunk_size: int = 150
-    chunk_overlap: int = 30
     lease_seconds: int = 600
     max_bytes: int = 50 * 1024 * 1024
     max_pages: int = 1000
@@ -36,9 +34,9 @@ def dedup_key(document_id, sha256, chunker):
 
 def enqueue(conn, organization_id, document_id, sha256, chunker):
     """Idempotent: the same document version and chunker produce one job."""
-    return conn.execute('''INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key)
-        VALUES (%s,%s,%s) ON CONFLICT (dedup_key) DO NOTHING RETURNING id''',
-        (organization_id, document_id, dedup_key(document_id, sha256, chunker))).fetchone()
+    return conn.execute('''INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key,chunker)
+        VALUES (%s,%s,%s,%s) ON CONFLICT (dedup_key) DO NOTHING RETURNING id''',
+        (organization_id, document_id, dedup_key(document_id, sha256, chunker), chunker)).fetchone()
 
 
 def reap_exhausted(pool):
@@ -62,7 +60,7 @@ def claim(pool, worker_id, lease_seconds):
                 WHERE attempts < max_attempts
                 AND (status='queued' OR (status='running' AND lease_expires_at < now()))
                 ORDER BY created_at, id FOR UPDATE SKIP LOCKED LIMIT 1)
-            RETURNING id, organization_id, document_id, attempts, max_attempts''',
+            RETURNING id, organization_id, document_id, attempts, max_attempts, chunker''',
             (worker_id, lease_seconds)).fetchone()
 
 
@@ -95,7 +93,7 @@ def _start(pool, job, worker_id):
     """Returns the document row, or None when the job should be cancelled."""
     with organization_connection(pool, job['organization_id']) as conn:
         _lock_own_job(conn, job, worker_id)
-        doc = conn.execute('''SELECT id, storage_key, sha256, status FROM fdi.documents
+        doc = conn.execute('''SELECT id, title, storage_key, sha256, status FROM fdi.documents
             WHERE id=%s FOR UPDATE''', (job['document_id'],)).fetchone()
         if not doc or doc['status'] == 'deleting':
             _finish_job(conn, job, 'cancelled', 'Document missing or being deleted')
@@ -164,18 +162,21 @@ def _record_failure(pool, job, worker_id, exc):
                 'failed' if final else 'will retry', error)
 
 
-def process(pool, job, worker_id, storage, embedder, settings=Settings()):
+def process(pool, job, worker_id, storage, embedder, settings=Settings(), chunkers=None):
     started = time.monotonic()
-    chunker = chunker_name(settings.chunk_size, settings.chunk_overlap)
+    chunker = job['chunker']
+    chunk = (chunkers or CHUNKERS).get(chunker)
     try:
         doc = _start(pool, job, worker_id)
         if doc is None:
             log.info('job %s cancelled before processing', job['id'])
             return 'cancelled'
+        if chunk is None:
+            raise PermanentIngestionError(f'Unknown chunker {chunker}')
         path = _read_verified(storage, doc, settings)
         pages = extract_pdf_isolated(path, settings.max_pages, settings.extract_timeout_seconds)
         renew(pool, job, worker_id, settings.lease_seconds)
-        chunks = fixed_word_chunks(pages, settings.chunk_size, settings.chunk_overlap)
+        chunks = chunk(pages, doc['title'])
         if not chunks:
             raise PermanentIngestionError('No extractable text')
         vectors = _embed(pool, job, worker_id, embedder, chunks, settings)
@@ -193,7 +194,7 @@ def process(pool, job, worker_id, storage, embedder, settings=Settings()):
     return 'succeeded'
 
 
-def run_once(pool, worker_id, storage, embedder, settings=Settings()):
+def run_once(pool, worker_id, storage, embedder, settings=Settings(), chunkers=None):
     reap_exhausted(pool)
     job = claim(pool, worker_id, settings.lease_seconds)
-    return None if job is None else process(pool, job, worker_id, storage, embedder, settings)
+    return None if job is None else process(pool, job, worker_id, storage, embedder, settings, chunkers)

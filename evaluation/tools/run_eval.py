@@ -3,7 +3,7 @@
 Writes evaluation/runs/<timestamp>-<config>/ (Git-ignored): run.json (settings, versions, hashes),
 results.jsonl (per question and repeat), summary.json. Calls the real LLM, so it costs money.
 
-    .venv/bin/python -m evaluation.tools.run_eval --repeats 3
+    .venv/bin/python -m evaluation.tools.run_eval --config R1 --repeats 3
 """
 import argparse
 import hashlib
@@ -18,7 +18,7 @@ from statistics import mean
 from uuid import UUID
 from backend.scripts.register_reports import document_ids
 from evaluation.tools.scoring import evidence_recall, score_answer, summarize
-from fdi.answering.b0 import PROMPT_VERSION, B0Config, answer_question
+from fdi.answering.b0 import CONFIGS, PROMPT_VERSION, answer_question
 from fdi.db.config import ROOT, dsn
 from fdi.db.session import create_pool, request_connection
 
@@ -71,14 +71,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--questions', default='evaluation/questions/s1_development.json')
     parser.add_argument('--repeats', type=int, default=1)
-    parser.add_argument('--label', default='B0')
+    parser.add_argument('--config', choices=sorted(CONFIGS), default='B0')
     args = parser.parse_args()
     questions_path, manifest_path = ROOT / args.questions, ROOT / 'evaluation/manifests/s1_reports.json'
     questions = json.loads(questions_path.read_text())
     manifest = {d['document_id']: d for d in json.loads(manifest_path.read_text())}
     ids = document_ids()
     by_db = {v: k for k, v in ids.items()}
-    config = B0Config()
+    config = CONFIGS[args.config]
 
     from fdi.answering.llm import OpenAIResponsesLLM
     from fdi.ingestion.embedding import SentenceTransformerEmbedder
@@ -88,10 +88,10 @@ def main():
     verify_corpus(pool, questions, manifest, ids, config.chunker)
 
     started = datetime.now(timezone.utc)
-    out = ROOT / 'evaluation/runs' / f"{started.strftime('%Y%m%dT%H%M%SZ')}-{args.label}"
+    out = ROOT / 'evaluation/runs' / f"{started.strftime('%Y%m%dT%H%M%SZ')}-{config.name}"
     out.mkdir(parents=True)
     commit, dirty = git_state()
-    run = {'label': args.label, 'started_at': started.isoformat(), 'git_commit': commit, 'git_worktree': dirty,
+    run = {'label': config.name, 'started_at': started.isoformat(), 'git_commit': commit, 'git_worktree': dirty,
            'repeats': args.repeats, 'config': asdict(config), 'prompt_version': PROMPT_VERSION,
            'embedding_model': embedder.name, 'questions_file': args.questions, 'questions_sha256': sha256(questions_path),
            'manifest_sha256': sha256(manifest_path), 'document_sha256': {k: v['sha256'] for k, v in manifest.items()},

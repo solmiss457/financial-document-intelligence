@@ -10,8 +10,8 @@ import uuid
 import psycopg
 from fdi.db.config import ROOT, dsn
 from fdi.storage import LocalStorage
-from fdi.worker.jobs import Settings, enqueue
-from fdi.ingestion.chunking import chunker_name
+from fdi.worker.jobs import enqueue
+from fdi.ingestion.chunkers import B0, CHUNKERS
 
 ORG_A, ORG_B = uuid.UUID(int=1), uuid.UUID(int=2)
 ADMIN_A, ADMIN_B, MEMBER_B = uuid.UUID(int=0xa), uuid.UUID(int=0xc), uuid.UUID(int=0xd)
@@ -26,15 +26,15 @@ def document_ids():
     return {r['document_id']: fixed.get(r['document_id'], uuid.uuid5(NAMESPACE, r['document_id'])) for r in manifest}
 
 
-def main():
+def main(chunker=B0):
+    if chunker not in CHUNKERS:
+        raise SystemExit(f'Unknown chunker {chunker}; choose from {sorted(CHUNKERS)}')
     access = json.loads((ROOT / 'evaluation/configs/s1_access.json').read_text())
     ids = document_ids()
     assert uuid.UUID(access['organization_id']) == ORG_A
     member_a = uuid.UUID(access['user_id'])
     fixed = {d['document_id']: d for d in access['documents']}
     manifest = json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())
-    settings = Settings()
-    chunker = chunker_name(settings.chunk_size, settings.chunk_overlap)
     storage = LocalStorage()
     added = queued = 0
     with psycopg.connect(dsn(admin=True)) as conn:
@@ -65,4 +65,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    main(sys.argv[1] if len(sys.argv) > 1 else B0)

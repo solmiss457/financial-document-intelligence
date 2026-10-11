@@ -18,7 +18,10 @@ Run a configuration with `.venv/bin/python -m evaluation.tools.run_eval --repeat
 
 | Configuration | Question set | Recall@5 | Numerical Accuracy | Answer Coverage | p95 |
 |---|---|---|---|---|---|
-| B0 | Development, 12 questions, 3 runs | 0.0% (0/8, all runs) | 0.0% (0/8, all runs) | 8.3–16.7% | 2.8–3.8 s (12 samples) |
+| B0 | Development, 12 questions, 3 runs | 0.0% | 0.0% | 8.3–16.7% | 2.8–3.8 s (12 samples) |
+| R1 table chunks | Development, same | 56.2% | 50.0% strict, 62.5% adjudicated | 58.3–66.7% | 2.1–7.9 s |
+| R2 hybrid on B0 chunks | Development, same | 0.0% | 0.0% | 8.3–16.7% | 2.2–2.6 s |
+| R3 table chunks + hybrid | Development, same | 81.2% | 62.5% strict, 75.0% adjudicated | 58.3–66.7% | 1.6–2.0 s |
 | F | Final test | Not measured | Not measured | Not measured | Not measured |
 
-Development results are not held-out results. See [B0 development report](../docs/experiments/b0-development-2026-10-11.md).
+Development results are not held-out results. See the [B0 report](../docs/experiments/b0-development-2026-10-11.md) and [R1–R3 report](../docs/experiments/r1-r3-development-2026-10-11.md), including the equal-token-budget comparison. `tools/evidence_ranks.py` measures evidence ranks without LLM calls.

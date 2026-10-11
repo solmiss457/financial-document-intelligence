@@ -131,3 +131,17 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Result and how it was checked.** B0 scored 0/8 on answerable development questions with Recall@5 of 0 in all three runs. Because a zero can come from a scorer bug, the scorer was checked against the whole index first: every evidence item has a covering chunk, ranked 15th to 2,873rd by the B0 query embedding. The zero is a retrieval result, not a scoring artifact.
 
 **Interview framing.** "My baseline answered none of the answerable development questions. Before trusting that, I checked that the evidence existed in the index and measured where it ranked. The model abstained instead of inventing numbers, so the problem was retrieval of number-dense statement chunks, which is what the table-aware chunking and hybrid search experiments test next. These are 12 development questions on one company, not a held-out result."
+
+## 2026-10-11 — R1 Table Rows from Coordinates; R1–R3 Results
+
+**Row reconstruction instead of `find_tables`.** S1 showed PyMuPDF table detection keeps rows but drops units. Clustering words by baseline rebuilt statement rows for all six companies, and the statement title and units line sit directly above each table. Chunks repeat document, title, units, and column years in every row group. Detected tables are retrieval units, not verified facts. Caps (12 rows, 1,200 characters) were chosen by measuring token lengths: 1,400 characters left 16 table chunks over the 512-token limit, 1,200 left 2.
+
+**Text outside tables unchanged.** Non-table text uses B0's 150/30 windows so that R1 differs from B0 only in table handling.
+
+**Results (development, 12 questions).** Evidence in top 5: B0 0/16, R1 8/16, R2 0/16, R3 12/16. Strict answerable accuracy 0%, 50%, 0%, 62.5%. R2 alone does nothing here because keyword search cannot reunite labels and numbers that B0 split apart.
+
+**Equal-budget check changed the conclusion.** With each configuration limited to B0's top-5 token total, R1 covers 7/16 items and R3 5/16. R3's top-5 advantage partly reflects 28% more context. R1 is kept; R3 vs R1 stays open until more questions exist.
+
+**New failure mode.** B0 abstained when unsure. R1/R3 answer more and sometimes answer confidently from the wrong table (segment totals, pro forma figures). Better retrieval exposes answer-verification needs; this motivates G1/G2 rather than declaring success.
+
+**Interview framing.** "Table-aware chunking moved the evidence for 'Berkshire total revenues 2024' from rank 2,359 to rank 4. Adding keyword search helped at top-5, but when I equalized the context budget the advantage shrank, so I kept the simpler improvement and left the combination undecided. Better retrieval also produced confident answers from the wrong table, which is why the next step is verification, not more retrieval tuning."

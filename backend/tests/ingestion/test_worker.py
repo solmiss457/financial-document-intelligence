@@ -11,9 +11,10 @@ from fdi.ingestion.embedding import HashEmbedder
 from fdi.ingestion.extract import PermanentIngestionError, extract_pdf_isolated
 from fdi.storage import LocalStorage
 from fdi.worker import jobs
+from fdi.ingestion.chunking import fixed_word_chunks
 from fdi.worker.jobs import Settings, claim, enqueue, process, run_once
 
-SETTINGS = Settings(chunk_size=20, chunk_overlap=5, lease_seconds=60, extract_timeout_seconds=60)
+SETTINGS = Settings(lease_seconds=60, extract_timeout_seconds=60)
 CHUNKER = 'fixed_words_v1:20/5'
 
 
@@ -28,6 +29,11 @@ def make_pdf(path, pages=3, marker='CANARY_TEXT'):
             page.insert_text((72, 72 + 14 * line), f'{marker} page {p + 1} line {line} revenue {1000 + line}')
     doc.save(path)
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+@pytest.fixture(autouse=True)
+def small_chunker(monkeypatch):
+    monkeypatch.setitem(jobs.CHUNKERS, CHUNKER, lambda pages, title: fixed_word_chunks(pages, 20, 5))
 
 
 @pytest.fixture
@@ -86,7 +92,7 @@ def test_reprocessing_replaces_without_duplicates(env):
     add(201)
     run_once(worker, 'w1', storage, HashEmbedder(), SETTINGS)
     before = counts(admin, 201)
-    admin.execute("INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key) VALUES (%s,%s,'manual-rerun')", (u(1), u(201)))
+    admin.execute("INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key,chunker) VALUES (%s,%s,'manual-rerun',%s)", (u(1), u(201), CHUNKER))
     assert run_once(worker, 'w1', storage, HashEmbedder(), SETTINGS) == 'succeeded'
     assert counts(admin, 201) == before
 
@@ -263,3 +269,23 @@ def test_worker_rejects_cross_org_job_document(env):
     import psycopg
     with pytest.raises(psycopg.errors.ForeignKeyViolation):
         admin.execute("INSERT INTO fdi.ingestion_jobs (organization_id,document_id,dedup_key) VALUES (%s,%s,'x')", (u(2), u(201)))
+
+
+def test_unknown_chunker_fails_permanently(env):
+    admin, _, worker, storage, add = env
+    add(201)
+    admin.execute("UPDATE fdi.ingestion_jobs SET chunker='no-such-chunker'")
+    assert run_once(worker, 'w1', storage, HashEmbedder(), SETTINGS) == 'failed'
+    assert job_of(admin, 201)[:3] == ('failed', 1, 'Unknown chunker no-such-chunker')
+
+
+def test_chunkers_coexist_per_document(env, monkeypatch):
+    admin, _, worker, storage, add = env
+    add(201)
+    monkeypatch.setitem(jobs.CHUNKERS, 'other', lambda pages, title: fixed_word_chunks(pages, 40, 0))
+    run_once(worker, 'w1', storage, HashEmbedder(), SETTINGS)
+    sha = admin.execute('SELECT sha256 FROM fdi.documents').fetchone()[0]
+    enqueue(admin, u(1), u(201), sha, 'other')
+    assert run_once(worker, 'w1', storage, HashEmbedder(), SETTINGS) == 'succeeded'
+    rows = dict(admin.execute('SELECT chunker, count(*) FROM fdi.chunks GROUP BY chunker').fetchall())
+    assert set(rows) == {CHUNKER, 'other'} and counts(admin, 201)[0] == 3
