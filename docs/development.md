@@ -51,6 +51,8 @@ docker compose up -d --wait db
 .venv/bin/python -m backend.scripts.register_reports
 # Process queued jobs, then exit. Omit --drain to keep polling.
 .venv/bin/python -m fdi.worker --drain
+# Evaluate B0 on the development questions (calls OpenAI; see evaluation/README.md).
+.venv/bin/python -m evaluation.tools.run_eval --repeats 3
 # Start the local API.
 .venv/bin/python -m uvicorn fdi.api.main:app --host 127.0.0.1 --port 8000
 ```

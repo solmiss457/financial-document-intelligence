@@ -121,3 +121,13 @@ Keep personal planning and agent instructions on the local machine and exclude t
 **Applied to.** The dev-11/dev-12 expectations (`expected_clarification`) and the B0 instructions (prompt `b0-v2-4a58d1dde6ff`), changed before any B0 measurement so all configurations share the same behavior spec. The prompt states the rule generically and does not name the dev-12 metric, to avoid fitting the prompt to development answers.
 
 **Evaluation consequence.** A clarification response counts as correct only with the right state and the provisional value and interpretation. Values offered as provisional must still be supported by evidence, so this does not relax unsupported-answer metrics.
+
+## 2026-10-11 — Evaluation Scoring Rules and First B0 Result
+
+**Evidence coverage.** A retrieved chunk covers an evidence item only if it is from the right document, spans the evidence page, and contains both the row label and the printed value. Requiring the label prevents counting a number separated from its meaning, which is the failure this project targets. Cost: a chunk that splits a label and its value across a boundary counts as a miss even if a model could reconstruct it.
+
+**Strict answer matching.** Exact value in the requested unit after scale conversion. A rounded "$89.0 billion" for a USD-million question is wrong, and a sign implied only by wording is flagged for a person rather than accepted. Alternative considered: an LLM judge; rejected as the sole ground truth by the plan.
+
+**Result and how it was checked.** B0 scored 0/8 on answerable development questions with Recall@5 of 0 in all three runs. Because a zero can come from a scorer bug, the scorer was checked against the whole index first: every evidence item has a covering chunk, ranked 15th to 2,873rd by the B0 query embedding. The zero is a retrieval result, not a scoring artifact.
+
+**Interview framing.** "My baseline answered none of the answerable development questions. Before trusting that, I checked that the evidence existed in the index and measured where it ranked. The model abstained instead of inventing numbers, so the problem was retrieval of number-dense statement chunks, which is what the table-aware chunking and hybrid search experiments test next. These are 12 development questions on one company, not a held-out result."

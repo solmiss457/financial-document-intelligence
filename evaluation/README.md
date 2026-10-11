@@ -14,7 +14,11 @@ For B0/R1/R2/R3/G1/G2/N1/N2/F, record the commit, model versions, prompt/retriev
 
 Report Recall@5, Complete Evidence@5, Answerable Accuracy, Unsupported Answer Rate, Citation Precision/Coverage, Numerical Accuracy, Answer Coverage, False Deferral, p50/p95 latency, and API cost. A zero denominator is N/A. Numerical tolerance must not excuse period or unit errors.
 
-| Configuration | Recall@5 | Numerical Accuracy | Answer Coverage | p95 |
-|---|---|---|---|---|
-| B0 | Not measured | Not measured | Not measured | Not measured |
-| F | Not measured | Not measured | Not measured | Not measured |
+Run a configuration with `.venv/bin/python -m evaluation.tools.run_eval --repeats 3` (real LLM calls; requires ingested reports and `OPENAI_API_KEY`). Scoring rules are in `tools/scoring.py` and its tests.
+
+| Configuration | Question set | Recall@5 | Numerical Accuracy | Answer Coverage | p95 |
+|---|---|---|---|---|---|
+| B0 | Development, 12 questions, 3 runs | 0.0% (0/8, all runs) | 0.0% (0/8, all runs) | 8.3–16.7% | 2.8–3.8 s (12 samples) |
+| F | Final test | Not measured | Not measured | Not measured | Not measured |
+
+Development results are not held-out results. See [B0 development report](../docs/experiments/b0-development-2026-10-11.md).

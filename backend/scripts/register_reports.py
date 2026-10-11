@@ -18,8 +18,17 @@ ADMIN_A, ADMIN_B, MEMBER_B = uuid.UUID(int=0xa), uuid.UUID(int=0xc), uuid.UUID(i
 NAMESPACE = uuid.UUID('6f1c1d9e-3c55-4a59-9c1f-6a1f4d0c2b11')
 
 
+def document_ids():
+    """Manifest report id -> database document UUID (fixed in s1_access.json, else derived)."""
+    access = json.loads((ROOT / 'evaluation/configs/s1_access.json').read_text())
+    fixed = {d['document_id']: uuid.UUID(d['db_id']) for d in access['documents']}
+    manifest = json.loads((ROOT / 'evaluation/manifests/s1_reports.json').read_text())
+    return {r['document_id']: fixed.get(r['document_id'], uuid.uuid5(NAMESPACE, r['document_id'])) for r in manifest}
+
+
 def main():
     access = json.loads((ROOT / 'evaluation/configs/s1_access.json').read_text())
+    ids = document_ids()
     assert uuid.UUID(access['organization_id']) == ORG_A
     member_a = uuid.UUID(access['user_id'])
     fixed = {d['document_id']: d for d in access['documents']}
@@ -42,7 +51,7 @@ def main():
             if hashlib.sha256(data).hexdigest() != report['sha256']:
                 raise SystemExit(f"Hash mismatch for {report['document_id']}; not registering")
             spec = fixed.get(report['document_id'], {})
-            doc_id = uuid.UUID(spec['db_id']) if spec else uuid.uuid5(NAMESPACE, report['document_id'])
+            doc_id = ids[report['document_id']]
             if not conn.execute('SELECT 1 FROM fdi.documents WHERE id=%s', (doc_id,)).fetchone():
                 key = storage.put(data)
                 conn.execute('INSERT INTO fdi.documents VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',

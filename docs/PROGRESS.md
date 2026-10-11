@@ -264,3 +264,22 @@ Step 4: revise development questions for the multi-company corpus (human review)
 - The project owner confirmed all 12 questions against the PDFs (single reviewer). Recorded `human_review_status=confirmed` with reviewer, date, and note per question; the contract test now accepts `confirmed` only with reviewer fields.
 - Clarification policy decided: ask, and also give the most likely interpretation's answer. Added `expected_clarification` to dev-11/dev-12 (provisional 371,433 and 88,995 USD million) with a contract check, and updated the B0 instructions (prompt `b0-v2-4a58d1dde6ff`, `b0_answer.json`). Full suite: 129 passed.
 - Next: evaluation runner and metrics, then the first B0 measurement on these 12 development questions.
+
+## 2026-10-11 — Plan Step 4: Evaluation Tooling and First B0 Measurement
+
+### Completed / Changed Files
+
+- `evaluation/tools/scoring.py` (evidence coverage, Recall@5, strict value matching with unit scales and signs, per-state scoring, metrics with N/A for zero denominators) and `backend/tests/evaluation/test_scoring.py` (22 tests).
+- `evaluation/tools/run_eval.py`: verifies every authorized document is ready at its manifest hash, runs each question as its user, stores `run.json` (commit, worktree hash, config, prompt version, model and package versions, document and question hashes), `results.jsonl`, and `summary.json` under Git-ignored `evaluation/runs/`.
+- `register_reports.document_ids()` shared with the runner. Report: `docs/experiments/b0-development-2026-10-11.md`.
+
+### Validation and Results
+
+- Full suite: 151 passed.
+- B0, 12 development questions × 3 runs: Recall@5 0/8 and answerable accuracy 0/8 in every run; false deferral 100%; out-of-scope deferral 2/2; clarification accuracy 0/2; answer coverage 8.3–16.7%; p50 1.2–1.5 s; about $0.08 in total.
+- Scorer cross-check: every evidence item has a covering chunk in the index; best ranks under B0 range from 15 to 2,873 of 9,435. No invalid citation IDs or processing errors.
+
+### Limitations / Next
+
+- 12 development questions, one company; the run used uncommitted evaluation code identified by worktree hash. Unsupported Answer Rate and citation support were not measured.
+- Next: R1 table-aware chunking and R2 hybrid retrieval, compared with B0 on the same questions, permissions, models, and top-5 budget; then more development questions on the other companies.
