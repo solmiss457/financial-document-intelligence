@@ -175,3 +175,22 @@ Check public text for remaining Korean, relative links against the published fil
 
 - Independent human review, real authentication, uploads, worker processing, and B0 remain pending; this reorganization does not advance feature acceptance.
 - Remote CI success is not claimed. Next implement the S2 authentication boundary in the new structure, then ingestion and baseline flow in small verified increments.
+
+## 2026-10-11 — Corpus Expansion: Five Additional Companies
+
+### Completed
+
+- Downloaded 10 reports from company investor-relations hosts into ignored `storage/reports/`: Apple FY2024/FY2025, Coca-Cola FY2024/FY2025, JPMorgan 2024/2025, Nike FY2025/FY2026, Walmart FY2025/FY2026. The manifest now lists 12 documents from six companies; PDFs remain uncommitted.
+- Added each URL, acquisition time, SHA256, page count, fiscal-year end, and document type to `evaluation/manifests/s1_reports.json`. Berkshire entries are unchanged.
+- Fiscal years end in September (Apple), December (Coca-Cola, JPMorgan), May (Nike), and January (Walmart), providing period-interpretation cases. Document types include 10-K filings and annual reports bundling shareholder letters.
+
+### Validation
+
+- All 10 files are unencrypted text PDFs (80–372 pages); no scanned pages were found.
+- A one-off PyMuPDF check located each consolidated income statement as extractable text with a units header. Prior-year columns of the first revenue lines match between consecutive reports of each company (for example, Apple FY2024 total net sales appear identically in both Apple reports). This is a presence and consistency check, not table-extraction accuracy.
+- `pytest -c backend/pytest.ini -q`: 40 passed; source-hash checks now cover all 12 manifest documents.
+
+### Limitations / Next
+
+- No questions reference the new documents yet, and no table-extraction probe cases were added. Redistribution permission is unverified.
+- Next: add representative table probes for the new layouts, then author development questions (human review required).

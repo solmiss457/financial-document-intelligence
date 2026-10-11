@@ -1,6 +1,6 @@
 # Evaluation Data and Experiment Rules
 
-Two public reports were acquired and four representative tables were checked (`manifests/s1_reports.json`, `configs/pdf_probe.json`). Twelve development questions are in `questions/s1_development.json`, with Codex source comparison and automated checks. Independent human review is pending; final evaluation questions and RAG evaluation runs do not yet exist. The original 10–15 reports, 160 questions, and 80/80 split are proposed targets, not completed quantities.
+Twelve public reports from six companies are listed in `manifests/s1_reports.json`; four representative Berkshire tables were checked (`configs/pdf_probe.json`). The ten reports added on 2026-10-11 have no probe cases or questions yet. Twelve development questions are in `questions/s1_development.json`, with Codex source comparison and automated checks. Independent human review is pending; final evaluation questions and RAG evaluation runs do not yet exist. The original 10–15 reports, 160 questions, and 80/80 split are proposed targets, not completed quantities.
 
 Manifest fields: document_id, company, fiscal_year, source_url, acquired_at, sha256, version, redistribution_notes, local_path.
 Question fields: question_id, type, split, evidence_group_ids, question, organization_id, user_id, authorized_document_ids, expected_state, expected_answer, alternative_evidence_sets, inputs, formula, tolerance, reviewed_by, reviewed_at.
