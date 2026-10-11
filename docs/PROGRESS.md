@@ -146,3 +146,11 @@ Additional checks: `docker compose config --quiet` passed. The CI-equivalent loc
 ### Validation and Follow-up
 
 Check public text for remaining Korean, relative links against the published file set, unchanged functional code, preserved local file hashes, and absence of the two private paths from rewritten reachable history. Functional tests are not rerun for documentation-only changes. Record the actual history/push verification after execution; do not interpret this plan as proof of completion. Previously listed S2 work and independent human review remain pending.
+
+### Executed Results
+
+- Created a local ignored backup at `work/privacy-backup/before-rewrite.bundle` and rewrote main in an isolated bare copy inside the same ignored directory.
+- Confirmed neither private file exists in any rewritten main commit and that the current public tree was identical before/after rewriting.
+- Published rewritten main using an explicit expected-SHA force-with-lease; the push succeeded. Synchronized local main/origin/main without changing working files.
+- Verified both local originals still exist with their saved SHA256 hashes and are ignored. Public branch/remote histories no longer contain the private paths. All tracked text is English and public Markdown links resolve.
+- This verifies reachable branch history, not erasure from third-party clones, forks, or GitHub's cached objects. Keep the backup local; do not push it. Existing other clones should be replaced or carefully rebased before further pushes.
